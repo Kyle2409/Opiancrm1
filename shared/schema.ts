@@ -43,7 +43,7 @@ export const teamMembers = pgTable("team_members", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull(),
-  role: text("role").notNull(), // CEO, Advisor, Manager, etc.
+  role: text("role").notNull().default("Admin"), // CEO, Financial Advisor, Admin, IT
   department: text("department"),
   isActive: boolean("is_active").default(true),
   userId: integer("user_id").references(() => users.id),

@@ -182,8 +182,25 @@ export default function BookingCalendar() {
                         </div>
                         
                         {apt.assignedToId && (
-                          <div className="text-purple-600 font-medium">
-                            Assigned to: {getTeamMemberName(apt.assignedToId)}
+                          <div className="flex items-center space-x-2">
+                            <span className="text-gray-600">Assigned to:</span>
+                            <span className="text-purple-600 font-medium">
+                              {getTeamMemberName(apt.assignedToId)}
+                            </span>
+                            {(() => {
+                              const member = teamMembers.find(tm => tm.id === apt.assignedToId);
+                              return member ? (
+                                <span className={`text-xs px-2 py-1 rounded ${
+                                  member.role === 'CEO' ? 'bg-purple-100 text-purple-700' :
+                                  member.role === 'Financial Advisor' ? 'bg-green-100 text-green-700' :
+                                  member.role === 'Admin' ? 'bg-blue-100 text-blue-700' :
+                                  member.role === 'IT' ? 'bg-orange-100 text-orange-700' :
+                                  'bg-gray-100 text-gray-700'
+                                }`}>
+                                  {member.role}
+                                </span>
+                              ) : null;
+                            })()}
                           </div>
                         )}
                         

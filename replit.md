@@ -25,10 +25,12 @@ Opian Core is a modern, full-stack customer relationship management application 
 ## Key Components
 
 ### Database Schema
-The application uses three main entities:
+The application uses five main entities:
 - **Clients**: Core customer information including name, email, company, status, and value
 - **Documents**: File attachments linked to clients with metadata
-- **Appointments**: Scheduled meetings with clients including time, type, and status
+- **Appointments**: Scheduled meetings with clients including time, type, status, and duration
+- **Users**: Authentication and user management with role-based access control
+- **Team Members**: Staff management with specific roles (CEO, Financial Advisor, Admin, IT) and department assignments
 
 ### API Structure
 RESTful API endpoints organized by resource:
@@ -99,6 +101,8 @@ Changelog:
 - July 07, 2025. Database integration - Migrated from in-memory storage to PostgreSQL with Drizzle ORM, added database relations, and automatic seeding
 - July 07, 2025. Authentication system - Added complete user authentication with login/register pages, protected routes, user-specific data filtering, and PostgreSQL session management
 - July 07, 2025. Rebranding - Renamed application from "CRM Hub" to "Opian Core"
+- July 07, 2025. Booking system enhancement - Transformed appointment scheduling into comprehensive booking system with step-by-step interface, real-time availability, visual indicators, and full appointment duration blocking
+- July 07, 2025. Role-based team management - Added specific team member roles (CEO, Financial Advisor, Admin, IT) with color-coded visual system throughout the application
 ```
 
 ## User Preferences

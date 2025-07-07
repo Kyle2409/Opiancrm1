@@ -256,7 +256,18 @@ export default function AddAppointmentModal({ isOpen, onClose }: AddAppointmentM
                         <SelectContent>
                           {teamMembers.map((member) => (
                             <SelectItem key={member.id} value={member.id.toString()}>
-                              {member.name} - {member.role}
+                              <div className="flex items-center justify-between w-full">
+                                <span>{member.name}</span>
+                                <span className={`text-xs px-2 py-1 rounded ml-2 ${
+                                  member.role === 'CEO' ? 'bg-purple-100 text-purple-700' :
+                                  member.role === 'Financial Advisor' ? 'bg-green-100 text-green-700' :
+                                  member.role === 'Admin' ? 'bg-blue-100 text-blue-700' :
+                                  member.role === 'IT' ? 'bg-orange-100 text-orange-700' :
+                                  'bg-gray-100 text-gray-700'
+                                }`}>
+                                  {member.role}
+                                </span>
+                              </div>
                             </SelectItem>
                           ))}
                         </SelectContent>

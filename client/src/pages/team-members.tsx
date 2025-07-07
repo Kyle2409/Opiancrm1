@@ -92,7 +92,18 @@ export default function TeamMembers() {
                     </div>
                     <div>
                       <CardTitle className="text-lg">{member.name}</CardTitle>
-                      <p className="text-sm text-gray-600">{member.role}</p>
+                      <Badge 
+                        variant="secondary" 
+                        className={`text-xs ${
+                          member.role === 'CEO' ? 'bg-purple-100 text-purple-700 border-purple-200' :
+                          member.role === 'Financial Advisor' ? 'bg-green-100 text-green-700 border-green-200' :
+                          member.role === 'Admin' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                          member.role === 'IT' ? 'bg-orange-100 text-orange-700 border-orange-200' :
+                          'bg-gray-100 text-gray-700 border-gray-200'
+                        }`}
+                      >
+                        {member.role}
+                      </Badge>
                     </div>
                   </div>
                   <div className="flex items-center space-x-1">

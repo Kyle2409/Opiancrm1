@@ -26,7 +26,7 @@ export default function TeamMembers() {
     queryFn: teamMembersApi.getAll,
   });
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
 
   if (isLoading) {
     return (

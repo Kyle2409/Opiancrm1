@@ -35,7 +35,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   firstName: text("first_name"),
   lastName: text("last_name"),
-  role: text("role").default("user"), // admin, user
+  role: text("role").default("user"), // super_admin, admin, user
   createdAt: timestamp("created_at").defaultNow(),
 });
 

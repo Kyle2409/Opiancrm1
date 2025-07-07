@@ -396,7 +396,7 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
               </Select>
             </div>
             
-            {user?.role === 'admin' && teamMembers.length > 0 && (
+            {(user?.role === 'admin' || user?.role === 'super_admin') && teamMembers.length > 0 && (
               <div className="space-y-2">
                 <Label htmlFor="assignedTo">Assign to Team Member</Label>
                 <Select 

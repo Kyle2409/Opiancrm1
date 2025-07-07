@@ -23,9 +23,11 @@ import {
 } from "lucide-react";
 import { format, isToday, isTomorrow, isThisWeek, startOfWeek, endOfWeek } from "date-fns";
 import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
+  const { user } = useAuth();
   
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/stats"],
@@ -125,7 +127,19 @@ export default function Dashboard() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Good morning, John! 👋</h1>
+            <div className="flex items-center space-x-3">
+              <h1 className="text-3xl font-bold text-gray-900">Good morning, {user?.username || 'User'}! 👋</h1>
+              {user?.role === 'super_admin' && (
+                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                  Super Admin
+                </Badge>
+              )}
+              {user?.role === 'admin' && (
+                <Badge className="bg-blue-600 text-white">
+                  Admin
+                </Badge>
+              )}
+            </div>
             <p className="text-gray-600 mt-1">Here's what's happening with your business today.</p>
           </div>
           <div className="flex items-center space-x-3">

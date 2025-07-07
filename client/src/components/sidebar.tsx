@@ -6,7 +6,8 @@ import {
   Calendar, 
   Clock, 
   BarChart3,
-  LogOut
+  LogOut,
+  Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -16,6 +17,7 @@ const navigationItems = [
   { path: "/clients", label: "Clients", icon: Users },
   { path: "/documents", label: "Documents", icon: FileText },
   { path: "/calendar", label: "Calendar", icon: Calendar },
+  { path: "/booking", label: "Book Appointment", icon: Plus },
   { path: "/appointments", label: "Appointments", icon: Clock },
   { path: "/team-members", label: "Team", icon: Users },
 ];

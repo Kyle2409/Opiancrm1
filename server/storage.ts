@@ -195,10 +195,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateAppointment(id: number, updateData: Partial<InsertAppointment>): Promise<Appointment | undefined> {
-    const processedData = { ...updateData };
-    if (processedData.date) {
-      processedData.date = new Date(processedData.date) as any;
+    // Convert string date to Date object if needed
+    const processedData = { ...updateData } as any;
+    if (processedData.date && typeof processedData.date === 'string') {
+      processedData.date = new Date(processedData.date);
     }
+    
     const [appointment] = await db
       .update(appointments)
       .set(processedData)

@@ -277,11 +277,11 @@ export default function Dashboard() {
                 Add New Client
               </Button>
               <Button 
-                onClick={() => setLocation("/appointments")}
+                onClick={() => setLocation("/booking")}
                 className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-md transition-all duration-200"
               >
                 <CalendarPlus className="w-4 h-4 mr-2" />
-                Schedule Meeting
+                Book Appointment
               </Button>
               <Button 
                 onClick={() => setLocation("/documents")}

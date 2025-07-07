@@ -75,6 +75,8 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
     queryFn: teamMembersApi.getAll,
   });
 
+  console.log("Team members in booking:", teamMembers);
+
   const bookAppointmentMutation = useMutation({
     mutationFn: appointmentsApi.create,
     onSuccess: () => {
@@ -397,11 +399,11 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
               </Select>
             </div>
             
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Who is this booking for?</Label>
-                <div className="flex space-x-4">
-                  <label className="flex items-center space-x-2 cursor-pointer">
+            <div className="space-y-4 border border-gray-200 rounded-lg p-4 bg-gray-50">
+              <div className="space-y-3">
+                <Label className="text-base font-semibold text-gray-900">Who is this booking for?</Label>
+                <div className="flex flex-col space-y-3">
+                  <label className="flex items-center space-x-3 cursor-pointer p-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors">
                     <input
                       type="radio"
                       name="bookingFor"
@@ -412,26 +414,30 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
                         bookingFor: e.target.value as "self" | "team_member",
                         assignedToId: null // Clear assignment when switching to self
                       })}
-                      className="text-primary"
+                      className="w-4 h-4 text-primary focus:ring-primary"
                     />
-                    <span className="text-sm font-medium">For myself</span>
+                    <div>
+                      <span className="text-sm font-medium text-gray-900">For myself</span>
+                      <p className="text-xs text-gray-500">Schedule an appointment for your own calendar</p>
+                    </div>
                   </label>
-                  {teamMembers.length > 0 && (
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="bookingFor"
-                        value="team_member"
-                        checked={bookingData.bookingFor === "team_member"}
-                        onChange={(e) => setBookingData({
-                          ...bookingData, 
-                          bookingFor: e.target.value as "self" | "team_member"
-                        })}
-                        className="text-primary"
-                      />
-                      <span className="text-sm font-medium">For a team member</span>
-                    </label>
-                  )}
+                  <label className="flex items-center space-x-3 cursor-pointer p-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="bookingFor"
+                      value="team_member"
+                      checked={bookingData.bookingFor === "team_member"}
+                      onChange={(e) => setBookingData({
+                        ...bookingData, 
+                        bookingFor: e.target.value as "self" | "team_member"
+                      })}
+                      className="w-4 h-4 text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-gray-900">For a team member</span>
+                      <p className="text-xs text-gray-500">Assign this appointment to someone on your team</p>
+                    </div>
+                  </label>
                 </div>
               </div>
 

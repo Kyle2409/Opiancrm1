@@ -35,6 +35,18 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   firstName: text("first_name"),
   lastName: text("last_name"),
+  role: text("role").default("user"), // admin, user
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const teamMembers = pgTable("team_members", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  role: text("role").notNull(), // CEO, Advisor, Manager, etc.
+  department: text("department"),
+  isActive: boolean("is_active").default(true),
+  userId: integer("user_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -43,7 +55,8 @@ export const appointments = pgTable("appointments", {
   title: text("title").notNull(),
   description: text("description"),
   clientId: integer("client_id").references(() => clients.id),
-  userId: integer("user_id").references(() => users.id),
+  userId: integer("user_id").references(() => users.id), // Who created the appointment
+  assignedToId: integer("assigned_to_id").references(() => teamMembers.id), // Who the appointment is assigned to
   date: timestamp("date").notNull(),
   startTime: text("start_time").notNull(),
   endTime: text("end_time").notNull(),
@@ -67,6 +80,14 @@ export const insertDocumentSchema = createInsertSchema(documents).omit({
 export const insertAppointmentSchema = createInsertSchema(appointments).omit({
   id: true,
   createdAt: true,
+}).extend({
+  date: z.string().min(1, "Date is required"),
+});
+
+export const insertTeamMemberSchema = createInsertSchema(teamMembers).omit({
+  id: true,
+  createdAt: true,
+  userId: true,
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -79,6 +100,15 @@ export const usersRelations = relations(users, ({ many }) => ({
   clients: many(clients),
   documents: many(documents),
   appointments: many(appointments),
+  teamMembers: many(teamMembers),
+}));
+
+export const teamMembersRelations = relations(teamMembers, ({ one, many }) => ({
+  user: one(users, {
+    fields: [teamMembers.userId],
+    references: [users.id],
+  }),
+  assignedAppointments: many(appointments),
 }));
 
 export const clientsRelations = relations(clients, ({ many, one }) => ({
@@ -110,6 +140,10 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
     fields: [appointments.userId],
     references: [users.id],
   }),
+  assignedTo: one(teamMembers, {
+    fields: [appointments.assignedToId],
+    references: [teamMembers.id],
+  }),
 }));
 
 export type InsertClient = z.infer<typeof insertClientSchema>;
@@ -120,3 +154,5 @@ export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
 export type Appointment = typeof appointments.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type InsertTeamMember = z.infer<typeof insertTeamMemberSchema>;
+export type TeamMember = typeof teamMembers.$inferSelect;

@@ -1,7 +1,7 @@
 import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertClientSchema, insertDocumentSchema, insertAppointmentSchema } from "@shared/schema";
+import { insertClientSchema, insertDocumentSchema, insertAppointmentSchema, insertTeamMemberSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
 import { setupAuth, requireAuth } from "./auth";
@@ -213,6 +213,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Failed to delete appointment" });
+    }
+  });
+
+  // Team member routes
+  app.get("/api/team-members", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const teamMembers = await storage.getTeamMembers(userId);
+      res.json(teamMembers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch team members" });
+    }
+  });
+
+  app.post("/api/team-members", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const result = insertTeamMemberSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: "Invalid team member data", errors: result.error.errors });
+      }
+      
+      const teamMember = await storage.createTeamMember(result.data, userId);
+      res.status(201).json(teamMember);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create team member" });
+    }
+  });
+
+  app.put("/api/team-members/:id", requireAuth, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = insertTeamMemberSchema.partial().safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: "Invalid team member data", errors: result.error.errors });
+      }
+      
+      const teamMember = await storage.updateTeamMember(id, result.data);
+      if (!teamMember) {
+        return res.status(404).json({ message: "Team member not found" });
+      }
+      res.json(teamMember);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update team member" });
+    }
+  });
+
+  app.delete("/api/team-members/:id", requireAuth, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteTeamMember(id);
+      if (!success) {
+        return res.status(404).json({ message: "Team member not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete team member" });
     }
   });
 

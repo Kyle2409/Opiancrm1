@@ -17,6 +17,7 @@ const navigationItems = [
   { path: "/documents", label: "Documents", icon: FileText },
   { path: "/calendar", label: "Calendar", icon: Calendar },
   { path: "/appointments", label: "Appointments", icon: Clock },
+  { path: "/team-members", label: "Team", icon: Users },
 ];
 
 export default function Sidebar() {

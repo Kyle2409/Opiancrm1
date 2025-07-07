@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { insertAppointmentSchema, type InsertAppointment } from "@shared/schema";
 import { appointmentsApi, clientsApi } from "@/lib/api";
+import { teamMembersApi } from "@/lib/team-api";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -41,6 +42,12 @@ export default function AddAppointmentModal({ isOpen, onClose }: AddAppointmentM
   const { data: clients = [] } = useQuery({
     queryKey: ["/api/clients"],
     queryFn: clientsApi.getAll,
+    enabled: isOpen,
+  });
+
+  const { data: teamMembers = [] } = useQuery({
+    queryKey: ["/api/team-members"],
+    queryFn: teamMembersApi.getAll,
     enabled: isOpen,
   });
 
@@ -233,6 +240,33 @@ export default function AddAppointmentModal({ isOpen, onClose }: AddAppointmentM
                 </FormItem>
               )}
             />
+
+            {teamMembers.length > 0 && (
+              <FormField
+                control={form.control}
+                name="assignedToId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Assign to Team Member (Optional)</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={(value) => field.onChange(value ? parseInt(value) : null)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select team member" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {teamMembers.map((member) => (
+                            <SelectItem key={member.id} value={member.id.toString()}>
+                              {member.name} - {member.role}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             
             <div className="flex justify-end space-x-3 pt-4">
               <Button type="button" variant="outline" onClick={onClose}>

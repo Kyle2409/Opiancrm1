@@ -13,6 +13,7 @@ import Documents from "@/pages/documents";
 import Calendar from "@/pages/calendar";
 import Appointments from "@/pages/appointments";
 import AuthPage from "@/pages/auth-page";
+import TeamMembers from "@/pages/team-members";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -30,6 +31,7 @@ function Router() {
               <ProtectedRoute path="/documents" component={Documents} />
               <ProtectedRoute path="/calendar" component={Calendar} />
               <ProtectedRoute path="/appointments" component={Appointments} />
+              <ProtectedRoute path="/team-members" component={TeamMembers} />
               <Route component={NotFound} />
             </Switch>
           </main>

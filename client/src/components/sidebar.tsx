@@ -5,8 +5,11 @@ import {
   FileText, 
   Calendar, 
   Clock, 
-  BarChart3
+  BarChart3,
+  LogOut
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 const navigationItems = [
   { path: "/", label: "Dashboard", icon: BarChart3 },
@@ -18,6 +21,7 @@ const navigationItems = [
 
 export default function Sidebar() {
   const [location] = useLocation();
+  const { logoutMutation } = useAuth();
 
   return (
     <nav className="w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col">
@@ -49,6 +53,17 @@ export default function Sidebar() {
         })}
       </div>
       
+      <div className="p-4 border-t border-gray-200">
+        <Button
+          onClick={() => logoutMutation.mutate()}
+          disabled={logoutMutation.isPending}
+          variant="ghost"
+          className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          {logoutMutation.isPending ? "Logging out..." : "Log out"}
+        </Button>
+      </div>
 
     </nav>
   );

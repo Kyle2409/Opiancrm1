@@ -1,8 +1,8 @@
-# CRM Hub - Customer Relationship Management System
+# Opian Core - Customer Relationship Management System
 
 ## Overview
 
-CRM Hub is a modern, full-stack customer relationship management application built with React, TypeScript, and Express. The application provides comprehensive client management, document handling, appointment scheduling, and calendar functionality. It follows a clean architecture pattern with a clear separation between frontend and backend components.
+Opian Core is a modern, full-stack customer relationship management application built with React, TypeScript, and Express. The application provides comprehensive client management, document handling, appointment scheduling, and calendar functionality. It follows a clean architecture pattern with a clear separation between frontend and backend components.
 
 ## System Architecture
 
@@ -97,6 +97,8 @@ Changelog:
 - July 07, 2025. Initial setup - Complete CRM system with client management, document handling, and appointment scheduling
 - July 07, 2025. Enhanced dashboard - Added sophisticated UI with gradient cards, enhanced client activity display, performance insights, and modern visual design
 - July 07, 2025. Database integration - Migrated from in-memory storage to PostgreSQL with Drizzle ORM, added database relations, and automatic seeding
+- July 07, 2025. Authentication system - Added complete user authentication with login/register pages, protected routes, user-specific data filtering, and PostgreSQL session management
+- July 07, 2025. Rebranding - Renamed application from "CRM Hub" to "Opian Core"
 ```
 
 ## User Preferences

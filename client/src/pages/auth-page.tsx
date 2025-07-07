@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as React from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -53,10 +54,11 @@ export default function AuthPage() {
   });
 
   // Redirect if already logged in
-  if (user) {
-    setLocation("/");
-    return null;
-  }
+  React.useEffect(() => {
+    if (user) {
+      setLocation("/");
+    }
+  }, [user, setLocation]);
 
   const onLogin = (data: LoginFormData) => {
     loginMutation.mutate(data);
@@ -73,7 +75,7 @@ export default function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to CRM Hub</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Opian Core</h1>
             <p className="text-gray-600">Manage your clients and grow your business</p>
           </div>
 

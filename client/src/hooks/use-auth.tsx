@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Registration successful",
-        description: "Welcome to CRM Hub!",
+        description: "Welcome to Opian Core!",
       });
     },
     onError: (error: Error) => {

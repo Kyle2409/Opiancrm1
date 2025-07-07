@@ -26,7 +26,7 @@ export default function Sidebar() {
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Users className="w-4 h-4 text-white" />
           </div>
-          <span className="text-xl font-bold text-textPrimary">CRM Hub</span>
+          <span className="text-xl font-bold text-textPrimary">Opian Core</span>
         </div>
       </div>
       

@@ -14,6 +14,7 @@ export const clients = pgTable("clients", {
   value: integer("value").default(0),
   lastContact: timestamp("last_contact").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
+  userId: integer("user_id").references(() => users.id),
 });
 
 export const documents = pgTable("documents", {
@@ -23,7 +24,18 @@ export const documents = pgTable("documents", {
   size: integer("size").notNull(),
   type: text("type").notNull(),
   clientId: integer("client_id").references(() => clients.id),
+  userId: integer("user_id").references(() => users.id),
   uploadedAt: timestamp("uploaded_at").defaultNow(),
+});
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(),
+  email: text("email").notNull().unique(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const appointments = pgTable("appointments", {
@@ -31,6 +43,7 @@ export const appointments = pgTable("appointments", {
   title: text("title").notNull(),
   description: text("description"),
   clientId: integer("client_id").references(() => clients.id),
+  userId: integer("user_id").references(() => users.id),
   date: timestamp("date").notNull(),
   startTime: text("start_time").notNull(),
   endTime: text("end_time").notNull(),
@@ -56,10 +69,25 @@ export const insertAppointmentSchema = createInsertSchema(appointments).omit({
   createdAt: true,
 });
 
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Relations
-export const clientsRelations = relations(clients, ({ many }) => ({
+export const usersRelations = relations(users, ({ many }) => ({
+  clients: many(clients),
   documents: many(documents),
   appointments: many(appointments),
+}));
+
+export const clientsRelations = relations(clients, ({ many, one }) => ({
+  documents: many(documents),
+  appointments: many(appointments),
+  user: one(users, {
+    fields: [clients.userId],
+    references: [users.id],
+  }),
 }));
 
 export const documentsRelations = relations(documents, ({ one }) => ({
@@ -67,12 +95,20 @@ export const documentsRelations = relations(documents, ({ one }) => ({
     fields: [documents.clientId],
     references: [clients.id],
   }),
+  user: one(users, {
+    fields: [documents.userId],
+    references: [users.id],
+  }),
 }));
 
 export const appointmentsRelations = relations(appointments, ({ one }) => ({
   client: one(clients, {
     fields: [appointments.clientId],
     references: [clients.id],
+  }),
+  user: one(users, {
+    fields: [appointments.userId],
+    references: [users.id],
   }),
 }));
 
@@ -82,3 +118,5 @@ export type InsertDocument = z.infer<typeof insertDocumentSchema>;
 export type Document = typeof documents.$inferSelect;
 export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
 export type Appointment = typeof appointments.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type User = typeof users.$inferSelect;

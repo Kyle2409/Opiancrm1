@@ -1,18 +1,41 @@
 import { db } from './db';
-import { clients, appointments } from '@shared/schema';
+import { clients, appointments, users } from '@shared/schema';
+import { scrypt, randomBytes } from "crypto";
+import { promisify } from "util";
+
+const scryptAsync = promisify(scrypt);
+
+async function hashPassword(password: string) {
+  const salt = randomBytes(16).toString("hex");
+  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+  return `${buf.toString("hex")}.${salt}`;
+}
 
 export async function seedDatabase() {
   console.log('Seeding database with sample data...');
   
   try {
     // Check if data already exists
-    const existingClients = await db.select().from(clients);
-    if (existingClients.length > 0) {
+    const existingUsers = await db.select().from(users);
+    if (existingUsers.length > 0) {
       console.log('Database already contains data, skipping seed');
       return;
     }
 
-    // Sample clients
+    // Create a demo user
+    const demoUser = {
+      username: "demo",
+      email: "demo@crmhub.com",
+      password: await hashPassword("demo123"),
+      firstName: "Demo",
+      lastName: "User",
+    };
+
+    const [insertedUser] = await db.insert(users).values(demoUser).returning();
+    console.log(`Created demo user: ${insertedUser.username}`);
+    const userId = insertedUser.id;
+
+    // Sample clients for the demo user
     const sampleClients = [
       {
         name: "Sarah Johnson",
@@ -22,6 +45,7 @@ export async function seedDatabase() {
         role: "CTO",
         status: "active",
         value: 75000,
+        userId: userId,
       },
       {
         name: "Michael Chen",
@@ -31,6 +55,7 @@ export async function seedDatabase() {
         role: "Product Manager",
         status: "prospect",
         value: 45000,
+        userId: userId,
       },
       {
         name: "Emily Rodriguez",
@@ -40,6 +65,7 @@ export async function seedDatabase() {
         role: "CEO",
         status: "active",
         value: 120000,
+        userId: userId,
       },
     ];
 
@@ -59,6 +85,7 @@ export async function seedDatabase() {
         title: "Product Demo Meeting",
         description: "Showcase our latest features and discuss integration options",
         clientId: insertedClients[0].id,
+        userId: userId,
         date: tomorrow,
         startTime: "10:00",
         endTime: "11:00",
@@ -70,6 +97,7 @@ export async function seedDatabase() {
         title: "Weekly Check-in Call",
         description: "Regular project update and planning session",
         clientId: insertedClients[1].id,
+        userId: userId,
         date: today,
         startTime: "14:30",
         endTime: "15:00",
@@ -81,6 +109,7 @@ export async function seedDatabase() {
         title: "Contract Review",
         description: "Review and finalize the service agreement",
         clientId: insertedClients[2].id,
+        userId: userId,
         date: nextWeek,
         startTime: "09:00",
         endTime: "10:30",

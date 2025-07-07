@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Search, Plus, Bell } from "lucide-react";
+import { Search, Plus, Bell, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/use-auth";
 import AddClientModal from "@/components/modals/add-client-modal";
 import AddAppointmentModal from "@/components/modals/add-appointment-modal";
 
@@ -19,6 +22,7 @@ export default function Header() {
   const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
   const [isAddAppointmentModalOpen, setIsAddAppointmentModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const { user, logoutMutation } = useAuth();
 
   const currentPage = pageTitles[location as keyof typeof pageTitles] || pageTitles["/"];
 
@@ -64,6 +68,38 @@ export default function Header() {
                 </span>
               </Button>
             </div>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center space-x-2 p-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-primary text-white">
+                      {user?.firstName?.[0]}{user?.lastName?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="hidden md:block text-left">
+                    <div className="text-sm font-medium">{user?.firstName} {user?.lastName}</div>
+                    <div className="text-xs text-gray-500">{user?.email}</div>
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  {logoutMutation.isPending ? "Logging out..." : "Log out"}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

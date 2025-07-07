@@ -1,24 +1,30 @@
-import { clients, documents, appointments, type Client, type InsertClient, type Document, type InsertDocument, type Appointment, type InsertAppointment } from "@shared/schema";
+import { clients, documents, appointments, users, type Client, type InsertClient, type Document, type InsertDocument, type Appointment, type InsertAppointment, type User, type InsertUser } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {
+  // User methods
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  
   // Client methods
-  getClients(): Promise<Client[]>;
+  getClients(userId?: number): Promise<Client[]>;
   getClient(id: number): Promise<Client | undefined>;
   createClient(client: InsertClient): Promise<Client>;
   updateClient(id: number, client: Partial<InsertClient>): Promise<Client | undefined>;
   deleteClient(id: number): Promise<boolean>;
   
   // Document methods
-  getDocuments(): Promise<Document[]>;
+  getDocuments(userId?: number): Promise<Document[]>;
   getDocumentsByClient(clientId: number): Promise<Document[]>;
   getDocument(id: number): Promise<Document | undefined>;
   createDocument(document: InsertDocument): Promise<Document>;
   deleteDocument(id: number): Promise<boolean>;
   
   // Appointment methods
-  getAppointments(): Promise<Appointment[]>;
+  getAppointments(userId?: number): Promise<Appointment[]>;
   getAppointmentsByClient(clientId: number): Promise<Appointment[]>;
   getAppointment(id: number): Promise<Appointment | undefined>;
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
@@ -26,7 +32,7 @@ export interface IStorage {
   deleteAppointment(id: number): Promise<boolean>;
   
   // Stats methods
-  getStats(): Promise<{
+  getStats(userId?: number): Promise<{
     totalClients: number;
     activeProjects: number;
     upcomingMeetings: number;
@@ -36,11 +42,36 @@ export interface IStorage {
 
 // DatabaseStorage implementation
 export class DatabaseStorage implements IStorage {
-  async getClients(): Promise<Client[]> {
-    const [result] = await Promise.all([
-      db.select().from(clients)
-    ]);
-    return result;
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  // Client methods
+  async getClients(userId?: number): Promise<Client[]> {
+    if (userId) {
+      return await db.select().from(clients).where(eq(clients.userId, userId));
+    }
+    return await db.select().from(clients);
   }
 
   async getClient(id: number): Promise<Client | undefined> {
@@ -59,6 +90,7 @@ export class DatabaseStorage implements IStorage {
         role: insertClient.role ?? null,
         status: insertClient.status ?? "active",
         value: insertClient.value ?? null,
+        userId: insertClient.userId ?? null,
       })
       .returning();
     return client;
@@ -82,7 +114,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Document methods
-  async getDocuments(): Promise<Document[]> {
+  async getDocuments(userId?: number): Promise<Document[]> {
+    if (userId) {
+      return await db.select().from(documents).where(eq(documents.userId, userId));
+    }
     return await db.select().from(documents);
   }
 
@@ -104,6 +139,7 @@ export class DatabaseStorage implements IStorage {
         size: insertDocument.size,
         type: insertDocument.type,
         clientId: insertDocument.clientId ?? null,
+        userId: insertDocument.userId ?? null,
       })
       .returning();
     return document;
@@ -115,7 +151,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Appointment methods
-  async getAppointments(): Promise<Appointment[]> {
+  async getAppointments(userId?: number): Promise<Appointment[]> {
+    if (userId) {
+      return await db.select().from(appointments).where(eq(appointments.userId, userId));
+    }
     return await db.select().from(appointments);
   }
 
@@ -135,6 +174,7 @@ export class DatabaseStorage implements IStorage {
         title: insertAppointment.title,
         description: insertAppointment.description ?? null,
         clientId: insertAppointment.clientId ?? null,
+        userId: insertAppointment.userId ?? null,
         date: insertAppointment.date,
         startTime: insertAppointment.startTime,
         endTime: insertAppointment.endTime,
@@ -161,15 +201,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Stats methods
-  async getStats(): Promise<{
+  async getStats(userId?: number): Promise<{
     totalClients: number;
     activeProjects: number;
     upcomingMeetings: number;
     revenue: number;
   }> {
+    const clientQuery = userId ? 
+      db.select().from(clients).where(eq(clients.userId, userId)) :
+      db.select().from(clients);
+    
+    const appointmentQuery = userId ?
+      db.select().from(appointments).where(eq(appointments.userId, userId)) :
+      db.select().from(appointments);
+    
     const [clientResults, appointmentResults] = await Promise.all([
-      db.select().from(clients),
-      db.select().from(appointments)
+      clientQuery,
+      appointmentQuery
     ]);
     
     const now = new Date();

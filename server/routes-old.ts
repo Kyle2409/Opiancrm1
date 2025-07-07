@@ -18,7 +18,6 @@ const upload = multer({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
-
   // Client routes
   app.get("/api/clients", requireAuth, async (req: any, res) => {
     try {
@@ -57,7 +56,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/clients/:id", requireAuth, async (req: any, res) => {
+  app.put("/api/clients/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const result = insertClientSchema.partial().safeParse(req.body);
@@ -74,7 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/clients/:id", requireAuth, async (req: any, res) => {
+  app.delete("/api/clients/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const success = await storage.deleteClient(id);
@@ -88,57 +87,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Document routes
-  app.get("/api/documents", requireAuth, async (req: any, res) => {
+  app.get("/api/documents", async (req, res) => {
     try {
-      const userId = req.user.id;
-      const documents = await storage.getDocuments(userId);
+      const documents = await storage.getDocuments();
       res.json(documents);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch documents" });
     }
   });
 
-  app.get("/api/documents/client/:clientId", requireAuth, async (req: any, res) => {
+  app.get("/api/clients/:id/documents", async (req, res) => {
     try {
-      const clientId = parseInt(req.params.clientId);
+      const clientId = parseInt(req.params.id);
       const documents = await storage.getDocumentsByClient(clientId);
       res.json(documents);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch documents" });
+      res.status(500).json({ message: "Failed to fetch client documents" });
     }
   });
 
-  app.post("/api/documents", requireAuth, upload.single("file"), async (req: MulterRequest & any, res) => {
+  app.post("/api/documents", upload.single("file"), async (req: MulterRequest, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      const clientId = req.body.clientId ? parseInt(req.body.clientId) : null;
-      
-      const documentData = {
+      const { clientId } = req.body;
+      const document = await storage.createDocument({
         name: req.file.filename || req.file.originalname,
         originalName: req.file.originalname,
         size: req.file.size,
         type: req.file.mimetype,
-        clientId,
-        userId: req.user.id,
-      };
+        clientId: clientId ? parseInt(clientId) : null,
+      });
 
-      const result = insertDocumentSchema.safeParse(documentData);
-      if (!result.success) {
-        return res.status(400).json({ message: "Invalid document data", errors: result.error.issues });
-      }
-
-      const document = await storage.createDocument(result.data);
       res.status(201).json(document);
     } catch (error) {
-      console.error("Document upload error:", error);
       res.status(500).json({ message: "Failed to upload document" });
     }
   });
 
-  app.delete("/api/documents/:id", requireAuth, async (req: any, res) => {
+  app.delete("/api/documents/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const success = await storage.deleteDocument(id);
@@ -152,41 +141,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Appointment routes
-  app.get("/api/appointments", requireAuth, async (req: any, res) => {
+  app.get("/api/appointments", async (req, res) => {
     try {
-      const userId = req.user.id;
-      const appointments = await storage.getAppointments(userId);
+      const appointments = await storage.getAppointments();
       res.json(appointments);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch appointments" });
     }
   });
 
-  app.get("/api/appointments/client/:clientId", requireAuth, async (req: any, res) => {
+  app.get("/api/clients/:id/appointments", async (req, res) => {
     try {
-      const clientId = parseInt(req.params.clientId);
+      const clientId = parseInt(req.params.id);
       const appointments = await storage.getAppointmentsByClient(clientId);
       res.json(appointments);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch appointments" });
+      res.status(500).json({ message: "Failed to fetch client appointments" });
     }
   });
 
-  app.post("/api/appointments", requireAuth, async (req: any, res) => {
+  app.post("/api/appointments", async (req, res) => {
     try {
       const result = insertAppointmentSchema.safeParse(req.body);
       if (!result.success) {
         return res.status(400).json({ message: "Invalid appointment data", errors: result.error.issues });
       }
-      const appointmentData = { ...result.data, userId: req.user.id };
-      const appointment = await storage.createAppointment(appointmentData);
+      const appointment = await storage.createAppointment(result.data);
       res.status(201).json(appointment);
     } catch (error) {
       res.status(500).json({ message: "Failed to create appointment" });
     }
   });
 
-  app.put("/api/appointments/:id", requireAuth, async (req: any, res) => {
+  app.put("/api/appointments/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const result = insertAppointmentSchema.partial().safeParse(req.body);
@@ -203,7 +190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/appointments/:id", requireAuth, async (req: any, res) => {
+  app.delete("/api/appointments/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const success = await storage.deleteAppointment(id);
@@ -217,10 +204,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stats route
-  app.get("/api/stats", requireAuth, async (req: any, res) => {
+  app.get("/api/stats", async (req, res) => {
     try {
-      const userId = req.user.id;
-      const stats = await storage.getStats(userId);
+      const stats = await storage.getStats();
       res.json(stats);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch stats" });

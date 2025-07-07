@@ -44,7 +44,7 @@ export default function AddTeamMemberModal({ isOpen, onClose }: AddTeamMemberMod
     defaultValues: {
       name: "",
       email: "",
-      role: "",
+      role: "Admin",
       department: "",
       isActive: true,
     },
@@ -71,6 +71,8 @@ export default function AddTeamMemberModal({ isOpen, onClose }: AddTeamMemberMod
   });
 
   const onSubmit = (data: InsertTeamMember) => {
+    console.log("Submitting team member data:", data);
+    console.log("Form errors:", form.formState.errors);
     createMutation.mutate(data);
   };
 

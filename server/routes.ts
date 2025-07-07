@@ -230,15 +230,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/team-members", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
+      console.log("Creating team member for user:", userId);
+      console.log("Request body:", req.body);
+      
       const result = insertTeamMemberSchema.safeParse(req.body);
       if (!result.success) {
+        console.log("Validation failed:", result.error.errors);
         return res.status(400).json({ message: "Invalid team member data", errors: result.error.errors });
       }
       
       const teamMember = await storage.createTeamMember(result.data, userId);
+      console.log("Team member created:", teamMember);
       res.status(201).json(teamMember);
     } catch (error) {
-      res.status(500).json({ message: "Failed to create team member" });
+      console.error("Team member creation error:", error);
+      res.status(500).json({ message: "Failed to create team member", error: String(error) });
     }
   });
 

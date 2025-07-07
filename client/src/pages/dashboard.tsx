@@ -22,8 +22,11 @@ import {
   MapPin
 } from "lucide-react";
 import { format, isToday, isTomorrow, isThisWeek, startOfWeek, endOfWeek } from "date-fns";
+import { useLocation } from "wouter";
 
 export default function Dashboard() {
+  const [, setLocation] = useLocation();
+  
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/stats"],
     queryFn: statsApi.get,
@@ -178,7 +181,12 @@ export default function Dashboard() {
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl font-semibold text-gray-900">Client Activity</CardTitle>
-                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
+                <Button 
+                  onClick={() => setLocation("/clients")}
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-gray-500 hover:text-gray-700"
+                >
                   View All
                 </Button>
               </div>
@@ -261,15 +269,24 @@ export default function Dashboard() {
               <CardTitle className="text-lg font-semibold text-gray-900">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md transition-all duration-200">
+              <Button 
+                onClick={() => setLocation("/clients")}
+                className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md transition-all duration-200"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Client
               </Button>
-              <Button className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-md transition-all duration-200">
+              <Button 
+                onClick={() => setLocation("/appointments")}
+                className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-md transition-all duration-200"
+              >
                 <CalendarPlus className="w-4 h-4 mr-2" />
                 Schedule Meeting
               </Button>
-              <Button className="w-full h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-md transition-all duration-200">
+              <Button 
+                onClick={() => setLocation("/documents")}
+                className="w-full h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-md transition-all duration-200"
+              >
                 <Upload className="w-4 h-4 mr-2" />
                 Upload Documents
               </Button>

@@ -157,13 +157,14 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {days.map((date) => {
             const availableSlots = getAvailableSlots(date);
+            const bookedSlots = TIME_SLOTS.length - availableSlots.length;
             const isDisabled = availableSlots.length === 0;
             
             return (
               <Card 
                 key={date.toISOString()} 
                 className={`cursor-pointer transition-all hover:shadow-md ${
-                  isDisabled ? 'opacity-50' : 'hover:border-primary'
+                  isDisabled ? 'opacity-50 border-red-200' : 'hover:border-primary'
                 }`}
                 onClick={() => !isDisabled && handleDateSelect(date)}
               >
@@ -182,8 +183,15 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
                       Today
                     </Badge>
                   )}
-                  <div className="text-xs text-gray-500 mt-1">
-                    {availableSlots.length} slots
+                  <div className="text-xs mt-2 space-y-1">
+                    <div className={`${availableSlots.length > 0 ? 'text-green-600' : 'text-gray-400'}`}>
+                      {availableSlots.length} available
+                    </div>
+                    {bookedSlots > 0 && (
+                      <div className="text-red-600">
+                        {bookedSlots} booked
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -196,6 +204,11 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
 
   const renderTimeSlots = () => {
     const availableSlots = getAvailableSlots(selectedDate);
+    const bookedSlots = TIME_SLOTS.filter(time => !isTimeSlotAvailable(selectedDate, time));
+    const bookedAppointments = appointments.filter(apt => {
+      const aptDate = new Date(apt.date);
+      return isSameDay(aptDate, selectedDate);
+    });
     
     return (
       <div className="space-y-6">
@@ -215,25 +228,77 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
             <span>Back</span>
           </Button>
         </div>
+
+        {/* Show booked appointments */}
+        {bookedAppointments.length > 0 && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <h3 className="text-sm font-semibold text-red-800 mb-2">Existing Bookings for This Date:</h3>
+            <div className="space-y-2">
+              {bookedAppointments.map((apt) => (
+                <div key={apt.id} className="flex items-center space-x-2 text-sm">
+                  <Clock className="w-4 h-4 text-red-600" />
+                  <span className="text-red-700">
+                    {apt.startTime} - {apt.endTime} | {apt.title}
+                    {apt.assignedToId && teamMembers.find(tm => tm.id === apt.assignedToId) && 
+                      ` (${teamMembers.find(tm => tm.id === apt.assignedToId)?.name})`
+                    }
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         
         {availableSlots.length === 0 ? (
           <div className="text-center py-12">
             <Clock className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No Available Times</h3>
-            <p className="text-gray-500">Please select a different date</p>
+            <p className="text-gray-500">All time slots are booked for this date</p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {availableSlots.map((time) => (
-              <Button
-                key={time}
-                variant="outline"
-                className="h-12 hover:bg-primary hover:text-white"
-                onClick={() => handleTimeSelect(time)}
-              >
-                {time}
-              </Button>
-            ))}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Available Time Slots</h3>
+              <div className="flex items-center space-x-4 text-sm">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-green-500 rounded"></div>
+                  <span className="text-gray-600">Available</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-red-500 rounded"></div>
+                  <span className="text-gray-600">Booked</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              {TIME_SLOTS.map((time) => {
+                const isAvailable = isTimeSlotAvailable(selectedDate, time);
+                const bookedApt = bookedAppointments.find(apt => apt.startTime === time);
+                
+                return (
+                  <div key={time} className="relative">
+                    <Button
+                      variant={isAvailable ? "outline" : "secondary"}
+                      className={`h-12 w-full ${
+                        isAvailable 
+                          ? "hover:bg-primary hover:text-white border-green-300 text-green-700" 
+                          : "bg-red-100 text-red-700 cursor-not-allowed border-red-300"
+                      }`}
+                      onClick={() => isAvailable && handleTimeSelect(time)}
+                      disabled={!isAvailable}
+                    >
+                      {time}
+                    </Button>
+                    {!isAvailable && bookedApt && (
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        !
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

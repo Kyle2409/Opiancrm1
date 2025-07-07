@@ -16,7 +16,7 @@ const navigationItems = [
   { path: "/", label: "Dashboard", icon: BarChart3 },
   { path: "/clients", label: "Clients", icon: Users },
   { path: "/documents", label: "Documents", icon: FileText },
-  { path: "/calendar", label: "Calendar", icon: Calendar },
+  { path: "/booking-calendar", label: "Calendar", icon: Calendar },
   { path: "/booking", label: "Book Appointment", icon: Plus },
   { path: "/appointments", label: "Appointments", icon: Clock },
   { path: "/team-members", label: "Team", icon: Users },

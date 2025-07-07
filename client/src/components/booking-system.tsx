@@ -56,7 +56,8 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
     description: "",
     clientId: null as number | null,
     assignedToId: null as number | null,
-    location: ""
+    location: "",
+    bookingFor: "self" as "self" | "team_member" // New field to track booking type
   });
 
   const { data: appointments = [] } = useQuery({
@@ -145,7 +146,7 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
       title: bookingData.title,
       description: bookingData.description,
       clientId: bookingData.clientId,
-      assignedToId: bookingData.assignedToId,
+      assignedToId: bookingData.bookingFor === "team_member" ? bookingData.assignedToId : null,
       date: selectedDate,
       startTime: selectedTime,
       endTime: endTime,
@@ -396,37 +397,81 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
               </Select>
             </div>
             
-            {(user?.role === 'admin' || user?.role === 'super_admin') && teamMembers.length > 0 && (
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="assignedTo">Assign to Team Member</Label>
-                <Select 
-                  value={bookingData.assignedToId?.toString() || ""} 
-                  onValueChange={(value) => setBookingData({...bookingData, assignedToId: value ? parseInt(value) : null})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select team member" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {teamMembers.map((member) => (
-                      <SelectItem key={member.id} value={member.id.toString()}>
-                        <div className="flex items-center justify-between w-full">
-                          <span>{member.name}</span>
-                          <span className={`text-xs px-2 py-1 rounded ml-2 ${
-                            member.role === 'CEO' ? 'bg-purple-100 text-purple-700' :
-                            member.role === 'Financial Advisor' ? 'bg-green-100 text-green-700' :
-                            member.role === 'Admin' ? 'bg-blue-100 text-blue-700' :
-                            member.role === 'IT' ? 'bg-orange-100 text-orange-700' :
-                            'bg-gray-100 text-gray-700'
-                          }`}>
-                            {member.role}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Who is this booking for?</Label>
+                <div className="flex space-x-4">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="bookingFor"
+                      value="self"
+                      checked={bookingData.bookingFor === "self"}
+                      onChange={(e) => setBookingData({
+                        ...bookingData, 
+                        bookingFor: e.target.value as "self" | "team_member",
+                        assignedToId: null // Clear assignment when switching to self
+                      })}
+                      className="text-primary"
+                    />
+                    <span className="text-sm font-medium">For myself</span>
+                  </label>
+                  {teamMembers.length > 0 && (
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="bookingFor"
+                        value="team_member"
+                        checked={bookingData.bookingFor === "team_member"}
+                        onChange={(e) => setBookingData({
+                          ...bookingData, 
+                          bookingFor: e.target.value as "self" | "team_member"
+                        })}
+                        className="text-primary"
+                      />
+                      <span className="text-sm font-medium">For a team member</span>
+                    </label>
+                  )}
+                </div>
               </div>
-            )}
+
+              {bookingData.bookingFor === "team_member" && teamMembers.length > 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="assignedTo">Select Team Member</Label>
+                  <Select 
+                    value={bookingData.assignedToId?.toString() || ""} 
+                    onValueChange={(value) => setBookingData({...bookingData, assignedToId: value ? parseInt(value) : null})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose team member" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {teamMembers.map((member) => (
+                        <SelectItem key={member.id} value={member.id.toString()}>
+                          <div className="flex items-center justify-between w-full">
+                            <span>{member.name}</span>
+                            <span className={`text-xs px-2 py-1 rounded ml-2 ${
+                              member.role === 'CEO' ? 'bg-purple-100 text-purple-700' :
+                              member.role === 'Financial Advisor' ? 'bg-green-100 text-green-700' :
+                              member.role === 'Admin' ? 'bg-blue-100 text-blue-700' :
+                              member.role === 'IT' ? 'bg-orange-100 text-orange-700' :
+                              'bg-gray-100 text-gray-700'
+                            }`}>
+                              {member.role}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {bookingData.assignedToId && (
+                    <p className="text-xs text-gray-600">
+                      Booking will be assigned to {teamMembers.find(m => m.id === bookingData.assignedToId)?.name}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
             
             <div className="space-y-2">
               <Label htmlFor="location">Location</Label>
@@ -478,8 +523,18 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
         <div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h2>
           <p className="text-gray-600">
-            Your appointment has been successfully scheduled for {format(selectedDate, 'EEEE, MMMM d')} at {selectedTime}
+            {bookingData.bookingFor === "team_member" && bookingData.assignedToId
+              ? `Appointment scheduled for ${teamMembers.find(m => m.id === bookingData.assignedToId)?.name} on ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedTime}`
+              : `Your appointment has been successfully scheduled for ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedTime}`
+            }
           </p>
+          {bookingData.bookingFor === "team_member" && bookingData.assignedToId && (
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <span className="font-medium">Assigned to:</span> {teamMembers.find(m => m.id === bookingData.assignedToId)?.name} ({teamMembers.find(m => m.id === bookingData.assignedToId)?.role})
+              </p>
+            </div>
+          )}
         </div>
         <div className="flex justify-center space-x-3">
           <Button 
@@ -494,7 +549,8 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
                 description: "",
                 clientId: null,
                 assignedToId: null,
-                location: ""
+                location: "",
+                bookingFor: "self"
               });
             }}
           >

@@ -38,11 +38,12 @@ RESTful API endpoints organized by resource:
 - `/api/stats` - Dashboard statistics
 
 ### Storage Layer
-Abstracted storage interface (`IStorage`) with in-memory implementation for development. The interface supports:
-- Client management operations
-- Document handling with file metadata
-- Appointment scheduling and tracking
-- Statistics aggregation
+Abstracted storage interface (`IStorage`) with PostgreSQL database implementation. The interface supports:
+- Client management operations with persistent storage
+- Document handling with file metadata and database relations
+- Appointment scheduling and tracking with client associations
+- Statistics aggregation from real database data
+- Automatic database seeding with sample data for development
 
 ## Data Flow
 
@@ -95,6 +96,7 @@ Abstracted storage interface (`IStorage`) with in-memory implementation for deve
 Changelog:
 - July 07, 2025. Initial setup - Complete CRM system with client management, document handling, and appointment scheduling
 - July 07, 2025. Enhanced dashboard - Added sophisticated UI with gradient cards, enhanced client activity display, performance insights, and modern visual design
+- July 07, 2025. Database integration - Migrated from in-memory storage to PostgreSQL with Drizzle ORM, added database relations, and automatic seeding
 ```
 
 ## User Preferences

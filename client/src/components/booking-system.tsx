@@ -95,14 +95,26 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
   });
 
   const isTimeSlotAvailable = (date: Date, time: string) => {
-    const appointmentDateTime = new Date(date);
-    const [hours, minutes] = time.split(':').map(Number);
-    appointmentDateTime.setHours(hours, minutes, 0, 0);
-    
     return !appointments.some(apt => {
       const aptDate = new Date(apt.date);
-      const aptTime = apt.startTime;
-      return isSameDay(aptDate, date) && aptTime === time;
+      if (!isSameDay(aptDate, date)) return false;
+      
+      // Check if the time slot falls within the appointment's duration
+      const startTime = apt.startTime;
+      const endTime = apt.endTime;
+      
+      // Convert times to minutes for comparison
+      const timeToMinutes = (timeStr: string) => {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+      };
+      
+      const slotMinutes = timeToMinutes(time);
+      const aptStartMinutes = timeToMinutes(startTime);
+      const aptEndMinutes = timeToMinutes(endTime);
+      
+      // Time slot is unavailable if it falls within the appointment duration
+      return slotMinutes >= aptStartMinutes && slotMinutes < aptEndMinutes;
     });
   };
 
@@ -274,7 +286,18 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {TIME_SLOTS.map((time) => {
                 const isAvailable = isTimeSlotAvailable(selectedDate, time);
-                const bookedApt = bookedAppointments.find(apt => apt.startTime === time);
+                const bookedApt = bookedAppointments.find(apt => {
+                  const timeToMinutes = (timeStr: string) => {
+                    const [hours, minutes] = timeStr.split(':').map(Number);
+                    return hours * 60 + minutes;
+                  };
+                  
+                  const slotMinutes = timeToMinutes(time);
+                  const aptStartMinutes = timeToMinutes(apt.startTime);
+                  const aptEndMinutes = timeToMinutes(apt.endTime);
+                  
+                  return slotMinutes >= aptStartMinutes && slotMinutes < aptEndMinutes;
+                });
                 
                 return (
                   <div key={time} className="relative">
@@ -287,6 +310,7 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
                       }`}
                       onClick={() => isAvailable && handleTimeSelect(time)}
                       disabled={!isAvailable}
+                      title={!isAvailable && bookedApt ? `Booked: ${bookedApt.title} (${bookedApt.startTime} - ${bookedApt.endTime})` : ''}
                     >
                       {time}
                     </Button>

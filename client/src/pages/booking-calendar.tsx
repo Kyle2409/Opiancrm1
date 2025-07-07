@@ -126,8 +126,9 @@ export default function BookingCalendar() {
                         <div
                           key={apt.id}
                           className="text-xs p-1 rounded bg-primary/10 text-primary truncate"
+                          title={`${apt.startTime} - ${apt.endTime}: ${apt.title}`}
                         >
-                          {apt.startTime} {apt.title}
+                          {apt.startTime}-{apt.endTime.slice(0, 5)} {apt.title}
                         </div>
                       ))}
                       {dayAppointments.length > 2 && (

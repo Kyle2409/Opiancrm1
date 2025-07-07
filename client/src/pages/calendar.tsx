@@ -1,0 +1,193 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { appointmentsApi } from "@/lib/api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { 
+  Calendar as CalendarIcon, 
+  ChevronLeft, 
+  ChevronRight, 
+  Plus 
+} from "lucide-react";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, startOfWeek, endOfWeek } from "date-fns";
+import AddAppointmentModal from "@/components/modals/add-appointment-modal";
+
+export default function Calendar() {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState<"month" | "week" | "day">("month");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const { data: appointments = [], isLoading } = useQuery({
+    queryKey: ["/api/appointments"],
+    queryFn: appointmentsApi.getAll,
+  });
+
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    const newDate = new Date(currentDate);
+    if (direction === 'prev') {
+      newDate.setMonth(currentDate.getMonth() - 1);
+    } else {
+      newDate.setMonth(currentDate.getMonth() + 1);
+    }
+    setCurrentDate(newDate);
+  };
+
+  const getDaysInMonth = () => {
+    const start = startOfWeek(startOfMonth(currentDate));
+    const end = endOfWeek(endOfMonth(currentDate));
+    return eachDayOfInterval({ start, end });
+  };
+
+  const getAppointmentsForDate = (date: Date) => {
+    return appointments.filter(apt => {
+      const aptDate = new Date(apt.date);
+      return aptDate.toDateString() === date.toDateString();
+    });
+  };
+
+  const getAppointmentColor = (type: string) => {
+    switch (type) {
+      case "meeting":
+        return "bg-primary text-primary-foreground";
+      case "call":
+        return "bg-secondary text-secondary-foreground";
+      case "review":
+        return "bg-warning text-warning-foreground";
+      default:
+        return "bg-gray-500 text-white";
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <Card>
+          <CardContent className="p-6">
+            <Skeleton className="h-96 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const days = getDaysInMonth();
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  return (
+    <div className="p-6">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Calendar</CardTitle>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigateMonth('prev')}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <h4 className="text-lg font-medium text-textPrimary">
+                  {format(currentDate, 'MMMM yyyy')}
+                </h4>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigateMonth('next')}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant={viewMode === "month" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("month")}
+                >
+                  Month
+                </Button>
+                <Button 
+                  variant={viewMode === "week" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("week")}
+                >
+                  Week
+                </Button>
+                <Button 
+                  variant={viewMode === "day" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("day")}
+                >
+                  Day
+                </Button>
+              </div>
+              <Button 
+                onClick={() => setIsAddModalOpen(true)}
+                className="bg-primary hover:bg-primary/90"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Event
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {/* Calendar Header */}
+            <div className="grid grid-cols-7 gap-1 mb-4">
+              {weekDays.map(day => (
+                <div key={day} className="text-center py-2 text-sm font-medium text-gray-500">
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            {/* Calendar Grid */}
+            <div className="grid grid-cols-7 gap-1">
+              {days.map((day, index) => {
+                const dayAppointments = getAppointmentsForDate(day);
+                const isCurrentMonth = isSameMonth(day, currentDate);
+                const isDayToday = isToday(day);
+
+                return (
+                  <div 
+                    key={index} 
+                    className={`min-h-24 p-2 border border-gray-100 hover:bg-gray-50 ${
+                      !isCurrentMonth ? 'bg-gray-50 text-gray-400' : ''
+                    } ${isDayToday ? 'bg-blue-50 border-primary' : ''}`}
+                  >
+                    <div className={`text-sm mb-1 ${
+                      isDayToday ? 'font-bold text-primary' : 
+                      isCurrentMonth ? 'text-textPrimary' : 'text-gray-400'
+                    }`}>
+                      {format(day, 'd')}
+                    </div>
+                    
+                    <div className="space-y-1">
+                      {dayAppointments.map((appointment) => (
+                        <div 
+                          key={appointment.id}
+                          className={`text-xs px-2 py-1 rounded text-center ${getAppointmentColor(appointment.type)}`}
+                        >
+                          <div className="font-medium">{appointment.startTime}</div>
+                          <div className="truncate">{appointment.title}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <AddAppointmentModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+      />
+    </div>
+  );
+}

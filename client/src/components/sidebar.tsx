@@ -49,19 +49,7 @@ export default function Sidebar() {
         })}
       </div>
       
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center space-x-3">
-          <img 
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32" 
-            alt="User Profile" 
-            className="w-8 h-8 rounded-full"
-          />
-          <div>
-            <p className="text-sm font-medium text-textPrimary">John Anderson</p>
-            <p className="text-xs text-gray-500">Account Manager</p>
-          </div>
-        </div>
-      </div>
+
     </nav>
   );
 }

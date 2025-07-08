@@ -183,9 +183,24 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
     
     return (
       <div className="space-y-6">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Select Date</h2>
-          <p className="text-gray-600">Choose your preferred date</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Select Date</h2>
+            <p className="text-gray-600">
+              {bookingData.bookingFor === "self" 
+                ? "Choose your preferred appointment date" 
+                : `Choose appointment date for ${teamMembers.find(m => m.id === bookingData.assignedToId)?.name || "team member"}`
+              }
+            </p>
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => setStep(1)}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back</span>
+          </Button>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">

@@ -97,6 +97,7 @@ export default function Kanban() {
     assignedToId: null,
     clientId: null
   });
+  const [isDragging, setIsDragging] = useState(false);
 
   // Fetch boards
   const { data: boards = [], isLoading: boardsLoading, error: boardsError } = useQuery({
@@ -139,7 +140,8 @@ export default function Kanban() {
       const cardsArrays = await Promise.all(cardsPromises);
       return cardsArrays.flat();
     },
-    enabled: Array.isArray(columns) && columns.length > 0,
+    enabled: Array.isArray(columns) && columns.length > 0 && !isDragging,
+    refetchInterval: isDragging ? false : undefined,
   });
 
   // Create board mutation
@@ -200,22 +202,33 @@ export default function Kanban() {
     mutationFn: ({ cardId, columnId, position }: { cardId: number; columnId: number; position: number }) =>
       kanbanAPI.moveCard(cardId, columnId, position),
     onSuccess: () => {
-      // Refresh the data to ensure consistency with server
-      queryClient.invalidateQueries({ queryKey: ["/api/kanban/cards"] });
+      // Wait a moment before enabling queries again to prevent flicker
+      setTimeout(() => {
+        setIsDragging(false);
+        queryClient.invalidateQueries({ queryKey: ["/api/kanban/cards"] });
+      }, 200);
     },
     onError: (error, variables) => {
+      setIsDragging(false);
       toast({ title: "Error", description: "Failed to move card", variant: "destructive" });
-      // Revert the optimistic update by refreshing data
       queryClient.invalidateQueries({ queryKey: ["/api/kanban/cards"] });
     },
   });
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
-    if (!destination) return;
+    if (!destination) {
+      setIsDragging(false);
+      return;
+    }
 
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      setIsDragging(false);
       return;
     }
 
@@ -440,7 +453,7 @@ export default function Kanban() {
       </div>
 
       {selectedBoard ? (
-        <DragDropContext onDragEnd={handleDragEnd}>
+        <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <div className="flex space-x-4 overflow-x-auto pb-4">
             {Array.isArray(columns) && columns.map((column) => (
               <div key={column.id} className="flex-shrink-0 w-80">

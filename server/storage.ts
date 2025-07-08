@@ -1,4 +1,4 @@
-import { clients, documents, appointments, users, teamMembers, type Client, type InsertClient, type Document, type InsertDocument, type Appointment, type InsertAppointment, type User, type InsertUser, type TeamMember, type InsertTeamMember } from "@shared/schema";
+import { clients, documents, appointments, users, type Client, type InsertClient, type Document, type InsertDocument, type Appointment, type InsertAppointment, type User, type InsertUser } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
@@ -31,12 +31,8 @@ export interface IStorage {
   updateAppointment(id: number, appointment: Partial<InsertAppointment>): Promise<Appointment | undefined>;
   deleteAppointment(id: number): Promise<boolean>;
   
-  // Team member methods
-  getTeamMembers(userId?: number): Promise<TeamMember[]>;
-  getTeamMember(id: number): Promise<TeamMember | undefined>;
-  createTeamMember(teamMember: InsertTeamMember, userId: number): Promise<TeamMember>;
-  updateTeamMember(id: number, teamMember: Partial<InsertTeamMember>): Promise<TeamMember | undefined>;
-  deleteTeamMember(id: number): Promise<boolean>;
+  // User methods (team members are users)
+  getAllUsers(): Promise<User[]>;
   
   // Stats methods
   getStats(userId?: number): Promise<{
@@ -214,42 +210,8 @@ export class DatabaseStorage implements IStorage {
     return (result.rowCount ?? 0) > 0;
   }
 
-  // Team member methods
-  async getTeamMembers(userId?: number): Promise<TeamMember[]> {
-    if (userId) {
-      return await db.select().from(teamMembers).where(eq(teamMembers.userId, userId));
-    }
-    return await db.select().from(teamMembers);
-  }
-
-  async getTeamMember(id: number): Promise<TeamMember | undefined> {
-    const [teamMember] = await db.select().from(teamMembers).where(eq(teamMembers.id, id));
-    return teamMember || undefined;
-  }
-
-  async createTeamMember(insertTeamMember: InsertTeamMember, userId: number): Promise<TeamMember> {
-    const [teamMember] = await db
-      .insert(teamMembers)
-      .values({
-        ...insertTeamMember,
-        userId,
-      })
-      .returning();
-    return teamMember;
-  }
-
-  async updateTeamMember(id: number, updateData: Partial<InsertTeamMember>): Promise<TeamMember | undefined> {
-    const [teamMember] = await db
-      .update(teamMembers)
-      .set(updateData)
-      .where(eq(teamMembers.id, id))
-      .returning();
-    return teamMember || undefined;
-  }
-
-  async deleteTeamMember(id: number): Promise<boolean> {
-    const result = await db.delete(teamMembers).where(eq(teamMembers.id, id));
-    return (result.rowCount ?? 0) > 0;
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
   }
 
   // Stats methods

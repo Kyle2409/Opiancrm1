@@ -216,66 +216,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Team member routes
-  app.get("/api/team-members", requireAuth, async (req: any, res) => {
+  // Users endpoint (replaces team members)
+  app.get("/api/users", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.id;
-      const teamMembers = await storage.getTeamMembers(userId);
-      res.json(teamMembers);
+      const users = await storage.getAllUsers();
+      res.json(users);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch team members" });
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
     }
   });
 
-  app.post("/api/team-members", requireAuth, async (req: any, res) => {
+  // Keep team-members endpoint for backward compatibility
+  app.get("/api/team-members", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.id;
-      console.log("Creating team member for user:", userId);
-      console.log("Request body:", req.body);
-      
-      const result = insertTeamMemberSchema.safeParse(req.body);
-      if (!result.success) {
-        console.log("Validation failed:", result.error.errors);
-        return res.status(400).json({ message: "Invalid team member data", errors: result.error.errors });
-      }
-      
-      const teamMember = await storage.createTeamMember(result.data, userId);
-      console.log("Team member created:", teamMember);
-      res.status(201).json(teamMember);
+      const users = await storage.getAllUsers();
+      res.json(users);
     } catch (error) {
-      console.error("Team member creation error:", error);
-      res.status(500).json({ message: "Failed to create team member", error: String(error) });
-    }
-  });
-
-  app.put("/api/team-members/:id", requireAuth, async (req: any, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const result = insertTeamMemberSchema.partial().safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: "Invalid team member data", errors: result.error.errors });
-      }
-      
-      const teamMember = await storage.updateTeamMember(id, result.data);
-      if (!teamMember) {
-        return res.status(404).json({ message: "Team member not found" });
-      }
-      res.json(teamMember);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to update team member" });
-    }
-  });
-
-  app.delete("/api/team-members/:id", requireAuth, async (req: any, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const success = await storage.deleteTeamMember(id);
-      if (!success) {
-        return res.status(404).json({ message: "Team member not found" });
-      }
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ message: "Failed to delete team member" });
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
     }
   });
 

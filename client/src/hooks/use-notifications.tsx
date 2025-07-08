@@ -42,7 +42,11 @@ export function useNotifications(): UseNotificationsReturn {
   };
 
   const showNotification = (data: NotificationData): void => {
-    notificationService.showNotification(data);
+    if (permission === 'granted') {
+      notificationService.showNotification(data);
+    } else {
+      console.warn('Notification permission not granted. Current permission:', permission);
+    }
   };
 
   const showAppointmentReminder = (appointment: any): void => {

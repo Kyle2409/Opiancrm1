@@ -11,7 +11,6 @@ export interface NotificationData {
 
 export class NotificationService {
   private static instance: NotificationService;
-  private registration: ServiceWorkerRegistration | null = null;
   private permission: NotificationPermission = 'default';
 
   private constructor() {
@@ -25,7 +24,7 @@ export class NotificationService {
     return NotificationService.instance;
   }
 
-  // Initialize service worker and request permissions
+  // Initialize notification service
   async initialize(): Promise<boolean> {
     try {
       // Check if browser supports notifications
@@ -34,20 +33,11 @@ export class NotificationService {
         return false;
       }
 
-      // Check if service worker is supported
-      if (!('serviceWorker' in navigator)) {
-        console.warn('Service Worker is not supported');
-        return false;
-      }
-
-      // Register service worker
-      this.registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker registered successfully');
-
-      // Request notification permission
-      await this.requestPermission();
+      // Update permission status
+      this.permission = Notification.permission;
+      console.log('Notification service initialized successfully');
       
-      return this.permission === 'granted';
+      return true;
     } catch (error) {
       console.error('Failed to initialize notification service:', error);
       return false;
@@ -80,30 +70,23 @@ export class NotificationService {
       const options: NotificationOptions = {
         body: data.body,
         icon: data.icon || '/favicon.ico',
-        badge: '/favicon.ico',
-        vibrate: [100, 50, 100],
+        tag: data.id || 'default',
+        timestamp: data.timestamp || Date.now(),
         data: {
-          url: data.url || '/',
-          id: data.id || Date.now().toString(),
-          timestamp: data.timestamp || Date.now(),
-          type: data.type || 'system'
-        },
-        actions: [
-          {
-            action: 'view',
-            title: 'View'
-          },
-          {
-            action: 'dismiss',
-            title: 'Dismiss'
-          }
-        ]
+          url: data.url,
+          type: data.type,
+          id: data.id
+        }
       };
 
-      if (this.registration) {
-        await this.registration.showNotification(data.title, options);
-      } else {
-        new Notification(data.title, options);
+      const notification = new Notification(data.title, options);
+      
+      if (data.url) {
+        notification.onclick = () => {
+          window.focus();
+          window.location.href = data.url;
+          notification.close();
+        };
       }
     } catch (error) {
       console.error('Failed to show notification:', error);

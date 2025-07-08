@@ -65,9 +65,8 @@ export default function TeamMembers() {
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
   const isSuperAdmin = user?.role === 'super_admin';
 
-  // Debug logging
-  console.log('Current user:', user);
-  console.log('User role:', user?.role);
+  // Debug logging (remove in production)
+  console.log('Current user role:', user?.role);
   console.log('Is super admin:', isSuperAdmin);
 
   const updateUserMutation = useMutation({
@@ -247,8 +246,7 @@ export default function TeamMembers() {
                     Joined: {new Date(member.createdAt).toLocaleDateString()}
                   </div>
                   
-                  {/* Temporarily show for all users to debug */}
-                  {(isSuperAdmin || true) && (
+                  {isSuperAdmin && (
                     <div className="flex items-center space-x-2 pt-3 border-t">
                       <Button 
                         variant="outline" 
@@ -271,13 +269,7 @@ export default function TeamMembers() {
                       )}
                     </div>
                   )}
-                  
-                  {/* Debug info */}
-                  {user?.role === 'super_admin' && (
-                    <div className="text-xs text-green-600 mt-2">
-                      DEBUG: Super Admin - should see buttons
-                    </div>
-                  )}
+
                 </div>
               </CardContent>
             </Card>
@@ -296,11 +288,14 @@ export default function TeamMembers() {
             </p>
             {isSuperAdmin && (
               <Button 
-                onClick={() => window.location.href = '/auth'}
+                onClick={() => {
+                  // Open auth page in new tab to allow user registration
+                  window.open('/auth', '_blank');
+                }}
                 className="bg-primary hover:bg-primary/90"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Add User Account
+                Add New User
               </Button>
             )}
           </div>

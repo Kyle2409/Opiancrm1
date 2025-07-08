@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 // Team members now use the users table directly
 import { useAuth } from "@/hooks/use-auth";
@@ -64,6 +65,13 @@ export default function TeamMembers() {
 
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
   const isSuperAdmin = user?.role === 'super_admin';
+
+  // Clear auth cache to force reload of user data with role
+  React.useEffect(() => {
+    if (user && !user.role) {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    }
+  }, [user]);
 
   // Debug logging (remove in production)
   console.log('Current user role:', user?.role);

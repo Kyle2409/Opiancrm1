@@ -33,6 +33,8 @@ export interface IStorage {
   
   // User methods (team members are users)
   getAllUsers(): Promise<User[]>;
+  updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined>;
+  deleteUser(id: number): Promise<boolean>;
   
   // Stats methods
   getStats(userId?: number): Promise<{
@@ -212,6 +214,26 @@ export class DatabaseStorage implements IStorage {
 
   async getAllUsers(): Promise<User[]> {
     return await db.select().from(users);
+  }
+
+  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined> {
+    // Hash password if provided
+    if (userData.password) {
+      const { hashPassword } = await import('./auth');
+      userData.password = await hashPassword(userData.password);
+    }
+
+    const [user] = await db
+      .update(users)
+      .set(userData)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Stats methods

@@ -227,6 +227,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user (super admin only)
+  app.put("/api/users/:id", requireAuth, async (req: any, res) => {
+    try {
+      if (req.user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Only super admins can edit users" });
+      }
+
+      const id = parseInt(req.params.id);
+      const updateData = req.body;
+      
+      // Remove password from update if empty
+      if (updateData.password === '') {
+        delete updateData.password;
+      }
+      
+      const user = await storage.updateUser(id, updateData);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
+  // Delete user (super admin only)
+  app.delete("/api/users/:id", requireAuth, async (req: any, res) => {
+    try {
+      if (req.user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Only super admins can delete users" });
+      }
+
+      const id = parseInt(req.params.id);
+      
+      // Prevent deleting self
+      if (id === req.user.id) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+
+      const success = await storage.deleteUser(id);
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
   // Keep team-members endpoint for backward compatibility
   app.get("/api/team-members", requireAuth, async (req, res) => {
     try {

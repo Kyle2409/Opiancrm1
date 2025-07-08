@@ -200,7 +200,7 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
             <p className="text-gray-600">
               {bookingData.bookingFor === "self" 
                 ? "Choose your preferred appointment date" 
-                : `Choose appointment date for ${teamMembers.find(m => m.id === bookingData.assignedToId)?.name || "team member"}`
+                : `Choose appointment date for ${teamMembers.find(m => m.id === bookingData.assignedToId)?.username || "team member"}`
               }
             </p>
           </div>
@@ -300,7 +300,7 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
                   <span className="text-red-700">
                     {apt.startTime} - {apt.endTime} | {apt.title}
                     {apt.assignedToId && teamMembers.find(tm => tm.id === apt.assignedToId) && 
-                      ` (${teamMembers.find(tm => tm.id === apt.assignedToId)?.name})`
+                      ` (${teamMembers.find(tm => tm.id === apt.assignedToId)?.username})`
                     }
                   </span>
                 </div>
@@ -453,15 +453,15 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
                       <User className="w-5 h-5 text-gray-600" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900">{member.name}</h4>
+                      <h4 className="font-medium text-gray-900">{member.username}</h4>
                       <span className={`text-xs px-2 py-1 rounded ${
-                        member.role === 'CEO' ? 'bg-purple-100 text-purple-700' :
-                        member.role === 'Financial Advisor' ? 'bg-green-100 text-green-700' :
-                        member.role === 'Admin' ? 'bg-blue-100 text-blue-700' :
-                        member.role === 'IT' ? 'bg-orange-100 text-orange-700' :
-                        'bg-gray-100 text-gray-700'
+                        member.role === 'super_admin' ? 'bg-red-100 text-red-700' :
+                        member.role === 'admin' ? 'bg-blue-100 text-blue-700' :
+                        member.role === 'user' ? 'bg-green-100 text-green-700' :
+                        member.role === 'viewer' ? 'bg-gray-100 text-gray-700' :
+                        'bg-yellow-100 text-yellow-700'
                       }`}>
-                        {member.role}
+                        {member.role?.replace('_', ' ').toUpperCase() || 'USER'}
                       </span>
                     </div>
                   </div>
@@ -605,14 +605,14 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h2>
           <p className="text-gray-600">
             {bookingData.bookingFor === "team_member" && bookingData.assignedToId
-              ? `Appointment scheduled for ${teamMembers.find(m => m.id === bookingData.assignedToId)?.name} on ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedTime}`
+              ? `Appointment scheduled for ${teamMembers.find(m => m.id === bookingData.assignedToId)?.username} on ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedTime}`
               : `Your appointment has been successfully scheduled for ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedTime}`
             }
           </p>
           {bookingData.bookingFor === "team_member" && bookingData.assignedToId && (
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                <span className="font-medium">Assigned to:</span> {teamMembers.find(m => m.id === bookingData.assignedToId)?.name} ({teamMembers.find(m => m.id === bookingData.assignedToId)?.role})
+                <span className="font-medium">Assigned to:</span> {teamMembers.find(m => m.id === bookingData.assignedToId)?.username} ({teamMembers.find(m => m.id === bookingData.assignedToId)?.role?.replace('_', ' ').toUpperCase() || 'USER'})
               </p>
             </div>
           )}

@@ -47,7 +47,7 @@ export default function BookingCalendar() {
   const getTeamMemberName = (teamMemberId: number | null) => {
     if (!teamMemberId) return null;
     const member = teamMembers.find(tm => tm.id === teamMemberId);
-    return member ? member.name : "Unknown member";
+    return member ? member.username : "Unknown member";
   };
 
   const previousMonth = () => {

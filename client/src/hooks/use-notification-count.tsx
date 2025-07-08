@@ -5,7 +5,7 @@ export interface NotificationItem {
   title: string;
   body: string;
   timestamp: number;
-  type: 'appointment' | 'reminder' | 'system' | 'client';
+  type: 'appointment' | 'reminder' | 'system' | 'team';
   read: boolean;
   url?: string;
 }
@@ -18,7 +18,7 @@ export function useNotificationCount() {
   const addNotification = (notification: Omit<NotificationItem, 'id' | 'read' | 'timestamp'>) => {
     const newNotification: NotificationItem = {
       ...notification,
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       read: false,
       timestamp: Date.now()
     };

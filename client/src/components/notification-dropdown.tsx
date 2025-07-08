@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, Check, X, Clock, Calendar, User, AlertCircle } from 'lucide-react';
+import { Bell, Check, X, Clock, Calendar, User, AlertCircle, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +13,7 @@ const notificationIcons = {
   appointment: Calendar,
   reminder: Clock,
   system: AlertCircle,
+  team: Users,
   client: User
 };
 
@@ -20,7 +21,8 @@ const notificationColors = {
   appointment: 'text-blue-500',
   reminder: 'text-orange-500',
   system: 'text-gray-500',
-  client: 'text-green-500'
+  team: 'text-green-500',
+  client: 'text-purple-500'
 };
 
 interface NotificationDropdownProps {

@@ -6,7 +6,7 @@ export interface NotificationData {
   url?: string;
   id?: string;
   timestamp?: number;
-  type?: 'appointment' | 'reminder' | 'system' | 'client';
+  type?: 'appointment' | 'reminder' | 'system' | 'team' | 'client';
 }
 
 export class NotificationService {
@@ -124,26 +124,42 @@ export class NotificationService {
     title: string;
     date: string;
     time: string;
-    client?: string;
+    teamMember?: string;
   }): void {
-    this.showNotification({
-      title: 'New Appointment Scheduled',
-      body: `${appointment.title} has been scheduled for ${appointment.date} at ${appointment.time}`,
-      type: 'appointment',
+    const notificationData = {
+      title: 'New Meeting Scheduled',
+      body: `${appointment.title} has been scheduled for ${appointment.date} at ${appointment.time}${appointment.teamMember ? ` with ${appointment.teamMember}` : ''}`,
+      type: 'appointment' as const,
       url: '/appointments',
       id: `new-appointment-${Date.now()}`
-    });
+    };
+    
+    // Add to context
+    if (addNotificationToContext) {
+      addNotificationToContext(notificationData);
+    }
+    
+    // Show push notification
+    this.showNotification(notificationData);
   }
 
-  // Show client update notification
-  showClientUpdate(clientName: string, message: string): void {
-    this.showNotification({
-      title: 'Client Update',
-      body: `${clientName}: ${message}`,
-      type: 'client',
-      url: '/clients',
-      id: `client-update-${Date.now()}`
-    });
+  // Show team member update notification
+  showTeamMemberUpdate(teamMemberName: string, message: string): void {
+    const notificationData = {
+      title: 'Team Member Update',
+      body: `${teamMemberName}: ${message}`,
+      type: 'team' as const,
+      url: '/team-members',
+      id: `team-update-${Date.now()}`
+    };
+    
+    // Add to context
+    if (addNotificationToContext) {
+      addNotificationToContext(notificationData);
+    }
+    
+    // Show push notification
+    this.showNotification(notificationData);
   }
 
   // Show system notification

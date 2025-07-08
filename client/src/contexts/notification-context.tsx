@@ -21,23 +21,23 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     const timeout = setTimeout(() => {
       notificationData.addNotification({
         title: 'Welcome to Opian Core',
-        body: 'Your CRM system is ready to use!',
+        body: 'Your team collaboration platform is ready!',
         type: 'system',
         url: '/dashboard'
       });
       
       notificationData.addNotification({
-        title: 'Upcoming Meeting',
-        body: 'You have a client meeting scheduled for tomorrow at 10:00 AM',
+        title: 'Team Meeting Reminder',
+        body: 'Team standup meeting scheduled for tomorrow at 10:00 AM',
         type: 'reminder',
         url: '/appointments'
       });
       
       notificationData.addNotification({
-        title: 'New Client Added',
-        body: 'Kyle test test has been added to your client list',
-        type: 'client',
-        url: '/clients'
+        title: 'New Team Member',
+        body: 'John Smith has joined your team as a Financial Advisor',
+        type: 'team',
+        url: '/team-members'
       });
     }, 1000);
 

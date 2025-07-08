@@ -21,12 +21,36 @@ export default function TeamMembers() {
   const { user } = useAuth();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   
-  const { data: teamMembers = [], isLoading } = useQuery({
+  // Fetch users as team members since they are the same thing
+  const { data: users = [], isLoading: usersLoading } = useQuery<any[]>({
+    queryKey: ["/api/users"],
+  });
+
+  // Also fetch team members data for those with additional team info
+  const { data: teamMembers = [], isLoading: teamLoading } = useQuery({
     queryKey: ["/api/team-members"],
     queryFn: teamMembersApi.getAll,
   });
 
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const isLoading = usersLoading || teamLoading;
+
+  // Combine users and team members - users are the primary source
+  const allTeamMembers = users.map(user => {
+    // Find matching team member data if exists
+    const teamMemberData = teamMembers.find(tm => tm.email === user.email);
+    return {
+      id: user.id,
+      name: user.username,
+      email: user.email,
+      role: teamMemberData?.role || user.role || 'User',
+      department: teamMemberData?.department || 'General',
+      isActive: true, // Users are always active
+      phone: teamMemberData?.phone || '',
+      joinDate: user.createdAt,
+      isUser: true, // Mark as user account
+    };
+  });
 
   if (isLoading) {
     return (
@@ -54,7 +78,7 @@ export default function TeamMembers() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Team Members</h1>
-            <p className="text-gray-600">Manage your team and assign responsibilities</p>
+            <p className="text-gray-600">All system users with their roles and access levels</p>
             {user?.role === 'super_admin' && (
               <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white mt-2">
                 Super Admin Access
@@ -73,7 +97,7 @@ export default function TeamMembers() {
 
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teamMembers.map((member) => (
+          {allTeamMembers.map((member) => (
             <Card key={member.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">

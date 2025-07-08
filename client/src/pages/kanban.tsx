@@ -123,7 +123,19 @@ export default function Kanban() {
     queryKey: ["/api/kanban/cards", Array.isArray(columns) ? columns.map(c => c.id) : []],
     queryFn: async () => {
       if (!Array.isArray(columns) || columns.length === 0) return [];
-      const cardsPromises = columns.map(column => kanbanAPI.getCards(column.id));
+      const cardsPromises = columns.map(async column => {
+        try {
+          const response = await fetch(`/api/kanban/columns/${column.id}/cards`, {
+            credentials: "include"
+          });
+          if (!response.ok) return [];
+          const cards = await response.json();
+          return Array.isArray(cards) ? cards : [];
+        } catch (error) {
+          console.error(`Error fetching cards for column ${column.id}:`, error);
+          return [];
+        }
+      });
       const cardsArrays = await Promise.all(cardsPromises);
       return cardsArrays.flat();
     },
@@ -163,6 +175,7 @@ export default function Kanban() {
   const createCardMutation = useMutation({
     mutationFn: kanbanAPI.createCard,
     onSuccess: () => {
+      // Invalidate both the cards query and the specific column's cards
       queryClient.invalidateQueries({ queryKey: ["/api/kanban/cards"] });
       setIsCreateCardOpen(false);
       setSelectedColumn(null);

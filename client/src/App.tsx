@@ -16,6 +16,7 @@ import AuthPage from "@/pages/auth-page";
 import TeamMembers from "@/pages/team-members";
 import Booking from "@/pages/booking";
 import BookingCalendar from "@/pages/booking-calendar";
+import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -36,6 +37,7 @@ function Router() {
               <ProtectedRoute path="/team-members" component={TeamMembers} />
               <ProtectedRoute path="/booking" component={Booking} />
               <ProtectedRoute path="/booking-calendar" component={BookingCalendar} />
+              <ProtectedRoute path="/settings" component={Settings} />
               <Route component={NotFound} />
             </Switch>
           </main>

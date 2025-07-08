@@ -7,7 +7,8 @@ import {
   Clock, 
   BarChart3,
   LogOut,
-  Plus
+  Plus,
+  Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,6 +21,7 @@ const navigationItems = [
   { path: "/booking", label: "Book Appointment", icon: Plus },
   { path: "/appointments", label: "Appointments", icon: Clock },
   { path: "/team-members", label: "Team", icon: Users },
+  { path: "/settings", label: "Settings", icon: Settings },
 ];
 
 export default function Sidebar() {

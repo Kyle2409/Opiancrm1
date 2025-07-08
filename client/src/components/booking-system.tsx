@@ -14,6 +14,7 @@ import { appointmentsApi } from "@/lib/api";
 import { clientsApi } from "@/lib/api";
 import { teamMembersApi } from "@/lib/team-api";
 import { useAuth } from "@/hooks/use-auth";
+import { useNotifications } from "@/hooks/use-notifications";
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -47,6 +48,7 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { showNewAppointment } = useNotifications();
   
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -81,7 +83,7 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
 
   const bookAppointmentMutation = useMutation({
     mutationFn: appointmentsApi.create,
-    onSuccess: () => {
+    onSuccess: (newAppointment) => {
       queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
@@ -89,6 +91,14 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
         description: "Your appointment has been successfully scheduled.",
       });
       setStep(5); // Success step
+      
+      // Show push notification
+      showNewAppointment({
+        title: newAppointment.title,
+        date: newAppointment.date,
+        time: newAppointment.startTime,
+        client: newAppointment.clientId ? `Client ${newAppointment.clientId}` : undefined
+      });
     },
     onError: (error) => {
       toast({

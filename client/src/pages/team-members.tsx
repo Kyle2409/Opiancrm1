@@ -57,6 +57,12 @@ export default function TeamMembers() {
     password: '',
     role: ''
   });
+  const [addForm, setAddForm] = useState({
+    username: '',
+    email: '',
+    password: '',
+    role: 'user'
+  });
   
   // Use users table as the source of truth for team members
   const { data: users = [], isLoading } = useQuery<any[]>({
@@ -73,9 +79,10 @@ export default function TeamMembers() {
     }
   }, [user]);
 
-  // Debug logging (remove in production)
+  // Debug logging
   console.log('Current user role:', user?.role);
   console.log('Is super admin:', isSuperAdmin);
+  console.log('User object:', user);
 
   const updateUserMutation = useMutation({
     mutationFn: async ({ id, userData }: { id: number; userData: any }) => {
@@ -160,6 +167,41 @@ export default function TeamMembers() {
     if (deleteUserId) {
       deleteUserMutation.mutate(deleteUserId);
     }
+  };
+
+  const addUserMutation = useMutation({
+    mutationFn: async (userData: any) => {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to create user');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+      setIsAddModalOpen(false);
+      setAddForm({ username: '', email: '', password: '', role: 'user' });
+      toast({
+        title: "Success",
+        description: "User created successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleAddUser = () => {
+    addUserMutation.mutate(addForm);
   };
 
   if (isLoading) {
@@ -296,10 +338,7 @@ export default function TeamMembers() {
             </p>
             {isSuperAdmin && (
               <Button 
-                onClick={() => {
-                  // Open auth page in new tab to allow user registration
-                  window.open('/auth', '_blank');
-                }}
+                onClick={() => setIsAddModalOpen(true)}
                 className="bg-primary hover:bg-primary/90"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -309,6 +348,71 @@ export default function TeamMembers() {
           </div>
         )}
       </div>
+
+      {/* Add User Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New User</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="add-username">Username</Label>
+              <Input
+                id="add-username"
+                value={addForm.username}
+                onChange={(e) => setAddForm({ ...addForm, username: e.target.value })}
+                placeholder="Enter username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="add-email">Email</Label>
+              <Input
+                id="add-email"
+                type="email"
+                value={addForm.email}
+                onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                placeholder="Enter email address"
+              />
+            </div>
+            <div>
+              <Label htmlFor="add-password">Password</Label>
+              <Input
+                id="add-password"
+                type="password"
+                value={addForm.password}
+                onChange={(e) => setAddForm({ ...addForm, password: e.target.value })}
+                placeholder="Enter password"
+              />
+            </div>
+            <div>
+              <Label htmlFor="add-role">Role</Label>
+              <Select value={addForm.role} onValueChange={(value) => setAddForm({ ...addForm, role: value })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="super_admin">Super Admin</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="viewer">Viewer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleAddUser}
+                disabled={addUserMutation.isPending}
+              >
+                {addUserMutation.isPending ? "Creating..." : "Create User"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit User Modal */}
       <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>

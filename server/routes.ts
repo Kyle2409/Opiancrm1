@@ -300,6 +300,175 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Kanban Boards
+  app.get("/api/kanban/boards", requireAuth, async (req: any, res) => {
+    try {
+      const boards = await storage.getKanbanBoards(req.user.id);
+      res.json(boards);
+    } catch (error) {
+      console.error("Error fetching kanban boards:", error);
+      res.status(500).json({ error: "Failed to fetch kanban boards" });
+    }
+  });
+
+  app.get("/api/kanban/boards/:id", requireAuth, async (req, res) => {
+    try {
+      const board = await storage.getKanbanBoard(parseInt(req.params.id));
+      if (!board) {
+        return res.status(404).json({ error: "Board not found" });
+      }
+      res.json(board);
+    } catch (error) {
+      console.error("Error fetching kanban board:", error);
+      res.status(500).json({ error: "Failed to fetch kanban board" });
+    }
+  });
+
+  app.post("/api/kanban/boards", requireAuth, async (req: any, res) => {
+    try {
+      const boardData = { ...req.body, userId: req.user.id };
+      const board = await storage.createKanbanBoard(boardData);
+      res.status(201).json(board);
+    } catch (error) {
+      console.error("Error creating kanban board:", error);
+      res.status(500).json({ error: "Failed to create kanban board" });
+    }
+  });
+
+  app.put("/api/kanban/boards/:id", requireAuth, async (req, res) => {
+    try {
+      const board = await storage.updateKanbanBoard(parseInt(req.params.id), req.body);
+      if (!board) {
+        return res.status(404).json({ error: "Board not found" });
+      }
+      res.json(board);
+    } catch (error) {
+      console.error("Error updating kanban board:", error);
+      res.status(500).json({ error: "Failed to update kanban board" });
+    }
+  });
+
+  app.delete("/api/kanban/boards/:id", requireAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteKanbanBoard(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ error: "Board not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting kanban board:", error);
+      res.status(500).json({ error: "Failed to delete kanban board" });
+    }
+  });
+
+  // Kanban Columns
+  app.get("/api/kanban/boards/:boardId/columns", requireAuth, async (req, res) => {
+    try {
+      const columns = await storage.getKanbanColumns(parseInt(req.params.boardId));
+      res.json(columns);
+    } catch (error) {
+      console.error("Error fetching kanban columns:", error);
+      res.status(500).json({ error: "Failed to fetch kanban columns" });
+    }
+  });
+
+  app.post("/api/kanban/columns", requireAuth, async (req, res) => {
+    try {
+      const column = await storage.createKanbanColumn(req.body);
+      res.status(201).json(column);
+    } catch (error) {
+      console.error("Error creating kanban column:", error);
+      res.status(500).json({ error: "Failed to create kanban column" });
+    }
+  });
+
+  app.put("/api/kanban/columns/:id", requireAuth, async (req, res) => {
+    try {
+      const column = await storage.updateKanbanColumn(parseInt(req.params.id), req.body);
+      if (!column) {
+        return res.status(404).json({ error: "Column not found" });
+      }
+      res.json(column);
+    } catch (error) {
+      console.error("Error updating kanban column:", error);
+      res.status(500).json({ error: "Failed to update kanban column" });
+    }
+  });
+
+  app.delete("/api/kanban/columns/:id", requireAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteKanbanColumn(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ error: "Column not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting kanban column:", error);
+      res.status(500).json({ error: "Failed to delete kanban column" });
+    }
+  });
+
+  // Kanban Cards
+  app.get("/api/kanban/columns/:columnId/cards", requireAuth, async (req, res) => {
+    try {
+      const cards = await storage.getKanbanCards(parseInt(req.params.columnId));
+      res.json(cards);
+    } catch (error) {
+      console.error("Error fetching kanban cards:", error);
+      res.status(500).json({ error: "Failed to fetch kanban cards" });
+    }
+  });
+
+  app.post("/api/kanban/cards", requireAuth, async (req, res) => {
+    try {
+      const card = await storage.createKanbanCard(req.body);
+      res.status(201).json(card);
+    } catch (error) {
+      console.error("Error creating kanban card:", error);
+      res.status(500).json({ error: "Failed to create kanban card" });
+    }
+  });
+
+  app.put("/api/kanban/cards/:id", requireAuth, async (req, res) => {
+    try {
+      const card = await storage.updateKanbanCard(parseInt(req.params.id), req.body);
+      if (!card) {
+        return res.status(404).json({ error: "Card not found" });
+      }
+      res.json(card);
+    } catch (error) {
+      console.error("Error updating kanban card:", error);
+      res.status(500).json({ error: "Failed to update kanban card" });
+    }
+  });
+
+  app.put("/api/kanban/cards/:id/move", requireAuth, async (req, res) => {
+    try {
+      const { columnId, position } = req.body;
+      const card = await storage.moveKanbanCard(parseInt(req.params.id), columnId, position);
+      if (!card) {
+        return res.status(404).json({ error: "Card not found" });
+      }
+      res.json(card);
+    } catch (error) {
+      console.error("Error moving kanban card:", error);
+      res.status(500).json({ error: "Failed to move kanban card" });
+    }
+  });
+
+  app.delete("/api/kanban/cards/:id", requireAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteKanbanCard(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ error: "Card not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting kanban card:", error);
+      res.status(500).json({ error: "Failed to delete kanban card" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

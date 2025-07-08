@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, varchar, date } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -151,6 +151,40 @@ export const appointments = pgTable("appointments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const kanbanBoards = pgTable("kanban_boards", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  userId: integer("user_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const kanbanColumns = pgTable("kanban_columns", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  position: integer("position").notNull().default(0),
+  color: varchar("color", { length: 7 }).default("#0073EA"),
+  boardId: integer("board_id").references(() => kanbanBoards.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const kanbanCards = pgTable("kanban_cards", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  position: integer("position").notNull().default(0),
+  priority: text("priority").default("medium"), // low, medium, high, urgent
+  dueDate: date("due_date"),
+  tags: text("tags").array(),
+  columnId: integer("column_id").references(() => kanbanColumns.id, { onDelete: "cascade" }),
+  assignedToId: integer("assigned_to_id").references(() => users.id),
+  clientId: integer("client_id").references(() => clients.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertClientSchema = createInsertSchema(clients).omit({
   id: true,
   createdAt: true,
@@ -183,6 +217,25 @@ export const insertTeamMemberSchema = createInsertSchema(teamMembers).omit({
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
+});
+
+export const insertKanbanBoardSchema = createInsertSchema(kanbanBoards).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+});
+
+export const insertKanbanColumnSchema = createInsertSchema(kanbanColumns).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertKanbanCardSchema = createInsertSchema(kanbanCards).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 // Relations
@@ -236,6 +289,37 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
   }),
 }));
 
+export const kanbanBoardsRelations = relations(kanbanBoards, ({ one, many }) => ({
+  user: one(users, {
+    fields: [kanbanBoards.userId],
+    references: [users.id],
+  }),
+  columns: many(kanbanColumns),
+}));
+
+export const kanbanColumnsRelations = relations(kanbanColumns, ({ one, many }) => ({
+  board: one(kanbanBoards, {
+    fields: [kanbanColumns.boardId],
+    references: [kanbanBoards.id],
+  }),
+  cards: many(kanbanCards),
+}));
+
+export const kanbanCardsRelations = relations(kanbanCards, ({ one }) => ({
+  column: one(kanbanColumns, {
+    fields: [kanbanCards.columnId],
+    references: [kanbanColumns.id],
+  }),
+  assignedTo: one(users, {
+    fields: [kanbanCards.assignedToId],
+    references: [users.id],
+  }),
+  client: one(clients, {
+    fields: [kanbanCards.clientId],
+    references: [clients.id],
+  }),
+}));
+
 export type InsertClient = z.infer<typeof insertClientSchema>;
 export type Client = typeof clients.$inferSelect;
 export type InsertDocument = z.infer<typeof insertDocumentSchema>;
@@ -246,3 +330,9 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertTeamMember = z.infer<typeof insertTeamMemberSchema>;
 export type TeamMember = typeof teamMembers.$inferSelect;
+export type InsertKanbanBoard = z.infer<typeof insertKanbanBoardSchema>;
+export type KanbanBoard = typeof kanbanBoards.$inferSelect;
+export type InsertKanbanColumn = z.infer<typeof insertKanbanColumnSchema>;
+export type KanbanColumn = typeof kanbanColumns.$inferSelect;
+export type InsertKanbanCard = z.infer<typeof insertKanbanCardSchema>;
+export type KanbanCard = typeof kanbanCards.$inferSelect;

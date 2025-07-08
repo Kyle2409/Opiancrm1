@@ -19,6 +19,7 @@ import Booking from "@/pages/booking";
 import BookingCalendar from "@/pages/booking-calendar";
 import Settings from "@/pages/settings";
 import Users from "@/pages/users";
+import Kanban from "@/pages/kanban";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -40,6 +41,7 @@ function Router() {
               <ProtectedRoute path="/users" component={TeamMembers} />
               <ProtectedRoute path="/booking" component={Booking} />
               <ProtectedRoute path="/booking-calendar" component={BookingCalendar} />
+              <ProtectedRoute path="/kanban" component={Kanban} />
               <ProtectedRoute path="/settings" component={Settings} />
               <Route component={NotFound} />
             </Switch>

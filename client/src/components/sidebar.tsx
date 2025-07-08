@@ -8,7 +8,8 @@ import {
   BarChart3,
   LogOut,
   Plus,
-  Settings
+  Settings,
+  Kanban
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,6 +21,7 @@ const navigationItems = [
   { path: "/booking-calendar", label: "Calendar", icon: Calendar },
   { path: "/booking", label: "Book Appointment", icon: Plus },
   { path: "/appointments", label: "Appointments", icon: Clock },
+  { path: "/kanban", label: "Kanban Board", icon: Kanban },
   { path: "/team-members", label: "Team", icon: Users },
   { path: "/settings", label: "Settings", icon: Settings },
 ];

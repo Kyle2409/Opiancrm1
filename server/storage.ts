@@ -1,4 +1,26 @@
-import { clients, documents, appointments, users, type Client, type InsertClient, type Document, type InsertDocument, type Appointment, type InsertAppointment, type User, type InsertUser } from "@shared/schema";
+import { 
+  clients, 
+  documents, 
+  appointments, 
+  users, 
+  kanbanBoards, 
+  kanbanColumns, 
+  kanbanCards,
+  type Client, 
+  type InsertClient, 
+  type Document, 
+  type InsertDocument, 
+  type Appointment, 
+  type InsertAppointment, 
+  type User, 
+  type InsertUser,
+  type KanbanBoard,
+  type KanbanColumn,
+  type KanbanCard,
+  type InsertKanbanBoard,
+  type InsertKanbanColumn,
+  type InsertKanbanCard
+} from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
@@ -43,6 +65,25 @@ export interface IStorage {
     upcomingMeetings: number;
     revenue: number;
   }>;
+  
+  // Kanban methods
+  getKanbanBoards(userId?: number): Promise<KanbanBoard[]>;
+  getKanbanBoard(id: number): Promise<KanbanBoard | undefined>;
+  createKanbanBoard(board: InsertKanbanBoard): Promise<KanbanBoard>;
+  updateKanbanBoard(id: number, board: Partial<InsertKanbanBoard>): Promise<KanbanBoard | undefined>;
+  deleteKanbanBoard(id: number): Promise<boolean>;
+  
+  getKanbanColumns(boardId: number): Promise<KanbanColumn[]>;
+  createKanbanColumn(column: InsertKanbanColumn): Promise<KanbanColumn>;
+  updateKanbanColumn(id: number, column: Partial<InsertKanbanColumn>): Promise<KanbanColumn | undefined>;
+  deleteKanbanColumn(id: number): Promise<boolean>;
+  
+  getKanbanCards(columnId: number): Promise<KanbanCard[]>;
+  getKanbanCard(id: number): Promise<KanbanCard | undefined>;
+  createKanbanCard(card: InsertKanbanCard): Promise<KanbanCard>;
+  updateKanbanCard(id: number, card: Partial<InsertKanbanCard>): Promise<KanbanCard | undefined>;
+  deleteKanbanCard(id: number): Promise<boolean>;
+  moveKanbanCard(cardId: number, newColumnId: number, newPosition: number): Promise<KanbanCard | undefined>;
 }
 
 // DatabaseStorage implementation
@@ -270,6 +311,113 @@ export class DatabaseStorage implements IStorage {
       upcomingMeetings,
       revenue: totalRevenue,
     };
+  }
+
+  // Kanban Board methods
+  async getKanbanBoards(userId?: number): Promise<KanbanBoard[]> {
+    if (userId) {
+      return await db.select().from(kanbanBoards).where(eq(kanbanBoards.userId, userId));
+    }
+    return await db.select().from(kanbanBoards);
+  }
+
+  async getKanbanBoard(id: number): Promise<KanbanBoard | undefined> {
+    const [board] = await db.select().from(kanbanBoards).where(eq(kanbanBoards.id, id));
+    return board || undefined;
+  }
+
+  async createKanbanBoard(insertBoard: InsertKanbanBoard): Promise<KanbanBoard> {
+    const [board] = await db
+      .insert(kanbanBoards)
+      .values(insertBoard)
+      .returning();
+    return board;
+  }
+
+  async updateKanbanBoard(id: number, updateData: Partial<InsertKanbanBoard>): Promise<KanbanBoard | undefined> {
+    const [board] = await db
+      .update(kanbanBoards)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(kanbanBoards.id, id))
+      .returning();
+    return board || undefined;
+  }
+
+  async deleteKanbanBoard(id: number): Promise<boolean> {
+    const result = await db.delete(kanbanBoards).where(eq(kanbanBoards.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  // Kanban Column methods
+  async getKanbanColumns(boardId: number): Promise<KanbanColumn[]> {
+    return await db.select().from(kanbanColumns).where(eq(kanbanColumns.boardId, boardId));
+  }
+
+  async createKanbanColumn(insertColumn: InsertKanbanColumn): Promise<KanbanColumn> {
+    const [column] = await db
+      .insert(kanbanColumns)
+      .values(insertColumn)
+      .returning();
+    return column;
+  }
+
+  async updateKanbanColumn(id: number, updateData: Partial<InsertKanbanColumn>): Promise<KanbanColumn | undefined> {
+    const [column] = await db
+      .update(kanbanColumns)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(kanbanColumns.id, id))
+      .returning();
+    return column || undefined;
+  }
+
+  async deleteKanbanColumn(id: number): Promise<boolean> {
+    const result = await db.delete(kanbanColumns).where(eq(kanbanColumns.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  // Kanban Card methods
+  async getKanbanCards(columnId: number): Promise<KanbanCard[]> {
+    return await db.select().from(kanbanCards).where(eq(kanbanCards.columnId, columnId));
+  }
+
+  async getKanbanCard(id: number): Promise<KanbanCard | undefined> {
+    const [card] = await db.select().from(kanbanCards).where(eq(kanbanCards.id, id));
+    return card || undefined;
+  }
+
+  async createKanbanCard(insertCard: InsertKanbanCard): Promise<KanbanCard> {
+    const [card] = await db
+      .insert(kanbanCards)
+      .values(insertCard)
+      .returning();
+    return card;
+  }
+
+  async updateKanbanCard(id: number, updateData: Partial<InsertKanbanCard>): Promise<KanbanCard | undefined> {
+    const [card] = await db
+      .update(kanbanCards)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(kanbanCards.id, id))
+      .returning();
+    return card || undefined;
+  }
+
+  async deleteKanbanCard(id: number): Promise<boolean> {
+    const result = await db.delete(kanbanCards).where(eq(kanbanCards.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  async moveKanbanCard(cardId: number, newColumnId: number, newPosition: number): Promise<KanbanCard | undefined> {
+    const [card] = await db
+      .update(kanbanCards)
+      .set({ 
+        columnId: newColumnId, 
+        position: newPosition,
+        updatedAt: new Date()
+      })
+      .where(eq(kanbanCards.id, cardId))
+      .returning();
+    return card || undefined;
   }
 }
 

@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useNotificationContext } from "@/contexts/notification-context";
 import { NotificationDropdown } from "@/components/notification-dropdown";
 import AddClientModal from "@/components/modals/add-client-modal";
+import ComprehensiveClientModal from "@/components/modals/comprehensive-client-modal";
 import AddAppointmentModal from "@/components/modals/add-appointment-modal";
 
 const pageTitles = {
@@ -22,6 +23,7 @@ const pageTitles = {
 export default function Header() {
   const [location] = useLocation();
   const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
+  const [isComprehensiveClientModalOpen, setIsComprehensiveClientModalOpen] = useState(false);
   const [isAddAppointmentModalOpen, setIsAddAppointmentModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const { user, logoutMutation } = useAuth();
@@ -33,7 +35,7 @@ export default function Header() {
     if (location === "/appointments" || location === "/calendar") {
       setIsAddAppointmentModalOpen(true);
     } else {
-      setIsAddClientModalOpen(true);
+      setIsComprehensiveClientModalOpen(true);
     }
   };
 
@@ -109,6 +111,11 @@ export default function Header() {
       <AddClientModal 
         isOpen={isAddClientModalOpen} 
         onClose={() => setIsAddClientModalOpen(false)} 
+      />
+      
+      <ComprehensiveClientModal 
+        isOpen={isComprehensiveClientModalOpen} 
+        onClose={() => setIsComprehensiveClientModalOpen(false)} 
       />
       
       <AddAppointmentModal 

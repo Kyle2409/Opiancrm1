@@ -40,11 +40,9 @@ export default function AddClientModal({ isOpen, onClose }: AddClientModalProps)
   const form = useForm<InsertClient>({
     resolver: zodResolver(insertClientSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      surname: "",
       email: "",
-      company: "",
-      phone: "",
-      role: "",
       status: "active",
       value: 0,
     },

@@ -44,25 +44,25 @@ export default function Dashboard() {
     queryFn: appointmentsApi.getAll,
   });
 
-  const recentClients = clients.slice(0, 5);
-  const todayAppointments = appointments.filter(apt => {
+  const recentClients = Array.isArray(clients) ? clients.slice(0, 5) : [];
+  const todayAppointments = Array.isArray(appointments) ? appointments.filter(apt => {
     const aptDate = new Date(apt.date);
     return isToday(aptDate);
-  });
+  }) : [];
   
-  const tomorrowAppointments = appointments.filter(apt => {
+  const tomorrowAppointments = Array.isArray(appointments) ? appointments.filter(apt => {
     const aptDate = new Date(apt.date);
     return isTomorrow(aptDate);
-  });
+  }) : [];
   
-  const weekAppointments = appointments.filter(apt => {
+  const weekAppointments = Array.isArray(appointments) ? appointments.filter(apt => {
     const aptDate = new Date(apt.date);
     return isThisWeek(aptDate, { weekStartsOn: 0 });
-  });
+  }) : [];
 
   // Calculate trends and insights
-  const activeClients = clients.filter(c => c.status === 'active');
-  const prospectClients = clients.filter(c => c.status === 'prospect');
+  const activeClients = Array.isArray(clients) ? clients.filter(c => c.status === 'active') : [];
+  const prospectClients = Array.isArray(clients) ? clients.filter(c => c.status === 'prospect') : [];
   const totalRevenue = clients.reduce((sum, client) => sum + (client.value || 0), 0);
   const avgDealSize = totalRevenue / clients.length || 0;
 
@@ -220,7 +220,7 @@ export default function Dashboard() {
                         <div className="relative">
                           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
                             <span className="text-white font-semibold text-sm">
-                              {client.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                              {(client.firstName?.[0] || '') + (client.surname?.[0] || '')}
                             </span>
                           </div>
                           <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
@@ -231,10 +231,10 @@ export default function Dashboard() {
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm font-semibold text-gray-900">{client.name}</p>
+                              <p className="text-sm font-semibold text-gray-900">{client.firstName} {client.surname}</p>
                               <div className="flex items-center space-x-2 mt-1">
                                 <Building className="w-3 h-3 text-gray-400" />
-                                <p className="text-xs text-gray-600">{client.company}</p>
+                                <p className="text-xs text-gray-600">{client.employer || client.occupation || 'N/A'}</p>
                                 <Badge className={`text-xs ${
                                   client.status === 'active' ? 'bg-green-100 text-green-700' :
                                   client.status === 'prospect' ? 'bg-yellow-100 text-yellow-700' :
@@ -258,10 +258,10 @@ export default function Dashboard() {
                               <Mail className="w-3 h-3" />
                               <span>{client.email}</span>
                             </div>
-                            {client.phone && (
+                            {client.cellPhone && (
                               <div className="flex items-center space-x-1 text-xs text-gray-500">
                                 <Phone className="w-3 h-3" />
-                                <span>{client.phone}</span>
+                                <span>{client.cellPhone}</span>
                               </div>
                             )}
                           </div>

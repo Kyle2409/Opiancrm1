@@ -5,11 +5,96 @@ import { z } from "zod";
 
 export const clients = pgTable("clients", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
+  
+  // Personal Information
+  title: text("title"), // Mr, Mrs, Dr, etc.
+  firstName: text("first_name").notNull(),
+  surname: text("surname").notNull(),
+  secondName: text("second_name"),
+  idNumber: text("id_number"),
+  dateOfBirth: timestamp("date_of_birth"),
+  smokerStatus: boolean("smoker_status").default(false),
+  
+  // Contact Details
+  cellPhone: text("cell_phone"),
+  homePhone: text("home_phone"),
+  workPhone: text("work_phone"),
   email: text("email").notNull().unique(),
-  company: text("company").notNull(),
-  phone: text("phone"),
-  role: text("role"),
+  physicalAddress: text("physical_address"),
+  postalAddress: text("postal_address"),
+  physicalPostalCode: text("physical_postal_code"),
+  postalCode: text("postal_code"),
+  
+  // Employment & Education
+  occupation: text("occupation"),
+  employer: text("employer"),
+  educationLevel: text("education_level"),
+  grossAnnualIncome: integer("gross_annual_income"),
+  dutySplitAdmin: integer("duty_split_admin"), // percentage
+  dutySplitTravel: integer("duty_split_travel"), // percentage
+  dutySplitSupervision: integer("duty_split_supervision"), // percentage
+  dutySplitManual: integer("duty_split_manual"), // percentage
+  hobbies: text("hobbies"),
+  
+  // Marital Details
+  maritalStatus: text("marital_status"), // Married, Single, Divorced, Widowed
+  marriageType: text("marriage_type"), // ANC, Accrual, COP
+  dateOfMarriage: timestamp("date_of_marriage"),
+  spouseName: text("spouse_name"),
+  spouseMaidenName: text("spouse_maiden_name"),
+  spouseDateOfBirth: timestamp("spouse_date_of_birth"),
+  spouseSmokerStatus: boolean("spouse_smoker_status"),
+  spouseOccupation: text("spouse_occupation"),
+  spouseEmployer: text("spouse_employer"),
+  spouseEducationLevel: text("spouse_education_level"),
+  spouseGrossAnnualIncome: integer("spouse_gross_annual_income"),
+  spouseDutySplitAdmin: integer("spouse_duty_split_admin"),
+  spouseDutySplitTravel: integer("spouse_duty_split_travel"),
+  spouseDutySplitSupervision: integer("spouse_duty_split_supervision"),
+  spouseDutySplitManual: integer("spouse_duty_split_manual"),
+  
+  // Financial Information
+  monthlyIncome: integer("monthly_income"),
+  spouseMonthlyIncome: integer("spouse_monthly_income"),
+  
+  // Group Risk Benefits
+  pensionFundCurrentValue: integer("pension_fund_current_value"),
+  pensionFundProjectedValue: integer("pension_fund_projected_value"),
+  providentFundCurrentValue: integer("provident_fund_current_value"),
+  providentFundProjectedValue: integer("provident_fund_projected_value"),
+  groupLifeCover: integer("group_life_cover"),
+  groupDisabilityCover: integer("group_disability_cover"),
+  groupDreadDiseaseCover: integer("group_dread_disease_cover"),
+  disabilityIncomeCover: integer("disability_income_cover"),
+  
+  // Medical Aid
+  medicalAidScheme: text("medical_aid_scheme"),
+  medicalAidMembershipNo: text("medical_aid_membership_no"),
+  medicalAidMembers: integer("medical_aid_members"),
+  medicalAidCompulsory: boolean("medical_aid_compulsory"),
+  medicalAidSatisfied: boolean("medical_aid_satisfied"),
+  
+  // Financial Objectives
+  deathMonthlyIncome: integer("death_monthly_income"),
+  disabilityCapitalExpenses: integer("disability_capital_expenses"),
+  disabilityMonthlyIncome: integer("disability_monthly_income"),
+  dreadDiseaseCover: integer("dread_disease_cover"),
+  retirementAge: integer("retirement_age"),
+  retirementMonthlyIncome: integer("retirement_monthly_income"),
+  childrenEducationAmount: integer("children_education_amount"),
+  childrenEducationYear: integer("children_education_year"),
+  
+  // Investment Expectations
+  expectedInvestmentReturns: integer("expected_investment_returns"), // percentage
+  expectedInflation: integer("expected_inflation"), // percentage
+  
+  // Will Information
+  hasWill: boolean("has_will"),
+  willLocation: text("will_location"),
+  willLastUpdated: timestamp("will_last_updated"),
+  willExecutor: text("will_executor"),
+  
+  // CRM Fields
   status: text("status").notNull().default("active"), // active, prospect, inactive
   value: integer("value").default(0),
   lastContact: timestamp("last_contact").defaultNow(),
@@ -70,6 +155,11 @@ export const insertClientSchema = createInsertSchema(clients).omit({
   id: true,
   createdAt: true,
   lastContact: true,
+  userId: true,
+}).extend({
+  firstName: z.string().min(1, "First name is required"),
+  surname: z.string().min(1, "Surname is required"),
+  email: z.string().email("Valid email is required"),
 });
 
 export const insertDocumentSchema = createInsertSchema(documents).omit({

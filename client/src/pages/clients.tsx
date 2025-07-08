@@ -173,14 +173,14 @@ export default function Clients() {
                             <Users className="w-4 h-4 text-primary" />
                           </div>
                           <div>
-                            <div className="font-medium text-textPrimary">{client.name}</div>
+                            <div className="font-medium text-textPrimary">{client.firstName} {client.surname}</div>
                             <div className="text-sm text-gray-500">{client.email}</div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-textPrimary">{client.company}</div>
-                        <div className="text-sm text-gray-500">{client.role}</div>
+                        <div className="text-textPrimary">{client.employer || '-'}</div>
+                        <div className="text-sm text-gray-500">{client.occupation || '-'}</div>
                       </TableCell>
                       <TableCell>
                         <Badge className={getStatusColor(client.status)}>

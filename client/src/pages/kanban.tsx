@@ -50,7 +50,19 @@ const kanbanAPI: KanbanAPI = {
     }
   },
   createBoard: (board) => apiRequest("POST", "/api/kanban/boards", board),
-  getColumns: (boardId) => apiRequest("GET", `/api/kanban/boards/${boardId}/columns`),
+  getColumns: async (boardId) => {
+    try {
+      const response = await fetch(`/api/kanban/boards/${boardId}/columns`, {
+        credentials: "include"
+      });
+      if (!response.ok) throw new Error("Failed to fetch columns");
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error("Error fetching columns:", error);
+      return [];
+    }
+  },
   createColumn: (column) => apiRequest("POST", "/api/kanban/columns", column),
   getCards: (columnId) => apiRequest("GET", `/api/kanban/columns/${columnId}/cards`),
   createCard: (card) => apiRequest("POST", "/api/kanban/cards", card),
@@ -108,14 +120,14 @@ export default function Kanban() {
 
   // Fetch cards for all columns
   const { data: allCards = [] } = useQuery({
-    queryKey: ["/api/kanban/cards", columns.map(c => c.id)],
+    queryKey: ["/api/kanban/cards", Array.isArray(columns) ? columns.map(c => c.id) : []],
     queryFn: async () => {
-      if (columns.length === 0) return [];
+      if (!Array.isArray(columns) || columns.length === 0) return [];
       const cardsPromises = columns.map(column => kanbanAPI.getCards(column.id));
       const cardsArrays = await Promise.all(cardsPromises);
       return cardsArrays.flat();
     },
-    enabled: columns.length > 0,
+    enabled: Array.isArray(columns) && columns.length > 0,
   });
 
   // Create board mutation
@@ -399,7 +411,7 @@ export default function Kanban() {
       {selectedBoard ? (
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className="flex space-x-4 overflow-x-auto pb-4">
-            {columns.map((column) => (
+            {Array.isArray(columns) && columns.map((column) => (
               <div key={column.id} className="flex-shrink-0 w-80">
                 <Card>
                   <CardHeader className="pb-3">

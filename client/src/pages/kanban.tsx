@@ -195,15 +195,18 @@ export default function Kanban() {
     },
   });
 
-  // Move card mutation
+  // Move card mutation  
   const moveCardMutation = useMutation({
     mutationFn: ({ cardId, columnId, position }: { cardId: number; columnId: number; position: number }) =>
       kanbanAPI.moveCard(cardId, columnId, position),
     onSuccess: () => {
+      // Refresh the data to ensure consistency with server
       queryClient.invalidateQueries({ queryKey: ["/api/kanban/cards"] });
     },
-    onError: () => {
+    onError: (error, variables) => {
       toast({ title: "Error", description: "Failed to move card", variant: "destructive" });
+      // Revert the optimistic update by refreshing data
+      queryClient.invalidateQueries({ queryKey: ["/api/kanban/cards"] });
     },
   });
 
@@ -220,6 +223,21 @@ export default function Kanban() {
     const newColumnId = parseInt(destination.droppableId);
     const newPosition = destination.index;
 
+    // Optimistically update the local state immediately
+    const card = allCards.find(c => c.id === cardId);
+    if (card) {
+      // Update the card's column and position in the query cache
+      const updatedCards = allCards.map(c => 
+        c.id === cardId 
+          ? { ...c, columnId: newColumnId, position: newPosition }
+          : c
+      );
+      
+      // Update the query cache immediately for smooth UX
+      queryClient.setQueryData(["/api/kanban/cards", columns.map(c => c.id)], updatedCards);
+    }
+
+    // Then perform the actual API call
     moveCardMutation.mutate({ cardId, columnId: newColumnId, position: newPosition });
   };
 

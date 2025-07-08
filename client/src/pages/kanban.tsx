@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -92,11 +92,18 @@ export default function Kanban() {
     queryFn: kanbanAPI.getBoards,
   });
 
+  // Auto-select first board when boards are loaded
+  useEffect(() => {
+    if (boards.length > 0 && !selectedBoard) {
+      setSelectedBoard(boards[0]);
+    }
+  }, [boards, selectedBoard]);
+
   // Fetch columns for selected board
   const { data: columns = [] } = useQuery({
     queryKey: ["/api/kanban/columns", selectedBoard?.id],
-    queryFn: () => selectedBoard ? kanbanAPI.getColumns(selectedBoard.id) : Promise.resolve([]),
-    enabled: !!selectedBoard,
+    queryFn: () => selectedBoard && selectedBoard.id ? kanbanAPI.getColumns(selectedBoard.id) : Promise.resolve([]),
+    enabled: !!selectedBoard && !!selectedBoard.id,
   });
 
   // Fetch cards for all columns
@@ -322,10 +329,12 @@ export default function Kanban() {
         
         <div className="flex items-center space-x-3">
           <Select
-            value={selectedBoard?.id.toString() || ""}
+            value={selectedBoard?.id?.toString() || ""}
             onValueChange={(value) => {
-              const board = boards.find(b => b.id === parseInt(value));
-              setSelectedBoard(board || null);
+              if (value && !isNaN(parseInt(value))) {
+                const board = boards.find(b => b.id === parseInt(value));
+                setSelectedBoard(board || null);
+              }
             }}
           >
             <SelectTrigger className="w-48">

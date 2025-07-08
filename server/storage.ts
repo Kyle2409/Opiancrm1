@@ -350,6 +350,10 @@ export class DatabaseStorage implements IStorage {
 
   // Kanban Column methods
   async getKanbanColumns(boardId: number): Promise<KanbanColumn[]> {
+    if (!boardId || isNaN(boardId)) {
+      console.warn("Invalid boardId provided to getKanbanColumns:", boardId);
+      return [];
+    }
     return await db.select().from(kanbanColumns).where(eq(kanbanColumns.boardId, boardId));
   }
 

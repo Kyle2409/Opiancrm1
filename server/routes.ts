@@ -364,7 +364,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Kanban Columns
   app.get("/api/kanban/boards/:boardId/columns", requireAuth, async (req, res) => {
     try {
-      const columns = await storage.getKanbanColumns(parseInt(req.params.boardId));
+      const boardId = parseInt(req.params.boardId);
+      if (isNaN(boardId)) {
+        return res.status(400).json({ error: "Invalid board ID" });
+      }
+      const columns = await storage.getKanbanColumns(boardId);
       res.json(columns);
     } catch (error) {
       console.error("Error fetching kanban columns:", error);

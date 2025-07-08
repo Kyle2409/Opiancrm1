@@ -36,7 +36,19 @@ interface KanbanAPI {
 }
 
 const kanbanAPI: KanbanAPI = {
-  getBoards: () => apiRequest("GET", "/api/kanban/boards"),
+  getBoards: async () => {
+    try {
+      const response = await fetch("/api/kanban/boards", {
+        credentials: "include"
+      });
+      if (!response.ok) throw new Error("Failed to fetch boards");
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error("Error fetching boards:", error);
+      return [];
+    }
+  },
   createBoard: (board) => apiRequest("POST", "/api/kanban/boards", board),
   getColumns: (boardId) => apiRequest("GET", `/api/kanban/boards/${boardId}/columns`),
   createColumn: (column) => apiRequest("POST", "/api/kanban/columns", column),
@@ -75,7 +87,7 @@ export default function Kanban() {
   });
 
   // Fetch boards
-  const { data: boards = [] } = useQuery({
+  const { data: boards = [], isLoading: boardsLoading, error: boardsError } = useQuery({
     queryKey: ["/api/kanban/boards"],
     queryFn: kanbanAPI.getBoards,
   });
@@ -206,7 +218,34 @@ export default function Kanban() {
     return allCards.filter(card => card.columnId === columnId).sort((a, b) => a.position - b.position);
   };
 
-  if (boards.length === 0) {
+  if (boardsLoading) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading kanban boards...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (boardsError) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-center min-h-[400px] text-center">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Error loading boards</h3>
+            <p className="text-gray-600 mb-4">There was an issue loading your kanban boards.</p>
+            <Button onClick={() => window.location.reload()}>Try Again</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!Array.isArray(boards) || boards.length === 0) {
     return (
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
@@ -293,7 +332,7 @@ export default function Kanban() {
               <SelectValue placeholder="Select a board" />
             </SelectTrigger>
             <SelectContent>
-              {boards.map((board) => (
+              {Array.isArray(boards) && boards.map((board) => (
                 <SelectItem key={board.id} value={board.id.toString()}>
                   {board.name}
                 </SelectItem>

@@ -65,6 +65,11 @@ export default function TeamMembers() {
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
   const isSuperAdmin = user?.role === 'super_admin';
 
+  // Debug logging
+  console.log('Current user:', user);
+  console.log('User role:', user?.role);
+  console.log('Is super admin:', isSuperAdmin);
+
   const updateUserMutation = useMutation({
     mutationFn: async ({ id, userData }: { id: number; userData: any }) => {
       const response = await fetch(`/api/users/${id}`, {
@@ -242,7 +247,8 @@ export default function TeamMembers() {
                     Joined: {new Date(member.createdAt).toLocaleDateString()}
                   </div>
                   
-                  {isSuperAdmin && (
+                  {/* Temporarily show for all users to debug */}
+                  {(isSuperAdmin || true) && (
                     <div className="flex items-center space-x-2 pt-3 border-t">
                       <Button 
                         variant="outline" 
@@ -263,6 +269,13 @@ export default function TeamMembers() {
                           <Trash2 className="w-3 h-3" />
                         </Button>
                       )}
+                    </div>
+                  )}
+                  
+                  {/* Debug info */}
+                  {user?.role === 'super_admin' && (
+                    <div className="text-xs text-green-600 mt-2">
+                      DEBUG: Super Admin - should see buttons
                     </div>
                   )}
                 </div>

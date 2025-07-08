@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Search, Plus, Bell, LogOut, User } from "lucide-react";
+import { Search, Plus, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
+import { useNotificationContext } from "@/contexts/notification-context";
+import { NotificationDropdown } from "@/components/notification-dropdown";
 import AddClientModal from "@/components/modals/add-client-modal";
 import AddAppointmentModal from "@/components/modals/add-appointment-modal";
 
@@ -23,6 +25,7 @@ export default function Header() {
   const [isAddAppointmentModalOpen, setIsAddAppointmentModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const { user, logoutMutation } = useAuth();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } = useNotificationContext();
 
   const currentPage = pageTitles[location as keyof typeof pageTitles] || pageTitles["/"];
 
@@ -60,14 +63,13 @@ export default function Header() {
               <Plus className="w-4 h-4 mr-2" />
               {location === "/appointments" || location === "/calendar" ? "Add Meeting" : "Add Client"}
             </Button>
-            <div className="relative">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  3
-                </span>
-              </Button>
-            </div>
+            <NotificationDropdown
+              notifications={notifications}
+              unreadCount={unreadCount}
+              onMarkAsRead={markAsRead}
+              onMarkAllAsRead={markAllAsRead}
+              onClearAll={clearAll}
+            />
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

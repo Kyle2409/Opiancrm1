@@ -198,3 +198,10 @@ export class NotificationService {
 
 // Export singleton instance
 export const notificationService = NotificationService.getInstance();
+
+// Global function to add notifications to context
+export let addNotificationToContext: ((notification: Omit<NotificationData, 'timestamp'>) => void) | null = null;
+
+export function setNotificationContextHandler(handler: (notification: Omit<NotificationData, 'timestamp'>) => void) {
+  addNotificationToContext = handler;
+}

@@ -15,6 +15,7 @@ import { clientsApi } from "@/lib/api";
 import { teamMembersApi } from "@/lib/team-api";
 import { useAuth } from "@/hooks/use-auth";
 import { useNotifications } from "@/hooks/use-notifications";
+import { useNotificationContext } from "@/contexts/notification-context";
 import { 
   Calendar as CalendarIcon, 
   Clock, 

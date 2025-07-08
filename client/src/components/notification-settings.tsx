@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Bell, BellOff, Check, X } from 'lucide-react';
 import { useNotifications } from '@/hooks/use-notifications';
+import { useNotificationContext } from '@/contexts/notification-context';
 import { useToast } from '@/hooks/use-toast';
 
 export default function NotificationSettings() {
@@ -16,6 +17,7 @@ export default function NotificationSettings() {
     requestPermission,
     showNotification 
   } = useNotifications();
+  const { addNotification } = useNotificationContext();
   const { toast } = useToast();
   
   const [settings, setSettings] = useState({

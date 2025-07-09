@@ -162,35 +162,51 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Enhanced Stats Cards */}
+      {/* Enhanced Stats Cards with Stained Glass Effect */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="relative overflow-hidden border border-slate-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group bg-white/80 backdrop-blur-sm transform hover:scale-105">
-              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-5 group-hover:opacity-10 transition-opacity`} />
-              <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <CardContent className="p-6 relative z-10">
+            <Card key={index} className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group transform hover:scale-105 hover:-translate-y-2">
+              {/* Stained glass background layers */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-20`} />
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/60 via-white/30 to-transparent opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-white/20 to-white/40 opacity-60" />
+              
+              {/* Stained glass pattern overlay */}
+              <div className="absolute inset-0 opacity-30">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-rose-200/40 via-transparent to-transparent" />
+                <div className="absolute top-0 right-0 w-2/3 h-2/3 bg-gradient-to-bl from-blue-200/40 via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-purple-200/40 via-transparent to-transparent" />
+                <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-amber-200/40 via-transparent to-transparent" />
+              </div>
+              
+              {/* Glass effect shimmer */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              {/* Subtle border glow */}
+              <div className="absolute inset-0 rounded-lg border border-white/30 shadow-inner"></div>
+              <CardContent className="p-6 relative z-10 backdrop-blur-sm">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                      <p className="text-sm font-semibold text-slate-700/90 drop-shadow-sm">{stat.title}</p>
                       {stat.changeType === 'positive' && (
-                        <ArrowUpRight className="w-3 h-3 text-green-500" />
+                        <ArrowUpRight className="w-3 h-3 text-emerald-600 drop-shadow-sm" />
                       )}
                     </div>
-                    <p className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</p>
-                    <p className="text-xs text-gray-500 mb-3">{stat.subtitle}</p>
+                    <p className="text-3xl font-bold text-slate-800 mb-1 drop-shadow-sm">{stat.value}</p>
+                    <p className="text-xs text-slate-600/80 mb-3 drop-shadow-sm">{stat.subtitle}</p>
                     <div className="flex items-center space-x-1">
-                      <span className={`text-sm font-medium ${
-                        stat.changeType === 'positive' ? 'text-green-600' : 'text-gray-600'
+                      <span className={`text-sm font-semibold drop-shadow-sm ${
+                        stat.changeType === 'positive' ? 'text-emerald-700' : 'text-slate-600'
                       }`}>
                         {stat.change}
                       </span>
                     </div>
                   </div>
-                  <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-7 h-7 text-white" />
+                  <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-all duration-300 backdrop-blur-sm border border-white/20 relative`}>
+                    <Icon className="w-7 h-7 text-white drop-shadow-sm" />
                     <div className="absolute inset-0 bg-white/20 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 </div>
@@ -202,12 +218,25 @@ export default function Dashboard() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Client Activity - Enhanced */}
+        {/* Recent Client Activity - Enhanced with Stained Glass */}
         <div className="lg:col-span-2">
-          <Card className="border border-slate-200/50 shadow-lg bg-white/80 backdrop-blur-sm">
-            <CardHeader className="pb-4">
+          <Card className="relative overflow-hidden border-0 shadow-2xl backdrop-blur-sm">
+            {/* Stained glass background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/15 to-purple-500/15" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/70 via-white/40 to-transparent opacity-90" />
+            <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-white/20 to-white/50 opacity-70" />
+            
+            {/* Stained glass pattern overlay */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-200/30 via-transparent to-transparent" />
+              <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-gradient-to-bl from-violet-200/30 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-rose-200/30 via-transparent to-transparent" />
+            </div>
+            
+            <div className="absolute inset-0 rounded-lg border border-white/30 shadow-inner"></div>
+            <CardHeader className="pb-4 relative z-10">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-xl font-semibold text-gray-900">Client Activity</CardTitle>
+                <CardTitle className="text-xl font-semibold text-slate-800 drop-shadow-sm">Client Activity</CardTitle>
                 <Button 
                   onClick={() => setLocation("/clients")}
                   variant="ghost" 
@@ -218,7 +247,7 @@ export default function Dashboard() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="space-y-4">
                 {recentClients.length === 0 ? (
                   <div className="text-center py-12">
@@ -290,12 +319,25 @@ export default function Dashboard() {
 
         {/* Right Sidebar */}
         <div className="space-y-6">
-          {/* Quick Actions - Enhanced */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-gray-900">Quick Actions</CardTitle>
+          {/* Quick Actions - Enhanced with Stained Glass */}
+          <Card className="relative overflow-hidden border-0 shadow-2xl backdrop-blur-sm">
+            {/* Stained glass background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/15 to-pink-500/15" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/70 via-white/40 to-transparent opacity-90" />
+            <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-white/20 to-white/50 opacity-70" />
+            
+            {/* Stained glass pattern overlay */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-orange-200/30 via-transparent to-transparent" />
+              <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-gradient-to-bl from-pink-200/30 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-yellow-200/30 via-transparent to-transparent" />
+            </div>
+            
+            <div className="absolute inset-0 rounded-lg border border-white/30 shadow-inner"></div>
+            <CardHeader className="pb-4 relative z-10">
+              <CardTitle className="text-lg font-semibold text-slate-800 drop-shadow-sm">Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 relative z-10">
               <Button 
                 onClick={() => setLocation("/clients")}
                 className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md transition-all duration-200"
@@ -320,17 +362,30 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Today's Schedule - Enhanced */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader className="pb-4">
+          {/* Today's Schedule - Enhanced with Stained Glass */}
+          <Card className="relative overflow-hidden border-0 shadow-2xl backdrop-blur-sm">
+            {/* Stained glass background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/15 to-indigo-500/15" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/70 via-white/40 to-transparent opacity-90" />
+            <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-white/20 to-white/50 opacity-70" />
+            
+            {/* Stained glass pattern overlay */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-violet-200/30 via-transparent to-transparent" />
+              <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-gradient-to-bl from-indigo-200/30 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-purple-200/30 via-transparent to-transparent" />
+            </div>
+            
+            <div className="absolute inset-0 rounded-lg border border-white/30 shadow-inner"></div>
+            <CardHeader className="pb-4 relative z-10">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-gray-900">Today's Schedule</CardTitle>
+                <CardTitle className="text-lg font-semibold text-slate-800 drop-shadow-sm">Today's Schedule</CardTitle>
                 <Badge variant="secondary" className="bg-blue-100 text-blue-700">
                   {todayAppointments.length} meetings
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="space-y-3">
                 {todayAppointments.length === 0 ? (
                   <div className="text-center py-8">

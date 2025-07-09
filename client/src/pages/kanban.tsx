@@ -465,7 +465,7 @@ export default function Kanban() {
                           className="w-3 h-3 rounded-full" 
                           style={{ backgroundColor: column.color }}
                         />
-                        <CardTitle className="text-sm font-medium">{column.name}</CardTitle>
+                        <CardTitle className="text-lg font-semibold">{column.name}</CardTitle>
                         <Badge variant="secondary" className="text-xs">
                           {getCardsForColumn(column.id).length}
                         </Badge>

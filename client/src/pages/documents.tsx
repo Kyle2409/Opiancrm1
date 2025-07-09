@@ -139,9 +139,9 @@ export default function Documents() {
               </Select>
               <Button 
                 onClick={() => setShowUpload(!showUpload)}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group"
               >
-                <Upload className="w-4 h-4 mr-2" />
+                <Upload className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
                 Upload File
               </Button>
             </div>
@@ -179,7 +179,7 @@ export default function Documents() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredDocuments.map((document) => (
-                <Card key={document.id} className="border border-gray-200 hover:shadow-md transition-shadow">
+                <Card key={document.id} className="border border-slate-200/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white/80 backdrop-blur-sm">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-3">

@@ -228,6 +228,7 @@ export class DatabaseStorage implements IStorage {
         type: insertAppointment.type,
         location: insertAppointment.location ?? null,
         status: insertAppointment.status ?? "scheduled",
+        appointmentStatus: insertAppointment.appointmentStatus ?? "pending",
       })
       .returning();
     return appointment;

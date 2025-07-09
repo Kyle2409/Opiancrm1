@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { clientsApi } from "@/lib/api";
+import { clientsApi, appointmentsApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,26 +21,47 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { 
   Users, 
   Edit, 
   CalendarPlus, 
   Upload, 
   Trash2,
-  Plus 
+  Plus,
+  Calendar,
+  CheckCircle,
+  XCircle,
+  Clock,
+  AlertCircle
 } from "lucide-react";
 import { format } from "date-fns";
 import AddClientModal from "@/components/modals/add-client-modal";
+import CreateAppointmentModal from "@/components/modals/create-appointment-modal";
+import type { Client, Appointment } from "@shared/schema";
 
 export default function Clients() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ["/api/clients"],
     queryFn: clientsApi.getAll,
+  });
+
+  const { data: appointments = [] } = useQuery({
+    queryKey: ["/api/appointments"],
+    queryFn: appointmentsApi.getAll,
   });
 
   const deleteClientMutation = useMutation({
@@ -84,6 +105,58 @@ export default function Clients() {
       default:
         return "bg-gray-100 text-gray-600";
     }
+  };
+
+  const getAppointmentStatusColor = (status: string) => {
+    switch (status) {
+      case "scheduled":
+        return "bg-blue-100 text-blue-800";
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      case "no_show":
+        return "bg-orange-100 text-orange-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      default:
+        return "bg-gray-100 text-gray-600";
+    }
+  };
+
+  const getAppointmentStatusIcon = (status: string) => {
+    switch (status) {
+      case "scheduled":
+        return <Calendar className="w-4 h-4" />;
+      case "completed":
+        return <CheckCircle className="w-4 h-4" />;
+      case "cancelled":
+        return <XCircle className="w-4 h-4" />;
+      case "no_show":
+        return <AlertCircle className="w-4 h-4" />;
+      case "pending":
+        return <Clock className="w-4 h-4" />;
+      default:
+        return <Calendar className="w-4 h-4" />;
+    }
+  };
+
+  const getClientAppointments = (clientId: number) => {
+    return appointments.filter(appointment => appointment.clientId === clientId);
+  };
+
+  const getClientAppointmentStatus = (clientId: number) => {
+    const clientAppointments = getClientAppointments(clientId);
+    if (clientAppointments.length === 0) return "no_appointments";
+    
+    const hasScheduled = clientAppointments.some(app => app.appointmentStatus === "scheduled");
+    const hasPending = clientAppointments.some(app => app.appointmentStatus === "pending");
+    const hasCompleted = clientAppointments.some(app => app.appointmentStatus === "completed");
+    
+    if (hasScheduled) return "scheduled";
+    if (hasPending) return "pending";
+    if (hasCompleted) return "completed";
+    return "no_appointments";
   };
 
   if (isLoading) {
@@ -159,6 +232,7 @@ export default function Clients() {
                     <TableHead>Client</TableHead>
                     <TableHead>Company</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Appointment Status</TableHead>
                     <TableHead>Last Contact</TableHead>
                     <TableHead>Value</TableHead>
                     <TableHead>Actions</TableHead>
@@ -187,6 +261,14 @@ export default function Clients() {
                           {client.status}
                         </Badge>
                       </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          {getAppointmentStatusIcon(getClientAppointmentStatus(client.id))}
+                          <Badge className={getAppointmentStatusColor(getClientAppointmentStatus(client.id))}>
+                            {getClientAppointmentStatus(client.id) === "no_appointments" ? "No Appointments" : getClientAppointmentStatus(client.id)}
+                          </Badge>
+                        </div>
+                      </TableCell>
                       <TableCell className="text-gray-500">
                         {format(new Date(client.lastContact || client.createdAt), 'MMM d, yyyy')}
                       </TableCell>
@@ -198,7 +280,14 @@ export default function Clients() {
                           <Button variant="ghost" size="sm">
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => {
+                              setSelectedClient(client);
+                              setIsAppointmentModalOpen(true);
+                            }}
+                          >
                             <CalendarPlus className="w-4 h-4" />
                           </Button>
                           <Button variant="ghost" size="sm">
@@ -226,6 +315,15 @@ export default function Clients() {
       <AddClientModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
+      />
+      
+      <CreateAppointmentModal
+        isOpen={isAppointmentModalOpen}
+        onClose={() => {
+          setIsAppointmentModalOpen(false);
+          setSelectedClient(null);
+        }}
+        client={selectedClient}
       />
     </div>
   );

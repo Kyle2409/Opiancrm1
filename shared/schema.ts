@@ -148,6 +148,7 @@ export const appointments = pgTable("appointments", {
   type: text("type").notNull(), // meeting, call, review
   location: text("location"),
   status: text("status").notNull().default("scheduled"), // scheduled, completed, cancelled
+  appointmentStatus: text("appointment_status").notNull().default("pending"), // pending, scheduled, completed, cancelled, no_show
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -45,15 +45,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/clients", requireAuth, async (req: any, res) => {
     try {
+      console.log("Creating client with data:", req.body);
       const result = insertClientSchema.safeParse(req.body);
       if (!result.success) {
+        console.log("Validation errors:", result.error.issues);
         return res.status(400).json({ message: "Invalid client data", errors: result.error.issues });
       }
       const clientData = { ...result.data, userId: req.user.id };
+      console.log("Processed client data:", clientData);
       const client = await storage.createClient(clientData);
       res.status(201).json(client);
     } catch (error) {
-      res.status(500).json({ message: "Failed to create client" });
+      console.error("Client creation error:", error);
+      res.status(500).json({ message: "Failed to create client", error: error.message });
     }
   });
 

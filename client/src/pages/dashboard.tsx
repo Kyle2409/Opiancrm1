@@ -378,14 +378,14 @@ export default function Dashboard() {
               </Button>
               <Button 
                 onClick={() => setLocation("/booking")}
-                className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-md transition-all duration-200"
+                className="w-full h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md transition-all duration-200"
               >
                 <CalendarPlus className="w-4 h-4 mr-2" />
                 Book Appointment
               </Button>
               <Button 
                 onClick={() => setLocation("/documents")}
-                className="w-full h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-md transition-all duration-200"
+                className="w-full h-12 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white shadow-md transition-all duration-200"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Upload Documents

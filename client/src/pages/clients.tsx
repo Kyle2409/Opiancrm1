@@ -43,7 +43,7 @@ import {
   FileText
 } from "lucide-react";
 import { format } from "date-fns";
-import AddClientModal from "@/components/modals/add-client-modal";
+import ComprehensiveClientModal from "@/components/modals/comprehensive-client-modal";
 import CreateAppointmentModal from "@/components/modals/create-appointment-modal";
 import EditClientModal from "@/components/modals/edit-client-modal";
 import ClientDocuments from "@/components/client-documents";
@@ -331,7 +331,7 @@ export default function Clients() {
         </CardContent>
       </Card>
 
-      <AddClientModal 
+      <ComprehensiveClientModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
       />

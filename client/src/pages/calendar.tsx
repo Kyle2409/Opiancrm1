@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { appointmentsApi } from "@/lib/api";
+import { appointmentsApi, clientsApi } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,6 +21,11 @@ export default function Calendar() {
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ["/api/appointments"],
     queryFn: appointmentsApi.getAll,
+  });
+
+  const { data: clients = [] } = useQuery({
+    queryKey: ["/api/clients"],
+    queryFn: clientsApi.getAll,
   });
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -50,13 +55,23 @@ export default function Calendar() {
     switch (type) {
       case "meeting":
         return "bg-primary text-primary-foreground";
-      case "call":
-        return "bg-secondary text-secondary-foreground";
-      case "review":
-        return "bg-warning text-warning-foreground";
+      case "consultation":
+        return "bg-blue-500 text-white";
+      case "demo":
+        return "bg-purple-500 text-white";
+      case "follow-up":
+        return "bg-green-500 text-white";
+      case "strategy":
+        return "bg-orange-500 text-white";
       default:
         return "bg-gray-500 text-white";
     }
+  };
+
+  const getClientName = (clientId: number | null) => {
+    if (!clientId) return "No client assigned";
+    const client = clients.find(c => c.id === clientId);
+    return client ? `${client.firstName} ${client.surname}` : "Unknown client";
   };
 
   if (isLoading) {
@@ -169,10 +184,13 @@ export default function Calendar() {
                       {dayAppointments.map((appointment) => (
                         <div 
                           key={appointment.id}
-                          className={`text-xs px-2 py-1 rounded text-center ${getAppointmentColor(appointment.type)}`}
+                          className={`text-xs px-2 py-1 rounded ${getAppointmentColor(appointment.type)}`}
                         >
                           <div className="font-medium">{appointment.startTime}</div>
                           <div className="truncate">{appointment.title}</div>
+                          <div className="truncate text-xs opacity-90">
+                            {getClientName(appointment.clientId)}
+                          </div>
                         </div>
                       ))}
                     </div>

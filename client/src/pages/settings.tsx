@@ -78,14 +78,27 @@ export default function Settings() {
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
+          <Card className="relative overflow-hidden border-0 shadow-2xl backdrop-blur-sm">
+            {/* Stained glass background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-sky-500/15 to-indigo-500/15" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/70 via-white/40 to-transparent opacity-90" />
+            <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-white/20 to-white/50 opacity-70" />
+            
+            {/* Stained glass pattern overlay */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-sky-200/30 via-transparent to-transparent" />
+              <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-gradient-to-bl from-indigo-200/30 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-blue-200/30 via-transparent to-transparent" />
+            </div>
+            
+            <div className="absolute inset-0 rounded-lg border border-white/30 shadow-inner"></div>
+            <CardHeader className="relative z-10">
+              <CardTitle className="text-slate-800 drop-shadow-sm">Profile Information</CardTitle>
               <CardDescription>
                 Update your personal information and contact details
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 relative z-10">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>

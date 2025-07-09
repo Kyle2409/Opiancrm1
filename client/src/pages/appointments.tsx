@@ -152,10 +152,23 @@ export default function Appointments() {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
       
-      <Card className="bg-white/80 backdrop-blur-sm border border-slate-200/50 shadow-xl">
-        <CardHeader>
+      <Card className="relative overflow-hidden border-0 shadow-2xl backdrop-blur-sm">
+        {/* Stained glass background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/15 to-pink-500/15" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/70 via-white/40 to-transparent opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-white/20 to-white/50 opacity-70" />
+        
+        {/* Stained glass pattern overlay */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-200/30 via-transparent to-transparent" />
+          <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-gradient-to-bl from-pink-200/30 via-transparent to-transparent" />
+          <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-violet-200/30 via-transparent to-transparent" />
+        </div>
+        
+        <div className="absolute inset-0 rounded-lg border border-white/30 shadow-inner"></div>
+        <CardHeader className="relative z-10">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Appointments</CardTitle>
+            <CardTitle className="text-2xl font-bold text-slate-800 drop-shadow-sm">Appointments</CardTitle>
             <div className="flex items-center space-x-4">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-40">
@@ -180,7 +193,7 @@ export default function Appointments() {
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative z-10">
           {filteredAppointments.length === 0 ? (
             <div className="text-center py-12">
               <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -204,8 +217,19 @@ export default function Appointments() {
           ) : (
             <div className="space-y-4">
               {filteredAppointments.map((appointment) => (
-                <Card key={appointment.id} className="border border-slate-200/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white/80 backdrop-blur-sm">
-                  <CardContent className="p-4">
+                <Card key={appointment.id} className="relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 backdrop-blur-sm">
+                  {/* Individual appointment card stained glass */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/10" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-white/80 via-white/50 to-transparent opacity-90" />
+                  <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-white/30 to-white/50 opacity-60" />
+                  
+                  <div className="absolute inset-0 opacity-15">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-200/30 via-transparent to-transparent" />
+                    <div className="absolute top-0 right-0 w-2/3 h-2/3 bg-gradient-to-bl from-indigo-200/30 via-transparent to-transparent" />
+                  </div>
+                  
+                  <div className="absolute inset-0 rounded-lg border border-white/30 shadow-inner"></div>
+                  <CardContent className="p-4 relative z-10">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${getAppointmentColor(appointment.type)}`}>

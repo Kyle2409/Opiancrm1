@@ -104,6 +104,7 @@ Changelog:
 - July 07, 2025. Booking system enhancement - Transformed appointment scheduling into comprehensive booking system with step-by-step interface, real-time availability, visual indicators, and full appointment duration blocking
 - July 07, 2025. Role-based team management - Added specific team member roles (CEO, Financial Advisor, Admin, IT) with color-coded visual system throughout the application
 - July 08, 2025. User management unification - Merged team members and users into single concept using users table only, removed team_members table, added super admin user management capabilities with edit/delete permissions
+- July 09, 2025. Real-time presence tracking - Added WebSocket-based online presence system showing who is online and their last seen status, with real-time updates for team member activities
 ```
 
 ## User Preferences

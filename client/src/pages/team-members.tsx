@@ -39,15 +39,20 @@ import {
   Building,
   Shield,
   Edit,
-  Trash2
+  Trash2,
+  Wifi,
+  WifiOff
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { usePresence } from "@/hooks/use-presence";
+import { PresenceIndicator } from "@/components/presence-indicator";
 // AddTeamMemberModal replaced by user creation
 
 export default function TeamMembers() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { users: presenceUsers, refreshUsers } = usePresence();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
@@ -67,6 +72,16 @@ export default function TeamMembers() {
   // Use users table as the source of truth for team members
   const { data: users = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/users"],
+  });
+
+  // Merge presence data with users data
+  const usersWithPresence = users.map(user => {
+    const presenceUser = presenceUsers.find(p => p.id === user.id);
+    return {
+      ...user,
+      isOnline: presenceUser?.isOnline || false,
+      lastSeen: presenceUser?.lastSeen || user.lastSeen
+    };
   });
 
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
@@ -231,11 +246,23 @@ export default function TeamMembers() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Team Members</h1>
             <p className="text-gray-600">All system users with their roles and access levels</p>
-            {user?.role === 'super_admin' && (
-              <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white mt-2">
-                Super Admin Access
-              </Badge>
-            )}
+            <div className="flex items-center space-x-4 mt-2">
+              {user?.role === 'super_admin' && (
+                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                  Super Admin Access
+                </Badge>
+              )}
+              <div className="flex items-center space-x-2">
+                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  <Wifi className="w-3 h-3 mr-1" />
+                  {usersWithPresence.filter(u => u.isOnline).length} Online
+                </Badge>
+                <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+                  <WifiOff className="w-3 h-3 mr-1" />
+                  {usersWithPresence.filter(u => !u.isOnline).length} Offline
+                </Badge>
+              </div>
+            </div>
           </div>
           <Button 
             onClick={() => setIsAddModalOpen(true)}
@@ -249,7 +276,7 @@ export default function TeamMembers() {
 
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {users.map((member) => (
+          {usersWithPresence.map((member) => (
             <Card key={member.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
@@ -275,9 +302,10 @@ export default function TeamMembers() {
                       </Badge>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <Badge variant="default">
-                      Active
+                  <div className="flex items-center space-x-2">
+                    <PresenceIndicator user={member} showLastSeen={false} size="md" />
+                    <Badge variant="default" className={`${member.isOnline ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {member.isOnline ? 'Online' : 'Offline'}
                     </Badge>
                   </div>
                 </div>
@@ -292,8 +320,13 @@ export default function TeamMembers() {
                     <Building className="w-4 h-4" />
                     <span>System User</span>
                   </div>
-                  <div className="text-xs text-gray-500">
-                    Joined: {new Date(member.createdAt).toLocaleDateString()}
+                  <div className="space-y-1">
+                    <div className="text-xs text-gray-500">
+                      Joined: {new Date(member.createdAt).toLocaleDateString()}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <PresenceIndicator user={member} showLastSeen={true} size="sm" />
+                    </div>
                   </div>
                   
                   {isSuperAdmin && (

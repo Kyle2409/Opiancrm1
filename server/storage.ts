@@ -259,7 +259,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users);
   }
 
-  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined> {
+  async updateUser(id: number, userData: Partial<InsertUser & { isOnline?: boolean; lastSeen?: Date }>): Promise<User | undefined> {
     // Hash password if provided
     if (userData.password) {
       const { hashPassword } = await import('./auth');

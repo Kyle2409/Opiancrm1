@@ -121,6 +121,8 @@ export const users = pgTable("users", {
   firstName: text("first_name"),
   lastName: text("last_name"),
   role: text("role").default("user"), // super_admin, admin, user
+  isOnline: boolean("is_online").default(false),
+  lastSeen: timestamp("last_seen").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -132,6 +134,8 @@ export const teamMembers = pgTable("team_members", {
   department: text("department"),
   isActive: boolean("is_active").default(true),
   userId: integer("user_id").references(() => users.id),
+  isOnline: boolean("is_online").default(false),
+  lastSeen: timestamp("last_seen").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

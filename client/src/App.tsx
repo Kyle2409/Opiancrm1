@@ -21,6 +21,7 @@ import Settings from "@/pages/settings";
 import Users from "@/pages/users";
 import Kanban from "@/pages/kanban";
 import NotFound from "@/pages/not-found";
+import PresenceProvider from "@/components/presence-provider";
 
 function Router() {
   return (
@@ -57,10 +58,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <NotificationProvider>
-          <TooltipProvider>
-            <Router />
-            <Toaster />
-          </TooltipProvider>
+          <PresenceProvider>
+            <TooltipProvider>
+              <Router />
+              <Toaster />
+            </TooltipProvider>
+          </PresenceProvider>
         </NotificationProvider>
       </AuthProvider>
     </QueryClientProvider>

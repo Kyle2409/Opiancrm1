@@ -1,5 +1,6 @@
 import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
+import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { insertClientSchema, insertDocumentSchema, insertAppointmentSchema, insertTeamMemberSchema } from "@shared/schema";
 import multer from "multer";
@@ -516,5 +517,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+  
+  // WebSocket server for real-time presence tracking
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // Store user connections
+  const userConnections = new Map<number, WebSocket>();
+  
+  wss.on('connection', (ws: WebSocket) => {
+    let userId: number | null = null;
+    
+    ws.on('message', async (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        
+        if (data.type === 'join' && data.userId) {
+          userId = data.userId;
+          userConnections.set(userId, ws);
+          
+          // Update user online status
+          await storage.updateUser(userId, { isOnline: true, lastSeen: new Date() });
+          
+          // Broadcast user came online
+          broadcastPresenceUpdate(userId, true);
+        } else if (data.type === 'heartbeat' && userId) {
+          // Update last seen timestamp
+          await storage.updateUser(userId, { lastSeen: new Date() });
+        }
+      } catch (error) {
+        console.error('WebSocket message error:', error);
+      }
+    });
+    
+    ws.on('close', async () => {
+      if (userId) {
+        userConnections.delete(userId);
+        
+        // Update user offline status
+        await storage.updateUser(userId, { isOnline: false, lastSeen: new Date() });
+        
+        // Broadcast user went offline
+        broadcastPresenceUpdate(userId, false);
+      }
+    });
+    
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+  });
+  
+  function broadcastPresenceUpdate(userId: number, isOnline: boolean) {
+    const message = JSON.stringify({
+      type: 'presence_update',
+      userId,
+      isOnline,
+      timestamp: new Date().toISOString()
+    });
+    
+    userConnections.forEach((ws) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(message);
+      }
+    });
+  }
+  
+  // API endpoint to get all users with their online status
+  app.get("/api/users/presence", requireAuth, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Error fetching users presence:", error);
+      res.status(500).json({ error: "Failed to fetch users presence" });
+    }
+  });
+  
   return httpServer;
 }

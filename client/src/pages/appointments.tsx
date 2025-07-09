@@ -64,7 +64,7 @@ export default function Appointments() {
 
   const filteredAppointments = appointments.filter(appointment => {
     if (statusFilter === "all") return true;
-    return appointment.status === statusFilter;
+    return appointment.appointmentStatus === statusFilter;
   });
 
   const handleDeleteAppointment = (id: number) => {
@@ -77,10 +77,14 @@ export default function Appointments() {
     switch (type) {
       case "meeting":
         return <Users className="w-5 h-5" />;
-      case "call":
+      case "consultation":
         return <Phone className="w-5 h-5" />;
-      case "review":
+      case "demo":
+        return <Video className="w-5 h-5" />;
+      case "follow-up":
         return <Calendar className="w-5 h-5" />;
+      case "strategy":
+        return <Users className="w-5 h-5" />;
       default:
         return <Calendar className="w-5 h-5" />;
     }
@@ -90,10 +94,14 @@ export default function Appointments() {
     switch (type) {
       case "meeting":
         return "bg-primary bg-opacity-10 text-primary";
-      case "call":
-        return "bg-secondary bg-opacity-10 text-secondary";
-      case "review":
-        return "bg-warning bg-opacity-10 text-warning";
+      case "consultation":
+        return "bg-blue-100 text-blue-600";
+      case "demo":
+        return "bg-purple-100 text-purple-600";
+      case "follow-up":
+        return "bg-green-100 text-green-600";
+      case "strategy":
+        return "bg-orange-100 text-orange-600";
       default:
         return "bg-gray-100 text-gray-600";
     }
@@ -101,12 +109,16 @@ export default function Appointments() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-600";
       case "scheduled":
         return "bg-blue-100 text-blue-600";
       case "completed":
-        return "bg-secondary/10 text-secondary";
+        return "bg-green-100 text-green-600";
       case "cancelled":
         return "bg-red-100 text-red-600";
+      case "no_show":
+        return "bg-gray-100 text-gray-600";
       default:
         return "bg-gray-100 text-gray-600";
     }
@@ -115,7 +127,7 @@ export default function Appointments() {
   const getClientName = (clientId: number | null) => {
     if (!clientId) return "No client assigned";
     const client = clients.find(c => c.id === clientId);
-    return client ? `${client.name} (${client.company})` : "Unknown client";
+    return client ? `${client.firstName} ${client.surname}` : "Unknown client";
   };
 
   if (isLoading) {
@@ -147,9 +159,11 @@ export default function Appointments() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Appointments</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="scheduled">Scheduled</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
                   <SelectItem value="cancelled">Cancelled</SelectItem>
+                  <SelectItem value="no_show">No Show</SelectItem>
                 </SelectContent>
               </Select>
               <Button 
@@ -216,8 +230,8 @@ export default function Appointments() {
                         <Badge className={getAppointmentColor(appointment.type)}>
                           {appointment.type}
                         </Badge>
-                        <Badge className={getStatusColor(appointment.status)}>
-                          {appointment.status}
+                        <Badge className={getStatusColor(appointment.appointmentStatus)}>
+                          {appointment.appointmentStatus}
                         </Badge>
                         {appointment.location && (
                           <span className="text-sm text-gray-500 flex items-center">

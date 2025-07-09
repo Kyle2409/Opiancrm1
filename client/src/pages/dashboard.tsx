@@ -66,6 +66,12 @@ export default function Dashboard() {
   const totalRevenue = clients.reduce((sum, client) => sum + (client.value || 0), 0);
   const avgDealSize = totalRevenue / clients.length || 0;
 
+  const getClientName = (clientId: number | null) => {
+    if (!clientId) return "No client";
+    const client = clients.find(c => c.id === clientId);
+    return client ? `${client.firstName} ${client.surname}` : "Client not found";
+  };
+
   if (statsLoading || clientsLoading || appointmentsLoading) {
     return (
       <div className="p-6 space-y-6">
@@ -337,6 +343,9 @@ export default function Dashboard() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">{appointment.title}</p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {getClientName(appointment.clientId)}
+                          </p>
                           <div className="flex items-center space-x-2 mt-1">
                             <Badge className={`text-xs ${
                               appointment.type === 'meeting' ? 'bg-blue-100 text-blue-700' :

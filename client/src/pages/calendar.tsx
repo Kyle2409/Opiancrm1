@@ -69,9 +69,9 @@ export default function Calendar() {
   };
 
   const getClientName = (clientId: number | null) => {
-    if (!clientId) return "No client assigned";
+    if (!clientId) return "No client";
     const client = clients.find(c => c.id === clientId);
-    return client ? `${client.firstName} ${client.surname}` : "Unknown client";
+    return client ? `${client.firstName} ${client.surname}` : "Client not found";
   };
 
   if (isLoading) {

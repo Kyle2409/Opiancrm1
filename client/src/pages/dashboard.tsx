@@ -226,39 +226,35 @@ export default function Dashboard() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Client Activity - Enhanced with Intense Stained Glass */}
+        {/* Recent Client Activity - Light Blue Stained Glass */}
         <div className="lg:col-span-2">
-          <Card className="relative overflow-hidden border-0 shadow-2xl backdrop-blur-sm">
-            {/* Intense stained glass base */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/85 via-white/80 to-white/85" />
+          <Card className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group">
+            {/* Light blue stained glass base */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/98 via-white/95 to-white/98" />
             
-            {/* Multiple layered stained glass segments */}
+            {/* Light blue stained glass segments */}
             <div className="absolute inset-0">
-              <div className="absolute top-0 left-0 w-1/3 h-1/2 bg-gradient-to-br from-blue-300/60 via-blue-400/40 to-transparent" />
-              <div className="absolute top-0 right-0 w-2/3 h-1/3 bg-gradient-to-bl from-sky-300/55 via-sky-400/35 to-transparent" />
-              <div className="absolute bottom-0 left-0 w-1/2 h-2/3 bg-gradient-to-tr from-cyan-300/50 via-cyan-400/30 to-transparent" />
-              <div className="absolute bottom-0 right-0 w-2/3 h-1/2 bg-gradient-to-tl from-indigo-300/55 via-indigo-400/35 to-transparent" />
-              <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-blue-400/45 via-blue-500/25 to-transparent" />
-              <div className="absolute top-1/3 right-1/5 w-2/5 h-1/3 bg-gradient-to-bl from-slate-400/50 via-slate-500/30 to-transparent" />
-              <div className="absolute top-1/6 left-1/6 w-1/4 h-1/4 bg-gradient-to-br from-blue-200/40 via-blue-300/20 to-transparent" />
-              <div className="absolute bottom-1/6 right-1/6 w-1/4 h-1/4 bg-gradient-to-tl from-indigo-200/40 via-indigo-300/20 to-transparent" />
+              <div className="absolute top-0 left-0 w-1/2 h-1/3 bg-gradient-to-br from-blue-200/40 via-blue-300/25 to-transparent" />
+              <div className="absolute top-0 right-0 w-1/2 h-2/5 bg-gradient-to-bl from-sky-200/35 via-sky-300/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 w-2/3 h-1/2 bg-gradient-to-tr from-cyan-200/30 via-cyan-300/18 to-transparent" />
+              <div className="absolute bottom-0 right-0 w-1/2 h-1/3 bg-gradient-to-tl from-indigo-200/35 via-indigo-300/20 to-transparent" />
+              <div className="absolute top-1/3 left-1/4 w-1/2 h-1/3 bg-gradient-to-br from-blue-300/25 via-blue-400/15 to-transparent" />
+              <div className="absolute top-1/2 right-1/4 w-1/3 h-1/4 bg-gradient-to-bl from-slate-300/30 via-slate-400/18 to-transparent" />
             </div>
             
-            {/* Enhanced lead lines pattern */}
-            <div className="absolute inset-0 opacity-25">
-              <div className="absolute top-1/4 left-0 w-full h-0.5 bg-slate-700/70" />
-              <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-700/70" />
-              <div className="absolute top-3/4 left-0 w-full h-0.5 bg-slate-700/70" />
-              <div className="absolute top-0 left-1/4 h-full w-0.5 bg-slate-700/70" />
-              <div className="absolute top-0 left-1/2 h-full w-0.5 bg-slate-700/70" />
-              <div className="absolute top-0 left-3/4 h-full w-0.5 bg-slate-700/70" />
-              <div className="absolute top-1/6 left-1/6 w-1/4 h-px bg-slate-700/50" />
-              <div className="absolute top-1/6 left-1/6 h-1/4 w-px bg-slate-700/50" />
-              <div className="absolute bottom-1/6 right-1/6 w-1/4 h-px bg-slate-700/50" />
-              <div className="absolute bottom-1/6 right-1/6 h-1/4 w-px bg-slate-700/50" />
+            {/* Lead lines effect */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-1/3 left-0 w-full h-px bg-slate-500/50" />
+              <div className="absolute top-2/3 left-0 w-full h-px bg-slate-500/50" />
+              <div className="absolute top-0 left-1/3 h-full w-px bg-slate-500/50" />
+              <div className="absolute top-0 left-2/3 h-full w-px bg-slate-500/50" />
             </div>
             
-            <div className="absolute inset-0 rounded-lg border border-slate-500/40 shadow-inner"></div>
+            {/* Glass reflection */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-white/15 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            
+            {/* Subtle border */}
+            <div className="absolute inset-0 rounded-lg border border-slate-400/30 shadow-inner"></div>
             <CardHeader className="pb-4 relative z-10">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl font-semibold text-slate-700 drop-shadow-sm">Client Activity</CardTitle>
@@ -344,19 +340,33 @@ export default function Dashboard() {
 
         {/* Right Sidebar */}
         <div className="space-y-6">
-          {/* Quick Actions - Enhanced with Blurry Blue Background */}
-          <Card className="relative overflow-hidden border-0 shadow-2xl backdrop-blur-lg">
-            {/* Blurry blue background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/70 via-blue-600/60 to-blue-700/70 backdrop-blur-xl" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-white/5 to-transparent" />
+          {/* Quick Actions - Light Blue Stained Glass */}
+          <Card className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group">
+            {/* Light blue stained glass base */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/98 via-white/95 to-white/98" />
             
-            {/* Enhanced blur effect */}
-            <div className="absolute inset-0 bg-blue-400/30 backdrop-blur-md" />
+            {/* Light blue stained glass segments */}
+            <div className="absolute inset-0">
+              <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-br from-blue-200/35 via-blue-300/20 to-transparent" />
+              <div className="absolute top-1/3 left-0 w-2/3 h-1/3 bg-gradient-to-bl from-sky-200/30 via-sky-300/18 to-transparent" />
+              <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-tr from-cyan-200/25 via-cyan-300/15 to-transparent" />
+              <div className="absolute top-1/4 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-indigo-200/30 via-indigo-300/18 to-transparent" />
+            </div>
             
-            {/* Subtle glass border */}
-            <div className="absolute inset-0 rounded-lg border border-white/20 shadow-inner"></div>
+            {/* Lead lines pattern */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-1/3 left-0 w-full h-px bg-slate-500/50" />
+              <div className="absolute top-2/3 left-0 w-full h-px bg-slate-500/50" />
+              <div className="absolute top-0 left-1/2 h-full w-px bg-slate-500/50" />
+            </div>
+            
+            {/* Glass reflection */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-white/15 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            
+            {/* Subtle border */}
+            <div className="absolute inset-0 rounded-lg border border-slate-400/30 shadow-inner"></div>
             <CardHeader className="pb-4 relative z-10">
-              <CardTitle className="text-lg font-semibold text-white drop-shadow-sm">Quick Actions</CardTitle>
+              <CardTitle className="text-lg font-semibold text-slate-700 drop-shadow-sm">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 relative z-10">
               <Button 

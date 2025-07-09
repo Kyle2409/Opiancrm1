@@ -41,7 +41,7 @@ export default function BookingCalendar() {
   const getClientName = (clientId: number | null) => {
     if (!clientId) return "No client";
     const client = clients.find(c => c.id === clientId);
-    return client ? client.name : "Unknown client";
+    return client ? `${client.firstName} ${client.surname}` : "Unknown client";
   };
 
   const getTeamMemberName = (teamMemberId: number | null) => {
@@ -125,10 +125,11 @@ export default function BookingCalendar() {
                       {dayAppointments.slice(0, 2).map((apt) => (
                         <div
                           key={apt.id}
-                          className="text-xs p-1 rounded bg-primary/10 text-primary truncate"
-                          title={`${apt.startTime} - ${apt.endTime}: ${apt.title}`}
+                          className="text-xs p-1 rounded bg-primary/10 text-primary"
+                          title={`${apt.startTime} - ${apt.endTime}: ${apt.title} (${getClientName(apt.clientId)})`}
                         >
-                          {apt.startTime}-{apt.endTime.slice(0, 5)} {apt.title}
+                          <div className="truncate font-medium">{apt.startTime}-{apt.endTime.slice(0, 5)} {apt.title}</div>
+                          <div className="truncate text-primary/70">{getClientName(apt.clientId)}</div>
                         </div>
                       ))}
                       {dayAppointments.length > 2 && (

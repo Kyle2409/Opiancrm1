@@ -190,6 +190,18 @@ export const kanbanCards = pgTable("kanban_cards", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const kanbanTasks = pgTable("kanban_tasks", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  completed: boolean("completed").default(false),
+  position: integer("position").notNull().default(0),
+  cardId: integer("card_id").references(() => kanbanCards.id, { onDelete: "cascade" }),
+  assignedToId: integer("assigned_to_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertClientSchema = createInsertSchema(clients).omit({
   id: true,
   createdAt: true,
@@ -238,6 +250,12 @@ export const insertKanbanColumnSchema = createInsertSchema(kanbanColumns).omit({
 });
 
 export const insertKanbanCardSchema = createInsertSchema(kanbanCards).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertKanbanTaskSchema = createInsertSchema(kanbanTasks).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -310,7 +328,7 @@ export const kanbanColumnsRelations = relations(kanbanColumns, ({ one, many }) =
   cards: many(kanbanCards),
 }));
 
-export const kanbanCardsRelations = relations(kanbanCards, ({ one }) => ({
+export const kanbanCardsRelations = relations(kanbanCards, ({ one, many }) => ({
   column: one(kanbanColumns, {
     fields: [kanbanCards.columnId],
     references: [kanbanColumns.id],
@@ -322,6 +340,18 @@ export const kanbanCardsRelations = relations(kanbanCards, ({ one }) => ({
   client: one(clients, {
     fields: [kanbanCards.clientId],
     references: [clients.id],
+  }),
+  tasks: many(kanbanTasks),
+}));
+
+export const kanbanTasksRelations = relations(kanbanTasks, ({ one }) => ({
+  card: one(kanbanCards, {
+    fields: [kanbanTasks.cardId],
+    references: [kanbanCards.id],
+  }),
+  assignedTo: one(users, {
+    fields: [kanbanTasks.assignedToId],
+    references: [users.id],
   }),
 }));
 
@@ -341,3 +371,5 @@ export type InsertKanbanColumn = z.infer<typeof insertKanbanColumnSchema>;
 export type KanbanColumn = typeof kanbanColumns.$inferSelect;
 export type InsertKanbanCard = z.infer<typeof insertKanbanCardSchema>;
 export type KanbanCard = typeof kanbanCards.$inferSelect;
+export type InsertKanbanTask = z.infer<typeof insertKanbanTaskSchema>;
+export type KanbanTask = typeof kanbanTasks.$inferSelect;

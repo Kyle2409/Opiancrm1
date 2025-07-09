@@ -6,6 +6,7 @@ import {
   kanbanBoards, 
   kanbanColumns, 
   kanbanCards,
+  kanbanTasks,
   type Client, 
   type InsertClient, 
   type Document, 
@@ -17,9 +18,11 @@ import {
   type KanbanBoard,
   type KanbanColumn,
   type KanbanCard,
+  type KanbanTask,
   type InsertKanbanBoard,
   type InsertKanbanColumn,
-  type InsertKanbanCard
+  type InsertKanbanCard,
+  type InsertKanbanTask
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -84,6 +87,13 @@ export interface IStorage {
   updateKanbanCard(id: number, card: Partial<InsertKanbanCard>): Promise<KanbanCard | undefined>;
   deleteKanbanCard(id: number): Promise<boolean>;
   moveKanbanCard(cardId: number, newColumnId: number, newPosition: number): Promise<KanbanCard | undefined>;
+  
+  // Task methods
+  getKanbanTasks(cardId: number): Promise<KanbanTask[]>;
+  getKanbanTask(id: number): Promise<KanbanTask | undefined>;
+  createKanbanTask(task: InsertKanbanTask): Promise<KanbanTask>;
+  updateKanbanTask(id: number, task: Partial<InsertKanbanTask>): Promise<KanbanTask | undefined>;
+  deleteKanbanTask(id: number): Promise<boolean>;
 }
 
 // DatabaseStorage implementation
@@ -426,6 +436,45 @@ export class DatabaseStorage implements IStorage {
       .where(eq(kanbanCards.id, cardId))
       .returning();
     return card || undefined;
+  }
+
+  // Task methods
+  async getKanbanTasks(cardId: number): Promise<KanbanTask[]> {
+    return await db.select().from(kanbanTasks).where(eq(kanbanTasks.cardId, cardId));
+  }
+
+  async getKanbanTask(id: number): Promise<KanbanTask | undefined> {
+    const [task] = await db.select().from(kanbanTasks).where(eq(kanbanTasks.id, id));
+    return task || undefined;
+  }
+
+  async createKanbanTask(insertTask: InsertKanbanTask): Promise<KanbanTask> {
+    const [task] = await db
+      .insert(kanbanTasks)
+      .values({
+        title: insertTask.title,
+        description: insertTask.description ?? null,
+        completed: insertTask.completed ?? false,
+        position: insertTask.position ?? 0,
+        cardId: insertTask.cardId,
+        assignedToId: insertTask.assignedToId ?? null,
+      })
+      .returning();
+    return task;
+  }
+
+  async updateKanbanTask(id: number, updateData: Partial<InsertKanbanTask>): Promise<KanbanTask | undefined> {
+    const [task] = await db
+      .update(kanbanTasks)
+      .set(updateData)
+      .where(eq(kanbanTasks.id, id))
+      .returning();
+    return task || undefined;
+  }
+
+  async deleteKanbanTask(id: number): Promise<boolean> {
+    const result = await db.delete(kanbanTasks).where(eq(kanbanTasks.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 }
 

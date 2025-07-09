@@ -2,7 +2,7 @@ import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import { insertClientSchema, insertDocumentSchema, insertAppointmentSchema, insertTeamMemberSchema } from "@shared/schema";
+import { insertClientSchema, insertDocumentSchema, insertAppointmentSchema, insertTeamMemberSchema, insertKanbanTaskSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -552,6 +552,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting kanban card:", error);
       res.status(500).json({ error: "Failed to delete kanban card" });
+    }
+  });
+
+  // Kanban Tasks
+  app.get("/api/kanban/cards/:cardId/tasks", requireAuth, async (req, res) => {
+    try {
+      const tasks = await storage.getKanbanTasks(parseInt(req.params.cardId));
+      res.json(tasks);
+    } catch (error) {
+      console.error("Error fetching kanban tasks:", error);
+      res.status(500).json({ error: "Failed to fetch kanban tasks" });
+    }
+  });
+
+  app.post("/api/kanban/tasks", requireAuth, async (req, res) => {
+    try {
+      const result = insertKanbanTaskSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: "Invalid task data", errors: result.error.issues });
+      }
+      const task = await storage.createKanbanTask(result.data);
+      res.status(201).json(task);
+    } catch (error) {
+      console.error("Error creating kanban task:", error);
+      res.status(500).json({ error: "Failed to create kanban task" });
+    }
+  });
+
+  app.put("/api/kanban/tasks/:id", requireAuth, async (req, res) => {
+    try {
+      const result = insertKanbanTaskSchema.partial().safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: "Invalid task data", errors: result.error.issues });
+      }
+      const task = await storage.updateKanbanTask(parseInt(req.params.id), result.data);
+      if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+      res.json(task);
+    } catch (error) {
+      console.error("Error updating kanban task:", error);
+      res.status(500).json({ error: "Failed to update kanban task" });
+    }
+  });
+
+  app.delete("/api/kanban/tasks/:id", requireAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteKanbanTask(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting kanban task:", error);
+      res.status(500).json({ error: "Failed to delete kanban task" });
     }
   });
 

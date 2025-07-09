@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { KanbanCardModal } from "@/components/kanban-card-modal";
 import { 
   Plus, 
   MoreHorizontal, 
@@ -86,6 +87,7 @@ export default function Kanban() {
   const [isCreateColumnOpen, setIsCreateColumnOpen] = useState(false);
   const [isCreateCardOpen, setIsCreateCardOpen] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState<KanbanColumn | null>(null);
+  const [selectedCard, setSelectedCard] = useState<KanbanCard | null>(null);
   const [boardForm, setBoardForm] = useState({ name: "", description: "" });
   const [columnForm, setColumnForm] = useState({ name: "", color: "#0073EA" });
   const [cardForm, setCardForm] = useState({
@@ -502,6 +504,10 @@ export default function Kanban() {
                                   className={`bg-white border rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-grab ${
                                     snapshot.isDragging ? 'rotate-2 shadow-lg' : ''
                                   }`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedCard(card);
+                                  }}
                                 >
                                   <div className="flex items-start justify-between mb-2">
                                     <h4 className="font-medium text-sm text-gray-900 flex-1">
@@ -703,6 +709,15 @@ export default function Kanban() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Card Detail Modal */}
+      {selectedCard && (
+        <KanbanCardModal
+          card={selectedCard}
+          isOpen={!!selectedCard}
+          onClose={() => setSelectedCard(null)}
+        />
+      )}
     </div>
   );
 }

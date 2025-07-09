@@ -189,6 +189,8 @@ export function KanbanCardModal({ card, isOpen, onClose }: KanbanCardModalProps)
   const handleUpdateTask = () => {
     if (!editingTask) return;
     
+    console.log('Updating task:', editingTask, 'with data:', editingTaskData);
+    
     updateTaskMutation.mutate({
       id: editingTask,
       data: editingTaskData

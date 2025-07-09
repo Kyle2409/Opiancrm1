@@ -54,7 +54,11 @@ export function KanbanCardModal({ card, isOpen, onClose }: KanbanCardModalProps)
   
   const [newTask, setNewTask] = useState('');
   const [editingTask, setEditingTask] = useState<number | null>(null);
-  const [editingTaskData, setEditingTaskData] = useState({ title: '', description: '', assignedToId: null });
+  const [editingTaskData, setEditingTaskData] = useState<{
+    title: string;
+    description: string;
+    assignedToId: number | null;
+  }>({ title: '', description: '', assignedToId: null });
 
   // Fetch tasks for this card
   const { data: tasks = [] } = useQuery<KanbanTask[]>({
@@ -178,11 +182,12 @@ export function KanbanCardModal({ card, isOpen, onClose }: KanbanCardModalProps)
   };
 
   const handleEditTask = (task: KanbanTask) => {
+    console.log('Editing task:', task);
     setEditingTask(task.id);
     setEditingTaskData({
-      title: task.title,
+      title: task.title || '',
       description: task.description || '',
-      assignedToId: task.assignedToId,
+      assignedToId: task.assignedToId || null,
     });
   };
 
@@ -393,18 +398,18 @@ export function KanbanCardModal({ card, isOpen, onClose }: KanbanCardModalProps)
                   {editingTask === task.id ? (
                     <div className="flex-1 space-y-2">
                       <Input
-                        value={editingTaskData.title}
+                        value={editingTaskData?.title || ''}
                         onChange={(e) => setEditingTaskData(prev => ({ ...prev, title: e.target.value }))}
                         placeholder="Task title"
                       />
                       <Textarea
-                        value={editingTaskData.description}
+                        value={editingTaskData?.description || ''}
                         onChange={(e) => setEditingTaskData(prev => ({ ...prev, description: e.target.value }))}
                         placeholder="Task description"
                         className="min-h-[60px]"
                       />
                       <Select
-                        value={editingTaskData.assignedToId?.toString() || ''}
+                        value={editingTaskData?.assignedToId?.toString() || ''}
                         onValueChange={(value) => setEditingTaskData(prev => ({ ...prev, assignedToId: value ? parseInt(value) : null }))}
                       >
                         <SelectTrigger>

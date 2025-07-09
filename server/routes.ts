@@ -31,6 +31,11 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
 });
 
+// Helper function to check if user has admin privileges
+function hasAdminAccess(userRole: string): boolean {
+  return userRole === 'admin' || userRole === 'super_admin';
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
@@ -38,7 +43,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Client routes
   app.get("/api/clients", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.id;
+      // Admin and super admin can see all clients, regular users see only their own
+      const userId = hasAdminAccess(req.user.role) ? undefined : req.user.id;
       const clients = await storage.getClients(userId);
       res.json(clients);
     } catch (error) {
@@ -110,7 +116,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Document routes
   app.get("/api/documents", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.id;
+      // Admin and super admin can see all documents, regular users see only their own
+      const userId = hasAdminAccess(req.user.role) ? undefined : req.user.id;
       const documents = await storage.getDocuments(userId);
       res.json(documents);
     } catch (error) {
@@ -197,7 +204,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Appointment routes
   app.get("/api/appointments", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.id;
+      // Admin and super admin can see all appointments, regular users see only their own
+      const userId = hasAdminAccess(req.user.role) ? undefined : req.user.id;
       const appointments = await storage.getAppointments(userId);
       res.json(appointments);
     } catch (error) {
@@ -335,7 +343,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stats route
   app.get("/api/stats", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.id;
+      // Admin and super admin can see all stats, regular users see only their own
+      const userId = hasAdminAccess(req.user.role) ? undefined : req.user.id;
       const stats = await storage.getStats(userId);
       res.json(stats);
     } catch (error) {
@@ -346,7 +355,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Kanban Boards
   app.get("/api/kanban/boards", requireAuth, async (req: any, res) => {
     try {
-      const boards = await storage.getKanbanBoards(req.user.id);
+      // Admin and super admin can see all boards, regular users see only their own
+      const userId = hasAdminAccess(req.user.role) ? undefined : req.user.id;
+      const boards = await storage.getKanbanBoards(userId);
       res.json(boards);
     } catch (error) {
       console.error("Error fetching kanban boards:", error);

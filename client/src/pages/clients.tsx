@@ -44,6 +44,7 @@ import {
 import { format } from "date-fns";
 import AddClientModal from "@/components/modals/add-client-modal";
 import CreateAppointmentModal from "@/components/modals/create-appointment-modal";
+import EditClientModal from "@/components/modals/edit-client-modal";
 import type { Client, Appointment } from "@shared/schema";
 
 export default function Clients() {
@@ -51,6 +52,7 @@ export default function Clients() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -277,7 +279,14 @@ export default function Clients() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => {
+                              setSelectedClient(client);
+                              setIsEditModalOpen(true);
+                            }}
+                          >
                             <Edit className="w-4 h-4" />
                           </Button>
                           <Button 
@@ -321,6 +330,15 @@ export default function Clients() {
         isOpen={isAppointmentModalOpen}
         onClose={() => {
           setIsAppointmentModalOpen(false);
+          setSelectedClient(null);
+        }}
+        client={selectedClient}
+      />
+      
+      <EditClientModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
           setSelectedClient(null);
         }}
         client={selectedClient}

@@ -54,7 +54,7 @@ export default function Sidebar() {
       </div>
       
       {/* Navigation */}
-      <div className="flex-1 p-4 space-y-1 relative z-10">
+      <div className="flex-1 p-4 space-y-2 relative z-10">
         {navigationItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = location === item.path;
@@ -63,10 +63,10 @@ export default function Sidebar() {
             <Link key={item.path} href={item.path}>
               <div 
                 className={cn(
-                  "group relative flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-300 ease-out",
-                  "hover:bg-gradient-to-r hover:from-primary/10 hover:to-blue-50 hover:scale-105 hover:shadow-md",
+                  "group relative flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 ease-out",
+                  "hover:bg-gradient-to-r hover:from-primary/10 hover:to-blue-50/80 hover:shadow-sm",
                   "transform hover:translate-x-1",
-                  isActive && "bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg scale-105"
+                  isActive && "bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg translate-x-1"
                 )}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
@@ -77,10 +77,10 @@ export default function Sidebar() {
                 
                 {/* Icon with animation */}
                 <div className={cn(
-                  "relative transition-all duration-300",
+                  "relative transition-all duration-200 flex-shrink-0",
                   isActive ? "text-white" : "text-slate-600 group-hover:text-primary"
                 )}>
-                  <Icon className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+                  <Icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-105" />
                   {/* Subtle glow effect */}
                   {isActive && (
                     <div className="absolute inset-0 bg-white/20 rounded-full blur-sm animate-pulse"></div>
@@ -89,14 +89,14 @@ export default function Sidebar() {
                 
                 {/* Label */}
                 <span className={cn(
-                  "font-medium transition-all duration-300",
+                  "font-medium transition-all duration-200 flex-1",
                   isActive ? "text-white" : "text-slate-700 group-hover:text-slate-900"
                 )}>
                   {item.label}
                 </span>
                 
                 {/* Hover effect background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-blue-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-blue-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10"></div>
               </div>
             </Link>
           );

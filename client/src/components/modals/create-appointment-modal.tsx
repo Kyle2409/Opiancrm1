@@ -361,14 +361,14 @@ export default function CreateAppointmentModal({
                   <div>
                     <Label htmlFor="assignedTo">Assign Team Member</Label>
                     <Select 
-                      value={formData.assignedToId?.toString() || ""} 
-                      onValueChange={(value) => handleTeamMemberSelect(value ? parseInt(value) : null)}
+                      value={formData.assignedToId?.toString() || "none"} 
+                      onValueChange={(value) => handleTeamMemberSelect(value === "none" ? null : parseInt(value))}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select team member (optional)" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No assignment</SelectItem>
+                        <SelectItem value="none">No assignment</SelectItem>
                         {teamMembers.map((member) => (
                           <SelectItem key={member.id} value={member.id.toString()}>
                             {member.username} ({member.email})

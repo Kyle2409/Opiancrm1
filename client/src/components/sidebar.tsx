@@ -9,7 +9,8 @@ import {
   LogOut,
   Plus,
   Settings,
-  Kanban
+  Kanban,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -31,47 +32,91 @@ export default function Sidebar() {
   const { logoutMutation } = useAuth();
 
   return (
-    <nav className="w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col">
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Users className="w-4 h-4 text-white" />
+    <nav className="w-64 bg-gradient-to-b from-slate-50 to-white shadow-xl border-r border-slate-200/50 flex flex-col relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent"></div>
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+      
+      {/* Header */}
+      <div className="relative p-6 border-b border-slate-200/50">
+        <div className="flex items-center space-x-3 group">
+          <div className="relative">
+            <div className="w-10 h-10 bg-gradient-to-r from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-all duration-300">
+              <Sparkles className="w-5 h-5 text-white animate-pulse" />
+            </div>
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-bounce"></div>
           </div>
-          <span className="text-xl font-bold text-textPrimary">Opian Core</span>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold text-slate-800 tracking-tight">Opian Core</span>
+            <span className="text-xs text-slate-500 font-medium">Financial CRM</span>
+          </div>
         </div>
       </div>
       
-      <div className="flex-1 p-4 space-y-2">
-        {navigationItems.map((item) => {
+      {/* Navigation */}
+      <div className="flex-1 p-4 space-y-1 relative z-10">
+        {navigationItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = location === item.path;
           
           return (
             <Link key={item.path} href={item.path}>
-              <div className={cn(
-                "nav-item",
-                isActive && "active"
-              )}>
-                <Icon className="w-4 h-4" />
-                <span>{item.label}</span>
+              <div 
+                className={cn(
+                  "group relative flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-300 ease-out",
+                  "hover:bg-gradient-to-r hover:from-primary/10 hover:to-blue-50 hover:scale-105 hover:shadow-md",
+                  "transform hover:translate-x-1",
+                  isActive && "bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg scale-105"
+                )}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                {/* Active indicator */}
+                {isActive && (
+                  <div className="absolute -left-2 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-white rounded-full shadow-md"></div>
+                )}
+                
+                {/* Icon with animation */}
+                <div className={cn(
+                  "relative transition-all duration-300",
+                  isActive ? "text-white" : "text-slate-600 group-hover:text-primary"
+                )}>
+                  <Icon className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+                  {/* Subtle glow effect */}
+                  {isActive && (
+                    <div className="absolute inset-0 bg-white/20 rounded-full blur-sm animate-pulse"></div>
+                  )}
+                </div>
+                
+                {/* Label */}
+                <span className={cn(
+                  "font-medium transition-all duration-300",
+                  isActive ? "text-white" : "text-slate-700 group-hover:text-slate-900"
+                )}>
+                  {item.label}
+                </span>
+                
+                {/* Hover effect background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-blue-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
               </div>
             </Link>
           );
         })}
       </div>
       
-      <div className="p-4 border-t border-gray-200">
+      {/* Footer */}
+      <div className="p-4 border-t border-slate-200/50 relative z-10">
         <Button
           onClick={() => logoutMutation.mutate()}
           disabled={logoutMutation.isPending}
           variant="ghost"
-          className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50"
+          className="w-full justify-start text-slate-600 hover:text-red-600 hover:bg-red-50/80 rounded-xl py-3 transition-all duration-300 group"
         >
-          <LogOut className="w-4 h-4 mr-2" />
-          {logoutMutation.isPending ? "Logging out..." : "Log out"}
+          <LogOut className="w-4 h-4 mr-3 transition-transform duration-300 group-hover:scale-110" />
+          <span className="font-medium">
+            {logoutMutation.isPending ? "Logging out..." : "Log out"}
+          </span>
         </Button>
       </div>
-
     </nav>
   );
 }

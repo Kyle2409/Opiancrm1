@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useEffect } from 'react';
+import { createContext, useContext, ReactNode, useEffect, useState } from 'react';
 import { useNotificationCount, NotificationItem } from '@/hooks/use-notification-count';
 import { setNotificationContextHandler } from '@/lib/notifications';
 import { useQuery } from '@tanstack/react-query';
@@ -22,18 +22,37 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const { data: appointments = [] } = useQuery({ queryKey: ['/api/appointments'] });
   const { data: stats } = useQuery({ queryKey: ['/api/stats'] });
 
-  // Generate dynamic notifications based on actual data
+  // Track which notifications have been shown to prevent duplicates
+  const [shownNotifications, setShownNotifications] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('opian-shown-notifications');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+
+  // Save shown notifications to localStorage
+  useEffect(() => {
+    localStorage.setItem('opian-shown-notifications', JSON.stringify([...shownNotifications]));
+  }, [shownNotifications]);
+
+  // Generate dynamic notifications based on actual data (only once)
   useEffect(() => {
     if (clients.length === 0 && appointments.length === 0) return;
 
     const timeout = setTimeout(() => {
+      const notificationsToAdd: Array<{key: string, notification: Omit<NotificationItem, 'id' | 'read' | 'timestamp'>}> = [];
+
       // Welcome notification with real stats
-      notificationData.addNotification({
-        title: 'Welcome to Opian Core',
-        body: `You have ${clients.length} clients and ${appointments.length} appointments scheduled`,
-        type: 'system',
-        url: '/dashboard'
-      });
+      const welcomeKey = `welcome-${clients.length}-${appointments.length}`;
+      if (!shownNotifications.has(welcomeKey)) {
+        notificationsToAdd.push({
+          key: welcomeKey,
+          notification: {
+            title: 'Welcome to Opian Core',
+            body: `You have ${clients.length} clients and ${appointments.length} appointments scheduled`,
+            type: 'system',
+            url: '/dashboard'
+          }
+        });
+      }
 
       // Check for upcoming appointments (next 2 hours)
       const now = new Date();
@@ -47,15 +66,21 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       });
 
       upcomingAppointments.forEach(apt => {
-        const client = clients.find(c => c.id === apt.clientId);
-        const clientName = client ? `${client.firstName} ${client.surname}` : 'Unknown Client';
-        
-        notificationData.addNotification({
-          title: 'Upcoming Appointment',
-          body: `Meeting with ${clientName} at ${apt.startTime}`,
-          type: 'appointment',
-          url: '/appointments'
-        });
+        const upcomingKey = `upcoming-${apt.id}`;
+        if (!shownNotifications.has(upcomingKey)) {
+          const client = clients.find(c => c.id === apt.clientId);
+          const clientName = client ? `${client.firstName} ${client.surname}` : 'Unknown Client';
+          
+          notificationsToAdd.push({
+            key: upcomingKey,
+            notification: {
+              title: 'Upcoming Appointment',
+              body: `Meeting with ${clientName} at ${apt.startTime}`,
+              type: 'appointment',
+              url: '/appointments'
+            }
+          });
+        }
       });
 
       // Check for new clients (created in last 24 hours)
@@ -65,39 +90,67 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       );
 
       newClients.forEach(client => {
-        notificationData.addNotification({
-          title: 'Recent Client Added',
-          body: `${client.firstName} ${client.surname} joined your client list recently`,
-          type: 'team',
-          url: '/clients'
-        });
+        const clientKey = `new-client-${client.id}`;
+        if (!shownNotifications.has(clientKey)) {
+          notificationsToAdd.push({
+            key: clientKey,
+            notification: {
+              title: 'Recent Client Added',
+              body: `${client.firstName} ${client.surname} joined your client list recently`,
+              type: 'team',
+              url: '/clients'
+            }
+          });
+        }
       });
 
       // Achievement notifications based on stats
       if (stats) {
         if (stats.totalClients >= 2) {
-          notificationData.addNotification({
-            title: 'Client Portfolio Growing',
-            body: `You now have ${stats.totalClients} clients in your portfolio`,
-            type: 'system',
-            url: '/dashboard'
-          });
+          const achievementKey = `achievement-clients-${stats.totalClients}`;
+          if (!shownNotifications.has(achievementKey)) {
+            notificationsToAdd.push({
+              key: achievementKey,
+              notification: {
+                title: 'Client Portfolio Growing',
+                body: `You now have ${stats.totalClients} clients in your portfolio`,
+                type: 'system',
+                url: '/dashboard'
+              }
+            });
+          }
         }
 
         if (stats.upcomingMeetings >= 1) {
-          notificationData.addNotification({
-            title: 'Active Schedule',
-            body: `You have ${stats.upcomingMeetings} meetings coming up. Stay organized!`,
-            type: 'reminder',
-            url: '/appointments'
-          });
+          const scheduleKey = `schedule-${stats.upcomingMeetings}`;
+          if (!shownNotifications.has(scheduleKey)) {
+            notificationsToAdd.push({
+              key: scheduleKey,
+              notification: {
+                title: 'Active Schedule',
+                body: `You have ${stats.upcomingMeetings} meetings coming up. Stay organized!`,
+                type: 'reminder',
+                url: '/appointments'
+              }
+            });
+          }
         }
+      }
+
+      // Add all new notifications and track them
+      if (notificationsToAdd.length > 0) {
+        const newKeys = notificationsToAdd.map(item => item.key);
+        setShownNotifications(prev => new Set([...prev, ...newKeys]));
+        
+        notificationsToAdd.forEach(item => {
+          notificationData.addNotification(item.notification);
+        });
       }
 
     }, 2000);
 
     return () => clearTimeout(timeout);
-  }, [clients, appointments, stats, notificationData.addNotification]);
+  }, [clients, appointments, stats, notificationData.addNotification, shownNotifications]);
 
   // Connect the notification service to context
   useEffect(() => {

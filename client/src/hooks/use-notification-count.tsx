@@ -11,8 +11,25 @@ export interface NotificationItem {
 }
 
 export function useNotificationCount() {
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState<NotificationItem[]>(() => {
+    // Load notifications from localStorage on initialization
+    const saved = localStorage.getItem('opian-notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [unreadCount, setUnreadCount] = useState(() => {
+    // Calculate unread count from loaded notifications
+    const saved = localStorage.getItem('opian-notifications');
+    if (saved) {
+      const parsedNotifications = JSON.parse(saved);
+      return parsedNotifications.filter((n: NotificationItem) => !n.read).length;
+    }
+    return 0;
+  });
+
+  // Save notifications to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('opian-notifications', JSON.stringify(notifications));
+  }, [notifications]);
 
   // Add new notification
   const addNotification = (notification: Omit<NotificationItem, 'id' | 'read' | 'timestamp'>) => {
@@ -49,6 +66,9 @@ export function useNotificationCount() {
   const clearAll = () => {
     setNotifications([]);
     setUnreadCount(0);
+    // Clear localStorage to prevent notifications from reloading
+    localStorage.removeItem('opian-notifications');
+    localStorage.removeItem('opian-shown-notifications');
   };
 
   return {

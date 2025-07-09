@@ -39,7 +39,8 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  AlertCircle
+  AlertCircle,
+  FileText
 } from "lucide-react";
 import { format } from "date-fns";
 import AddClientModal from "@/components/modals/add-client-modal";
@@ -309,7 +310,7 @@ export default function Clients() {
                               setIsDocumentsModalOpen(true);
                             }}
                           >
-                            <Upload className="w-4 h-4" />
+                            <FileText className="w-4 h-4" />
                           </Button>
                           <Button 
                             variant="ghost" 

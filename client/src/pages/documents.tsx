@@ -115,11 +115,15 @@ export default function Documents() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <Card>
+    <div className="p-6 space-y-6 relative min-h-screen">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10"></div>
+      
+      <Card className="bg-white/80 backdrop-blur-sm border border-slate-200/50 shadow-xl">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Document Management</CardTitle>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Document Management</CardTitle>
             <div className="flex items-center space-x-4">
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger className="w-40">
@@ -166,9 +170,9 @@ export default function Documents() {
               </p>
               <Button 
                 onClick={() => setShowUpload(true)}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group"
               >
-                <Upload className="w-4 h-4 mr-2" />
+                <Upload className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
                 Upload Document
               </Button>
             </div>

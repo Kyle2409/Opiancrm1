@@ -128,7 +128,12 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-gray-50 to-white min-h-screen">
+    <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-white min-h-screen relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10"></div>
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-3xl animate-pulse -z-10"></div>
+      
       {/* Welcome Section */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
@@ -162,9 +167,10 @@ export default function Dashboard() {
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
+            <Card key={index} className="relative overflow-hidden border border-slate-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group bg-white/80 backdrop-blur-sm transform hover:scale-105">
               <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-5 group-hover:opacity-10 transition-opacity`} />
-              <CardContent className="p-6 relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <CardContent className="p-6 relative z-10">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
@@ -183,8 +189,9 @@ export default function Dashboard() {
                       </span>
                     </div>
                   </div>
-                  <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                  <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
                     <Icon className="w-7 h-7 text-white" />
+                    <div className="absolute inset-0 bg-white/20 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 </div>
               </CardContent>
@@ -197,7 +204,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Client Activity - Enhanced */}
         <div className="lg:col-span-2">
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200/50 shadow-lg bg-white/80 backdrop-blur-sm">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl font-semibold text-gray-900">Client Activity</CardTitle>

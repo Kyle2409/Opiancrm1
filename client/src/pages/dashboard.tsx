@@ -93,9 +93,7 @@ export default function Dashboard() {
       title: "Total Revenue",
       value: `$${totalRevenue.toLocaleString()}`,
       icon: DollarSign,
-      color: "from-slate-600 to-slate-700",
-      bgColor: "bg-slate-50",
-      iconColor: "text-slate-600",
+      color: "from-blue-500 to-blue-600",
       change: "+24.5%",
       changeType: "positive" as const,
       subtitle: `Avg: $${Math.round(avgDealSize).toLocaleString()} per client`,
@@ -104,9 +102,7 @@ export default function Dashboard() {
       title: "Active Clients",
       value: activeClients.length,
       icon: Users,
-      color: "from-slate-600 to-slate-700",
-      bgColor: "bg-slate-50",
-      iconColor: "text-slate-600",
+      color: "from-green-500 to-green-600",
       change: `+${prospectClients.length} prospects`,
       changeType: "positive" as const,
       subtitle: `${Math.round((activeClients.length / clients.length) * 100)}% conversion rate`,
@@ -115,9 +111,7 @@ export default function Dashboard() {
       title: "This Week",
       value: weekAppointments.length,
       icon: Calendar,
-      color: "from-slate-600 to-slate-700",
-      bgColor: "bg-slate-50",
-      iconColor: "text-slate-600",
+      color: "from-purple-500 to-purple-600",
       change: `${todayAppointments.length} today`,
       changeType: "neutral" as const,
       subtitle: `${tomorrowAppointments.length} tomorrow`,
@@ -126,9 +120,7 @@ export default function Dashboard() {
       title: "Growth Rate",
       value: "+18.2%",
       icon: TrendingUp,
-      color: "from-slate-600 to-slate-700",
-      bgColor: "bg-slate-50",
-      iconColor: "text-slate-600",
+      color: "from-orange-500 to-orange-600",
       change: "vs last month",
       changeType: "positive" as const,
       subtitle: "Above industry avg",
@@ -136,34 +128,33 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="p-8 space-y-8 bg-gradient-to-br from-gray-50 to-white min-h-screen relative overflow-x-hidden">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,_rgba(15,23,42,0.05)_1px,_transparent_0)] [background-size:24px_24px] -z-10"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-slate-200/30 to-slate-300/20 rounded-full blur-3xl -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
+    <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-white min-h-screen relative overflow-x-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-3xl animate-pulse -z-10 transform -translate-x-1/2 translate-y-1/2"></div>
       
-      {/* Professional Header */}
-      <div className="mb-10">
+      {/* Welcome Section */}
+      <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <div className="flex items-center space-x-4">
-              <h1 className="text-4xl font-light text-slate-900 tracking-tight">
-                Good morning, {user?.username || 'User'}
-              </h1>
+            <div className="flex items-center space-x-3">
+              <h1 className="text-3xl font-bold text-gray-900">Good morning, {user?.username || 'User'}! 👋</h1>
               {user?.role === 'super_admin' && (
-                <Badge className="bg-slate-900 text-white text-xs font-medium px-3 py-1 rounded-full">
+                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                   Super Admin
                 </Badge>
               )}
               {user?.role === 'admin' && (
-                <Badge className="bg-slate-700 text-white text-xs font-medium px-3 py-1 rounded-full">
+                <Badge className="bg-blue-600 text-white">
                   Admin
                 </Badge>
               )}
             </div>
-            <p className="text-slate-600 mt-2 text-lg font-light">Here's your business overview for today</p>
+            <p className="text-gray-600 mt-1">Here's what's happening with your business today.</p>
           </div>
           <div className="flex items-center space-x-3">
-            <Badge variant="outline" className="text-emerald-700 border-emerald-200 bg-emerald-50/50 font-medium">
+            <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
               <Activity className="w-3 h-3 mr-1" />
               All systems operational
             </Badge>
@@ -171,33 +162,36 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Professional Stats Cards */}
+      {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="relative overflow-hidden border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-200 group bg-white">
+            <Card key={index} className="relative overflow-hidden border border-slate-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group bg-white/80 backdrop-blur-sm transform hover:scale-105">
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-5 group-hover:opacity-10 transition-opacity`} />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <CardContent className="p-6 relative z-10">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-3">
-                      <p className="text-sm font-medium text-slate-600 uppercase tracking-wider">{stat.title}</p>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
                       {stat.changeType === 'positive' && (
-                        <ArrowUpRight className="w-3 h-3 text-emerald-600" />
+                        <ArrowUpRight className="w-3 h-3 text-green-500" />
                       )}
                     </div>
-                    <p className="text-3xl font-semibold text-slate-900 mb-2 tracking-tight">{stat.value}</p>
-                    <p className="text-xs text-slate-500 mb-3 font-medium">{stat.subtitle}</p>
+                    <p className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</p>
+                    <p className="text-xs text-gray-500 mb-3">{stat.subtitle}</p>
                     <div className="flex items-center space-x-1">
                       <span className={`text-sm font-medium ${
-                        stat.changeType === 'positive' ? 'text-emerald-600' : 'text-slate-600'
+                        stat.changeType === 'positive' ? 'text-green-600' : 'text-gray-600'
                       }`}>
                         {stat.change}
                       </span>
                     </div>
                   </div>
-                  <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center border border-slate-200/60 group-hover:border-slate-300 transition-colors duration-200`}>
-                    <Icon className={`w-6 h-6 ${stat.iconColor}`} />
+                  <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className="w-7 h-7 text-white" />
+                    <div className="absolute inset-0 bg-white/20 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 </div>
               </CardContent>
@@ -208,17 +202,17 @@ export default function Dashboard() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Client Activity - Professional */}
+        {/* Recent Client Activity - Enhanced */}
         <div className="lg:col-span-2">
-          <Card className="border border-slate-200/60 shadow-sm bg-white">
-            <CardHeader className="pb-4 border-b border-slate-100">
+          <Card className="border border-slate-200/50 shadow-lg bg-white/80 backdrop-blur-sm">
+            <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-medium text-slate-900">Recent Client Activity</CardTitle>
+                <CardTitle className="text-xl font-semibold text-gray-900">Client Activity</CardTitle>
                 <Button 
                   onClick={() => setLocation("/clients")}
                   variant="ghost" 
                   size="sm" 
-                  className="text-slate-500 hover:text-slate-700 font-medium"
+                  className="text-gray-500 hover:text-gray-700"
                 >
                   View All
                 </Button>
@@ -228,57 +222,57 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {recentClients.length === 0 ? (
                   <div className="text-center py-12">
-                    <Users className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No clients yet</h3>
-                    <p className="text-slate-500">Add your first client to get started</p>
+                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No clients yet</h3>
+                    <p className="text-gray-500">Add your first client to get started</p>
                   </div>
                 ) : (
                   recentClients.map((client) => (
                     <div key={client.id} className="group relative">
-                      <div className="flex items-center space-x-4 p-4 rounded-lg border border-slate-200/60 hover:border-slate-300 hover:shadow-sm transition-all duration-200">
+                      <div className="flex items-center space-x-4 p-4 rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-200">
                         <div className="relative">
-                          <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200/60">
-                            <span className="text-slate-700 font-medium text-sm">
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <span className="text-white font-semibold text-sm">
                               {(client.firstName?.[0] || '') + (client.surname?.[0] || '')}
                             </span>
                           </div>
                           <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
-                            client.status === 'active' ? 'bg-emerald-500' : 
-                            client.status === 'prospect' ? 'bg-amber-500' : 'bg-slate-400'
+                            client.status === 'active' ? 'bg-green-500' : 
+                            client.status === 'prospect' ? 'bg-yellow-500' : 'bg-gray-400'
                           }`} />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm font-medium text-slate-900">{client.firstName} {client.surname}</p>
+                              <p className="text-sm font-semibold text-gray-900">{client.firstName} {client.surname}</p>
                               <div className="flex items-center space-x-2 mt-1">
-                                <Building className="w-3 h-3 text-slate-400" />
-                                <p className="text-xs text-slate-600">{client.employer || client.occupation || 'N/A'}</p>
-                                <Badge className={`text-xs font-medium ${
-                                  client.status === 'active' ? 'bg-emerald-100 text-emerald-700' :
-                                  client.status === 'prospect' ? 'bg-amber-100 text-amber-700' :
-                                  'bg-slate-100 text-slate-600'
+                                <Building className="w-3 h-3 text-gray-400" />
+                                <p className="text-xs text-gray-600">{client.employer || client.occupation || 'N/A'}</p>
+                                <Badge className={`text-xs ${
+                                  client.status === 'active' ? 'bg-green-100 text-green-700' :
+                                  client.status === 'prospect' ? 'bg-yellow-100 text-yellow-700' :
+                                  'bg-gray-100 text-gray-600'
                                 }`}>
                                   {client.status}
                                 </Badge>
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="text-sm font-medium text-slate-900">
+                              <p className="text-sm font-semibold text-gray-900">
                                 ${client.value?.toLocaleString() || 0}
                               </p>
-                              <p className="text-xs text-slate-500">
+                              <p className="text-xs text-gray-500">
                                 {format(new Date(client.lastContact || client.createdAt), 'MMM d')}
                               </p>
                             </div>
                           </div>
                           <div className="flex items-center space-x-4 mt-3">
-                            <div className="flex items-center space-x-1 text-xs text-slate-500">
+                            <div className="flex items-center space-x-1 text-xs text-gray-500">
                               <Mail className="w-3 h-3" />
                               <span>{client.email}</span>
                             </div>
                             {client.cellPhone && (
-                              <div className="flex items-center space-x-1 text-xs text-slate-500">
+                              <div className="flex items-center space-x-1 text-xs text-gray-500">
                                 <Phone className="w-3 h-3" />
                                 <span>{client.cellPhone}</span>
                               </div>
@@ -296,32 +290,29 @@ export default function Dashboard() {
 
         {/* Right Sidebar */}
         <div className="space-y-6">
-          {/* Quick Actions - Professional */}
-          <Card className="border border-slate-200/60 shadow-sm bg-white">
-            <CardHeader className="pb-4 border-b border-slate-100">
-              <CardTitle className="text-lg font-medium text-slate-900">Quick Actions</CardTitle>
+          {/* Quick Actions - Enhanced */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold text-gray-900">Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 pt-4">
+            <CardContent className="space-y-3">
               <Button 
                 onClick={() => setLocation("/clients")}
-                className="w-full h-12 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 transition-all duration-200 font-medium"
-                variant="outline"
+                className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md transition-all duration-200"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Client
               </Button>
               <Button 
                 onClick={() => setLocation("/booking")}
-                className="w-full h-12 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 transition-all duration-200 font-medium"
-                variant="outline"
+                className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-md transition-all duration-200"
               >
                 <CalendarPlus className="w-4 h-4 mr-2" />
                 Book Appointment
               </Button>
               <Button 
                 onClick={() => setLocation("/documents")}
-                className="w-full h-12 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 transition-all duration-200 font-medium"
-                variant="outline"
+                className="w-full h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-md transition-all duration-200"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Upload Documents
@@ -329,12 +320,12 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Today's Schedule - Professional */}
-          <Card className="border border-slate-200/60 shadow-sm bg-white">
-            <CardHeader className="pb-4 border-b border-slate-100">
+          {/* Today's Schedule - Enhanced */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-medium text-slate-900">Today's Schedule</CardTitle>
-                <Badge variant="secondary" className="bg-slate-100 text-slate-700 font-medium">
+                <CardTitle className="text-lg font-semibold text-gray-900">Today's Schedule</CardTitle>
+                <Badge variant="secondary" className="bg-blue-100 text-blue-700">
                   {todayAppointments.length} meetings
                 </Badge>
               </div>
@@ -343,17 +334,17 @@ export default function Dashboard() {
               <div className="space-y-3">
                 {todayAppointments.length === 0 ? (
                   <div className="text-center py-8">
-                    <Calendar className="mx-auto h-10 w-10 text-slate-400 mb-3" />
-                    <p className="text-sm text-slate-500">No meetings today</p>
-                    <p className="text-xs text-slate-400 mt-1">Enjoy your free time!</p>
+                    <Calendar className="mx-auto h-10 w-10 text-gray-400 mb-3" />
+                    <p className="text-sm text-gray-500">No meetings today</p>
+                    <p className="text-xs text-gray-400 mt-1">Enjoy your free time!</p>
                   </div>
                 ) : (
                   todayAppointments.map((appointment) => (
                     <div key={appointment.id} className="relative">
-                      <div className="flex items-start space-x-3 p-4 rounded-lg border border-slate-200/60 hover:border-slate-300 hover:shadow-sm transition-all duration-200">
+                      <div className="flex items-start space-x-3 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 hover:shadow-md transition-all duration-200">
                         <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-slate-100 rounded-lg flex flex-col items-center justify-center text-slate-700 border border-slate-200/60">
-                            <span className="text-xs font-medium">{appointment.startTime.split(':')[0]}</span>
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex flex-col items-center justify-center text-white shadow-md">
+                            <span className="text-xs font-bold">{appointment.startTime.split(':')[0]}</span>
                             <span className="text-xs">{appointment.startTime.split(':')[1]}</span>
                           </div>
                         </div>

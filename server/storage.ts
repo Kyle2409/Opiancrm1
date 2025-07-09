@@ -39,7 +39,7 @@ export interface IStorage {
   deleteClient(id: number): Promise<boolean>;
   
   // Document methods
-  getDocuments(userId?: number): Promise<Document[]>;
+  getDocuments(userId?: number, userRole?: string): Promise<Document[]>;
   getDocumentsByClient(clientId: number): Promise<Document[]>;
   getDocument(id: number): Promise<Document | undefined>;
   createDocument(document: InsertDocument): Promise<Document>;
@@ -161,10 +161,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Document methods
-  async getDocuments(userId?: number): Promise<Document[]> {
-    if (userId) {
+  async getDocuments(userId?: number, userRole?: string): Promise<Document[]> {
+    if (userId && userRole !== 'admin' && userRole !== 'super_admin') {
+      // Regular users see only their own documents
       return await db.select().from(documents).where(eq(documents.userId, userId));
     }
+    // Admin and super admin users see all documents
     return await db.select().from(documents);
   }
 

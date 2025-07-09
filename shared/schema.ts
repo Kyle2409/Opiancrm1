@@ -145,7 +145,7 @@ export const appointments = pgTable("appointments", {
   description: text("description"),
   clientId: integer("client_id").references(() => clients.id),
   userId: integer("user_id").references(() => users.id), // Who created the appointment
-  assignedToId: integer("assigned_to_id").references(() => teamMembers.id), // Who the appointment is assigned to
+  assignedToId: integer("assigned_to_id").references(() => users.id), // Who the appointment is assigned to
   date: timestamp("date").notNull(),
   startTime: text("start_time").notNull(),
   endTime: text("end_time").notNull(),

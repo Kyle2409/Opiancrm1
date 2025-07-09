@@ -22,6 +22,17 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const { data: appointments = [] } = useQuery({ queryKey: ['/api/appointments'] });
   const { data: stats } = useQuery({ queryKey: ['/api/stats'] });
 
+  // Listen for WebSocket notification events
+  useEffect(() => {
+    const handleNotificationEvent = (event: any) => {
+      const notification = event.detail;
+      notificationData.addNotification(notification);
+    };
+
+    window.addEventListener('notification', handleNotificationEvent);
+    return () => window.removeEventListener('notification', handleNotificationEvent);
+  }, [notificationData]);
+
   // Track which notifications have been shown to prevent duplicates
   const [shownNotifications, setShownNotifications] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('opian-shown-notifications');

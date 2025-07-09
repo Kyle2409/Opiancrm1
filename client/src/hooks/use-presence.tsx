@@ -56,6 +56,33 @@ export function usePresence() {
               
               return updatedUsers;
             });
+          } else if (data.type === 'appointment_notification') {
+            // Handle appointment notifications
+            const notification = data.data;
+            if (notification.assignedToId === user?.id) {
+              // Add notification to local storage
+              const existingNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+              const newNotification = {
+                ...notification,
+                id: `appointment_${notification.appointmentId}_${Date.now()}`,
+                timestamp: Date.now(),
+                read: false
+              };
+              
+              existingNotifications.unshift(newNotification);
+              localStorage.setItem('notifications', JSON.stringify(existingNotifications));
+              
+              // Trigger notification event
+              window.dispatchEvent(new CustomEvent('notification', { detail: newNotification }));
+              
+              // Show browser notification if permission granted
+              if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(notification.title, {
+                  body: notification.body,
+                  icon: '/favicon.ico'
+                });
+              }
+            }
           }
         } catch (error) {
           console.error('Error parsing presence message:', error);

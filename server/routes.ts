@@ -118,7 +118,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Admin and super admin can see all documents, regular users see only their own
       const userId = hasAdminAccess(req.user.role) ? undefined : req.user.id;
-      const documents = await storage.getDocuments(userId);
+      const documents = await storage.getDocuments(userId, req.user.role);
       res.json(documents);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch documents" });
@@ -231,6 +231,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       const appointmentData = { ...result.data, userId: req.user.id };
       const appointment = await storage.createAppointment(appointmentData);
+      
+      // Send notification to assigned user if different from creator
+      if (appointment.assignedToId && appointment.assignedToId !== req.user.id) {
+        const assignedUser = await storage.getUser(appointment.assignedToId);
+        if (assignedUser) {
+          // Broadcast appointment notification via WebSocket
+          wss.clients.forEach((client: WebSocket) => {
+            if (client.readyState === WebSocket.OPEN) {
+              client.send(JSON.stringify({
+                type: 'appointment_notification',
+                data: {
+                  id: `appointment_${appointment.id}`,
+                  title: 'New Appointment Assigned',
+                  body: `You have been assigned to: ${appointment.title}`,
+                  timestamp: Date.now(),
+                  type: 'appointment',
+                  read: false,
+                  url: `/appointments`,
+                  appointmentId: appointment.id,
+                  assignedToId: appointment.assignedToId,
+                  createdBy: req.user.username
+                }
+              }));
+            }
+          });
+        }
+      }
+      
       res.status(201).json(appointment);
     } catch (error) {
       res.status(500).json({ message: "Failed to create appointment" });

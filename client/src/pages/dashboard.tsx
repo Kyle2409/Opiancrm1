@@ -19,15 +19,19 @@ import {
   Building,
   Phone,
   Mail,
-  MapPin
+  MapPin,
+  Wifi,
+  WifiOff
 } from "lucide-react";
 import { format, isToday, isTomorrow, isThisWeek, startOfWeek, endOfWeek } from "date-fns";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { usePresence } from "@/hooks/use-presence";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
+  const { users: presenceUsers } = usePresence();
   
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/stats"],

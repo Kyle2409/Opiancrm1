@@ -540,6 +540,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Broadcast user came online
           broadcastPresenceUpdate(userId, true);
+          console.log(`User ${userId} connected via WebSocket`);
         } else if (data.type === 'heartbeat' && userId) {
           // Update last seen timestamp
           await storage.updateUser(userId, { lastSeen: new Date() });
@@ -553,11 +554,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (userId) {
         userConnections.delete(userId);
         
-        // Update user offline status
-        await storage.updateUser(userId, { isOnline: false, lastSeen: new Date() });
-        
-        // Broadcast user went offline
-        broadcastPresenceUpdate(userId, false);
+        // Add a small delay before marking offline to handle quick reconnections
+        setTimeout(async () => {
+          // Check if user has reconnected
+          if (!userConnections.has(userId!)) {
+            // Update user offline status
+            await storage.updateUser(userId!, { isOnline: false, lastSeen: new Date() });
+            
+            // Broadcast user went offline
+            broadcastPresenceUpdate(userId!, false);
+            console.log(`User ${userId} marked as offline`);
+          }
+        }, 5000); // Wait 5 seconds before marking offline
       }
     });
     

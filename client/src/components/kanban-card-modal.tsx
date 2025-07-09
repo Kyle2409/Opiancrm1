@@ -295,14 +295,14 @@ export function KanbanCardModal({ card, isOpen, onClose }: KanbanCardModalProps)
                 <div className="col-span-2">
                   <Label>Assigned To</Label>
                   <Select
-                    value={cardData.assignedToId?.toString() || ''}
-                    onValueChange={(value) => setCardData(prev => ({ ...prev, assignedToId: value ? parseInt(value) : null }))}
+                    value={cardData.assignedToId?.toString() || 'unassigned'}
+                    onValueChange={(value) => setCardData(prev => ({ ...prev, assignedToId: value === 'unassigned' ? null : parseInt(value) }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select user" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Unassigned</SelectItem>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
                       {users.map(user => (
                         <SelectItem key={user.id} value={user.id.toString()}>
                           {user.username}
@@ -409,14 +409,14 @@ export function KanbanCardModal({ card, isOpen, onClose }: KanbanCardModalProps)
                         className="min-h-[60px]"
                       />
                       <Select
-                        value={editingTaskData?.assignedToId?.toString() || ''}
-                        onValueChange={(value) => setEditingTaskData(prev => ({ ...prev, assignedToId: value ? parseInt(value) : null }))}
+                        value={editingTaskData?.assignedToId?.toString() || 'unassigned'}
+                        onValueChange={(value) => setEditingTaskData(prev => ({ ...prev, assignedToId: value === 'unassigned' ? null : parseInt(value) }))}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Assign to..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Unassigned</SelectItem>
+                          <SelectItem value="unassigned">Unassigned</SelectItem>
                           {users.map(user => (
                             <SelectItem key={user.id} value={user.id.toString()}>
                               {user.username}

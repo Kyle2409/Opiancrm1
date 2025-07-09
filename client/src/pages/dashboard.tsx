@@ -171,14 +171,14 @@ export default function Dashboard() {
               {/* Stained glass base layer */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/95" />
               
-              {/* Stained glass color segments */}
+              {/* Stained glass color segments - Blue theme */}
               <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-1/2 h-1/3 bg-gradient-to-br from-blue-400/60 via-blue-500/40 to-transparent" />
-                <div className="absolute top-0 right-0 w-1/2 h-2/5 bg-gradient-to-bl from-purple-400/50 via-purple-500/30 to-transparent" />
-                <div className="absolute bottom-0 left-0 w-2/3 h-1/2 bg-gradient-to-tr from-emerald-400/45 via-green-500/35 to-transparent" />
-                <div className="absolute bottom-0 right-0 w-1/2 h-1/3 bg-gradient-to-tl from-amber-400/55 via-orange-500/35 to-transparent" />
-                <div className="absolute top-1/3 left-1/4 w-1/2 h-1/3 bg-gradient-to-br from-rose-400/40 via-pink-500/25 to-transparent" />
-                <div className="absolute top-1/2 right-1/4 w-1/3 h-1/4 bg-gradient-to-bl from-cyan-400/45 via-teal-500/30 to-transparent" />
+                <div className="absolute top-0 left-0 w-1/2 h-1/3 bg-gradient-to-br from-blue-300/60 via-blue-400/40 to-transparent" />
+                <div className="absolute top-0 right-0 w-1/2 h-2/5 bg-gradient-to-bl from-blue-500/50 via-blue-600/30 to-transparent" />
+                <div className="absolute bottom-0 left-0 w-2/3 h-1/2 bg-gradient-to-tr from-sky-400/45 via-sky-500/35 to-transparent" />
+                <div className="absolute bottom-0 right-0 w-1/2 h-1/3 bg-gradient-to-tl from-indigo-400/55 via-indigo-500/35 to-transparent" />
+                <div className="absolute top-1/3 left-1/4 w-1/2 h-1/3 bg-gradient-to-br from-cyan-400/40 via-cyan-500/25 to-transparent" />
+                <div className="absolute top-1/2 right-1/4 w-1/3 h-1/4 bg-gradient-to-bl from-slate-400/45 via-slate-500/30 to-transparent" />
               </div>
               
               {/* Lead lines effect */}
@@ -232,14 +232,14 @@ export default function Dashboard() {
             {/* Stained glass base layer */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/95" />
             
-            {/* Large stained glass segments */}
+            {/* Large stained glass segments - Blue theme */}
             <div className="absolute inset-0">
               <div className="absolute top-0 left-0 w-1/3 h-1/2 bg-gradient-to-br from-blue-400/50 via-blue-500/30 to-transparent" />
-              <div className="absolute top-0 right-0 w-2/3 h-1/3 bg-gradient-to-bl from-purple-400/45 via-purple-500/25 to-transparent" />
-              <div className="absolute bottom-0 left-0 w-1/2 h-2/3 bg-gradient-to-tr from-emerald-400/40 via-green-500/25 to-transparent" />
-              <div className="absolute bottom-0 right-0 w-2/3 h-1/2 bg-gradient-to-tl from-amber-400/45 via-orange-500/30 to-transparent" />
-              <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-rose-400/35 via-pink-500/20 to-transparent" />
-              <div className="absolute top-1/3 right-1/5 w-2/5 h-1/3 bg-gradient-to-bl from-cyan-400/40 via-teal-500/25 to-transparent" />
+              <div className="absolute top-0 right-0 w-2/3 h-1/3 bg-gradient-to-bl from-indigo-400/45 via-indigo-500/25 to-transparent" />
+              <div className="absolute bottom-0 left-0 w-1/2 h-2/3 bg-gradient-to-tr from-sky-400/40 via-sky-500/25 to-transparent" />
+              <div className="absolute bottom-0 right-0 w-2/3 h-1/2 bg-gradient-to-tl from-cyan-400/45 via-cyan-500/30 to-transparent" />
+              <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-blue-600/35 via-blue-700/20 to-transparent" />
+              <div className="absolute top-1/3 right-1/5 w-2/5 h-1/3 bg-gradient-to-bl from-slate-400/40 via-slate-500/25 to-transparent" />
             </div>
             
             {/* Lead lines pattern */}
@@ -343,12 +343,12 @@ export default function Dashboard() {
             {/* Stained glass base layer */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/95" />
             
-            {/* Stained glass segments for sidebar */}
+            {/* Stained glass segments for sidebar - Blue theme */}
             <div className="absolute inset-0">
-              <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-br from-orange-400/50 via-amber-500/30 to-transparent" />
-              <div className="absolute top-1/3 left-0 w-2/3 h-1/3 bg-gradient-to-bl from-pink-400/45 via-rose-500/25 to-transparent" />
-              <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-tr from-purple-400/40 via-violet-500/25 to-transparent" />
-              <div className="absolute top-1/4 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-cyan-400/35 via-teal-500/20 to-transparent" />
+              <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-br from-blue-400/50 via-blue-500/30 to-transparent" />
+              <div className="absolute top-1/3 left-0 w-2/3 h-1/3 bg-gradient-to-bl from-indigo-400/45 via-indigo-500/25 to-transparent" />
+              <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-tr from-sky-400/40 via-sky-500/25 to-transparent" />
+              <div className="absolute top-1/4 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-cyan-400/35 via-cyan-500/20 to-transparent" />
             </div>
             
             {/* Lead lines pattern */}
@@ -392,12 +392,12 @@ export default function Dashboard() {
             {/* Stained glass base layer */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/95" />
             
-            {/* Stained glass segments for schedule */}
+            {/* Stained glass segments for schedule - Blue theme */}
             <div className="absolute inset-0">
-              <div className="absolute top-0 left-0 w-2/3 h-1/2 bg-gradient-to-br from-indigo-400/50 via-blue-500/30 to-transparent" />
-              <div className="absolute top-0 right-0 w-1/2 h-2/3 bg-gradient-to-bl from-violet-400/45 via-purple-500/25 to-transparent" />
-              <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-emerald-400/40 via-green-500/25 to-transparent" />
-              <div className="absolute bottom-0 right-0 w-2/3 h-1/3 bg-gradient-to-tl from-sky-400/35 via-cyan-500/20 to-transparent" />
+              <div className="absolute top-0 left-0 w-2/3 h-1/2 bg-gradient-to-br from-blue-400/50 via-blue-500/30 to-transparent" />
+              <div className="absolute top-0 right-0 w-1/2 h-2/3 bg-gradient-to-bl from-indigo-400/45 via-indigo-500/25 to-transparent" />
+              <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-sky-400/40 via-sky-500/25 to-transparent" />
+              <div className="absolute bottom-0 right-0 w-2/3 h-1/3 bg-gradient-to-tl from-cyan-400/35 via-cyan-500/20 to-transparent" />
             </div>
             
             {/* Lead lines pattern */}

@@ -147,10 +147,10 @@ export default function Appointments() {
   }
 
   return (
-    <div className="p-6 space-y-6 relative min-h-screen">
+    <div className="p-6 space-y-6 relative min-h-screen overflow-x-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
       
       <Card className="bg-white/80 backdrop-blur-sm border border-slate-200/50 shadow-xl">
         <CardHeader>

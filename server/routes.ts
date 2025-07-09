@@ -582,14 +582,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/kanban/tasks/:id", requireAuth, async (req, res) => {
     try {
+      console.log("Updating task with ID:", req.params.id);
+      console.log("Request body:", req.body);
+      
       const result = insertKanbanTaskSchema.partial().safeParse(req.body);
       if (!result.success) {
+        console.error("Validation failed:", result.error.issues);
         return res.status(400).json({ message: "Invalid task data", errors: result.error.issues });
       }
+      
+      console.log("Parsed data:", result.data);
+      
       const task = await storage.updateKanbanTask(parseInt(req.params.id), result.data);
       if (!task) {
+        console.error("Task not found for ID:", req.params.id);
         return res.status(404).json({ error: "Task not found" });
       }
+      
+      console.log("Updated task:", task);
       res.json(task);
     } catch (error) {
       console.error("Error updating kanban task:", error);

@@ -196,9 +196,18 @@ export function KanbanCardModal({ card, isOpen, onClose }: KanbanCardModalProps)
     
     console.log('Updating task:', editingTask, 'with data:', editingTaskData);
     
+    // Ensure we're sending the correct data structure
+    const updateData = {
+      title: editingTaskData.title,
+      description: editingTaskData.description,
+      assignedToId: editingTaskData.assignedToId
+    };
+    
+    console.log('Sending update data:', updateData);
+    
     updateTaskMutation.mutate({
       id: editingTask,
-      data: editingTaskData
+      data: updateData
     });
   };
 

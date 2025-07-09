@@ -233,25 +233,52 @@ export default function Kanban() {
     }
 
     const cardId = parseInt(draggableId);
-    const newColumnId = parseInt(destination.droppableId);
+    const sourceColumnId = parseInt(source.droppableId);
+    const destinationColumnId = parseInt(destination.droppableId);
     const newPosition = destination.index;
 
-    // Optimistically update the local state immediately
-    const card = allCards.find(c => c.id === cardId);
-    if (card) {
-      // Update the card's column and position in the query cache
-      const updatedCards = allCards.map(c => 
-        c.id === cardId 
-          ? { ...c, columnId: newColumnId, position: newPosition }
-          : c
-      );
-      
-      // Update the query cache immediately for smooth UX
-      queryClient.setQueryData(["/api/kanban/cards", columns.map(c => c.id)], updatedCards);
+    // Get the cards in the destination column to calculate positions correctly
+    const destinationCards = allCards.filter(card => card.columnId === destinationColumnId);
+    const sourceCards = allCards.filter(card => card.columnId === sourceColumnId);
+    
+    // Find the card being moved
+    const cardToMove = allCards.find(c => c.id === cardId);
+    if (!cardToMove) {
+      setIsDragging(false);
+      return;
     }
 
-    // Then perform the actual API call
-    moveCardMutation.mutate({ cardId, columnId: newColumnId, position: newPosition });
+    // Create optimistic update
+    let updatedCards = [...allCards];
+    
+    // Remove card from source position
+    updatedCards = updatedCards.filter(c => c.id !== cardId);
+    
+    // Add card to destination position
+    const updatedCard = {
+      ...cardToMove,
+      columnId: destinationColumnId,
+      position: newPosition
+    };
+    
+    // Insert at the correct position
+    const destinationCardsWithoutMoved = updatedCards.filter(c => c.columnId === destinationColumnId);
+    destinationCardsWithoutMoved.splice(newPosition, 0, updatedCard);
+    
+    // Update positions for destination column
+    destinationCardsWithoutMoved.forEach((card, index) => {
+      card.position = index;
+    });
+    
+    // Combine with other columns
+    const otherCards = updatedCards.filter(c => c.columnId !== destinationColumnId);
+    updatedCards = [...otherCards, ...destinationCardsWithoutMoved];
+    
+    // Update query cache optimistically
+    queryClient.setQueryData(["/api/kanban/cards", columns.map(c => c.id)], updatedCards);
+
+    // Perform the API call
+    moveCardMutation.mutate({ cardId, columnId: destinationColumnId, position: newPosition });
   };
 
   const handleCreateBoard = () => {
@@ -381,9 +408,9 @@ export default function Kanban() {
       
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 drop-shadow-sm">Kanban Board</h1>
+          <h1 className="text-4xl font-black text-slate-800 drop-shadow-sm tracking-tight">Kanban Board</h1>
           {selectedBoard && (
-            <p className="text-slate-600 mt-1 drop-shadow-sm">{selectedBoard.name}</p>
+            <p className="text-lg font-semibold text-slate-600 mt-2 drop-shadow-sm">{selectedBoard.name}</p>
           )}
         </div>
         
@@ -482,8 +509,8 @@ export default function Kanban() {
                           className="w-3 h-3 rounded-full" 
                           style={{ backgroundColor: column.color }}
                         />
-                        <CardTitle className="text-sm font-medium text-slate-800 drop-shadow-sm">{column.name}</CardTitle>
-                        <Badge variant="secondary" className="text-xs">
+                        <CardTitle className="text-lg font-bold text-slate-800 drop-shadow-sm tracking-tight">{column.name}</CardTitle>
+                        <Badge variant="secondary" className="text-sm font-semibold px-3 py-1">
                           {getCardsForColumn(column.id).length}
                         </Badge>
                       </div>
@@ -505,8 +532,8 @@ export default function Kanban() {
                         <div
                           ref={provided.innerRef}
                           {...provided.droppableProps}
-                          className={`space-y-3 min-h-[200px] p-2 rounded-lg transition-colors ${
-                            snapshot.isDraggingOver ? 'bg-gray-50' : ''
+                          className={`space-y-3 min-h-[200px] p-2 rounded-lg transition-all duration-300 ${
+                            snapshot.isDraggingOver ? 'bg-slate-100/50 ring-2 ring-primary/30 scale-105' : ''
                           }`}
                         >
                           {getCardsForColumn(column.id).map((card, index) => (
@@ -517,7 +544,7 @@ export default function Kanban() {
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
                                   className={`relative overflow-hidden border-0 rounded-lg p-3 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-grab transform hover:scale-105 backdrop-blur-sm ${
-                                    snapshot.isDragging ? 'rotate-2 shadow-2xl scale-105' : ''
+                                    snapshot.isDragging ? 'rotate-2 shadow-2xl scale-110 z-50' : ''
                                   }`}
                                   style={{
                                     background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.8) 100%)',
@@ -526,17 +553,17 @@ export default function Kanban() {
                                     boxShadow: '0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5)'
                                   }}
                                 >
-                                  <div className="flex items-start justify-between mb-2">
-                                    <h4 className="font-medium text-sm text-gray-900 flex-1">
+                                  <div className="flex items-start justify-between mb-3">
+                                    <h4 className="font-bold text-base text-slate-900 flex-1 drop-shadow-sm tracking-tight">
                                       {card.title}
                                     </h4>
-                                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                                      <MoreHorizontal className="w-3 h-3" />
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-slate-100/80">
+                                      <MoreHorizontal className="w-4 h-4" />
                                     </Button>
                                   </div>
                                   
                                   {card.description && (
-                                    <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+                                    <p className="text-sm font-medium text-slate-700 mb-4 line-clamp-3 drop-shadow-sm">
                                       {card.description}
                                     </p>
                                   )}
@@ -545,37 +572,37 @@ export default function Kanban() {
                                     <div className="flex items-center space-x-2">
                                       {card.priority && (
                                         <Badge 
-                                          className={`text-xs px-2 py-0.5 ${PRIORITY_COLORS[card.priority as keyof typeof PRIORITY_COLORS]}`}
+                                          className={`text-sm font-semibold px-3 py-1 ${PRIORITY_COLORS[card.priority as keyof typeof PRIORITY_COLORS]}`}
                                           variant="secondary"
                                         >
-                                          <Flag className="w-3 h-3 mr-1" />
+                                          <Flag className="w-4 h-4 mr-1" />
                                           {card.priority}
                                         </Badge>
                                       )}
                                       {card.dueDate && (
-                                        <Badge variant="outline" className="text-xs px-2 py-0.5">
-                                          <Calendar className="w-3 h-3 mr-1" />
+                                        <Badge variant="outline" className="text-sm font-semibold px-3 py-1">
+                                          <Calendar className="w-4 h-4 mr-1" />
                                           {new Date(card.dueDate).toLocaleDateString()}
                                         </Badge>
                                       )}
                                     </div>
                                     {card.assignedToId && (
-                                      <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
-                                        <User className="w-3 h-3 text-gray-600" />
+                                      <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center shadow-sm">
+                                        <User className="w-4 h-4 text-slate-600" />
                                       </div>
                                     )}
                                   </div>
                                   
                                   {card.tags && card.tags.length > 0 && (
-                                    <div className="flex flex-wrap gap-1 mt-2">
+                                    <div className="flex flex-wrap gap-2 mt-3">
                                       {card.tags.slice(0, 3).map((tag, idx) => (
-                                        <Badge key={idx} variant="outline" className="text-xs px-1 py-0">
-                                          <Tag className="w-2 h-2 mr-1" />
+                                        <Badge key={idx} variant="outline" className="text-sm font-medium px-2 py-1">
+                                          <Tag className="w-3 h-3 mr-1" />
                                           {tag}
                                         </Badge>
                                       ))}
                                       {card.tags.length > 3 && (
-                                        <Badge variant="outline" className="text-xs px-1 py-0">
+                                        <Badge variant="outline" className="text-sm font-medium px-2 py-1">
                                           +{card.tags.length - 3}
                                         </Badge>
                                       )}
@@ -610,10 +637,10 @@ export default function Kanban() {
                     </div>
                     
                     <div className="absolute inset-0 rounded-lg border border-white/30 shadow-inner border-dashed"></div>
-                    <CardContent className="flex items-center justify-center py-8 relative z-10">
+                    <CardContent className="flex items-center justify-center py-12 relative z-10">
                       <div className="text-center">
-                        <Plus className="w-8 h-8 text-slate-500 mx-auto mb-2 drop-shadow-sm" />
-                        <p className="text-sm text-slate-600 drop-shadow-sm">Add Column</p>
+                        <Plus className="w-10 h-10 text-slate-500 mx-auto mb-3 drop-shadow-sm" />
+                        <p className="text-lg font-bold text-slate-600 drop-shadow-sm tracking-tight">Add Column</p>
                       </div>
                     </CardContent>
                   </Card>

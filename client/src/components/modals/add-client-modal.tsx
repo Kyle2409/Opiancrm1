@@ -64,15 +64,17 @@ export default function AddClientModal({ isOpen, onClose }: AddClientModalProps)
       onClose();
     },
     onError: (error) => {
+      console.error("Client creation error:", error);
       toast({
         title: "Error",
-        description: "Failed to add client. Please try again.",
+        description: error.message || "Failed to add client. Please try again.",
         variant: "destructive",
       });
     },
   });
 
   const onSubmit = (data: InsertClient) => {
+    console.log("Form submitted with data:", data);
     createClientMutation.mutate(data);
   };
 

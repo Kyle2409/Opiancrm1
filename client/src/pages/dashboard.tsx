@@ -232,28 +232,27 @@ export default function Dashboard() {
             {/* Light blue stained glass base */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/98 via-white/95 to-white/98" />
             
-            {/* Enhanced light blue stained glass segments for more contrast */}
+            {/* Light blue stained glass segments */}
             <div className="absolute inset-0">
-              <div className="absolute top-0 left-0 w-1/3 h-1/2 bg-gradient-to-br from-blue-300/50 via-blue-400/35 to-transparent" />
-              <div className="absolute top-0 right-0 w-2/3 h-1/3 bg-gradient-to-bl from-sky-300/45 via-sky-400/30 to-transparent" />
-              <div className="absolute bottom-0 left-0 w-1/2 h-2/3 bg-gradient-to-tr from-cyan-300/40 via-cyan-400/25 to-transparent" />
-              <div className="absolute bottom-0 right-0 w-2/3 h-1/2 bg-gradient-to-tl from-indigo-300/45 via-indigo-400/30 to-transparent" />
-              <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-blue-400/35 via-blue-500/20 to-transparent" />
-              <div className="absolute top-1/3 right-1/5 w-2/5 h-1/3 bg-gradient-to-bl from-slate-400/40 via-slate-500/25 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-transparent to-blue-100/30" />
+              <div className="absolute top-0 left-0 w-1/3 h-1/2 bg-gradient-to-br from-blue-200/35 via-blue-300/20 to-transparent" />
+              <div className="absolute top-0 right-0 w-2/3 h-1/3 bg-gradient-to-bl from-sky-200/30 via-sky-300/18 to-transparent" />
+              <div className="absolute bottom-0 left-0 w-1/2 h-2/3 bg-gradient-to-tr from-cyan-200/25 via-cyan-300/15 to-transparent" />
+              <div className="absolute bottom-0 right-0 w-2/3 h-1/2 bg-gradient-to-tl from-indigo-200/30 via-indigo-300/18 to-transparent" />
+              <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-blue-300/20 via-blue-400/12 to-transparent" />
+              <div className="absolute top-1/3 right-1/5 w-2/5 h-1/3 bg-gradient-to-bl from-slate-300/25 via-slate-400/15 to-transparent" />
             </div>
             
-            {/* Enhanced lead lines pattern for better definition */}
-            <div className="absolute inset-0 opacity-25">
-              <div className="absolute top-1/4 left-0 w-full h-px bg-slate-700/70" />
-              <div className="absolute top-1/2 left-0 w-full h-px bg-slate-700/70" />
-              <div className="absolute top-3/4 left-0 w-full h-px bg-slate-700/70" />
-              <div className="absolute top-0 left-1/4 h-full w-px bg-slate-700/70" />
-              <div className="absolute top-0 left-1/2 h-full w-px bg-slate-700/70" />
-              <div className="absolute top-0 left-3/4 h-full w-px bg-slate-700/70" />
+            {/* Lead lines pattern */}
+            <div className="absolute inset-0 opacity-15">
+              <div className="absolute top-1/4 left-0 w-full h-px bg-slate-600/60" />
+              <div className="absolute top-1/2 left-0 w-full h-px bg-slate-600/60" />
+              <div className="absolute top-3/4 left-0 w-full h-px bg-slate-600/60" />
+              <div className="absolute top-0 left-1/4 h-full w-px bg-slate-600/60" />
+              <div className="absolute top-0 left-1/2 h-full w-px bg-slate-600/60" />
+              <div className="absolute top-0 left-3/4 h-full w-px bg-slate-600/60" />
             </div>
             
-            <div className="absolute inset-0 rounded-lg border-2 border-slate-500/40 shadow-inner"></div>
+            <div className="absolute inset-0 rounded-lg border border-slate-400/30 shadow-inner"></div>
             <CardHeader className="pb-4 relative z-10">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl font-semibold text-slate-700 drop-shadow-sm">Client Activity</CardTitle>
@@ -366,60 +365,24 @@ export default function Dashboard() {
             <CardContent className="space-y-3 relative z-10">
               <Button 
                 onClick={() => setLocation("/clients")}
-                className="w-full h-12 relative overflow-hidden border-0 shadow-md transition-all duration-200 hover:shadow-lg"
+                className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md transition-all duration-200"
               >
-                {/* Light blue stained glass background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/95" />
-                <div className="absolute inset-0">
-                  <div className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-br from-blue-300/40 via-blue-400/25 to-transparent" />
-                  <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-sky-300/35 via-sky-400/20 to-transparent" />
-                </div>
-                <div className="absolute inset-0 opacity-15">
-                  <div className="absolute top-0 left-1/2 h-full w-px bg-slate-600/60" />
-                </div>
-                <div className="absolute inset-0 rounded border border-slate-400/30"></div>
-                <div className="relative z-10 flex items-center justify-center text-slate-700 font-medium">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New Client
-                </div>
+                <Plus className="w-4 h-4 mr-2" />
+                Add New Client
               </Button>
               <Button 
                 onClick={() => setLocation("/booking")}
-                className="w-full h-12 relative overflow-hidden border-0 shadow-md transition-all duration-200 hover:shadow-lg"
+                className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-md transition-all duration-200"
               >
-                {/* Light blue stained glass background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/95" />
-                <div className="absolute inset-0">
-                  <div className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-br from-cyan-300/40 via-cyan-400/25 to-transparent" />
-                  <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-indigo-300/35 via-indigo-400/20 to-transparent" />
-                </div>
-                <div className="absolute inset-0 opacity-15">
-                  <div className="absolute top-0 left-1/2 h-full w-px bg-slate-600/60" />
-                </div>
-                <div className="absolute inset-0 rounded border border-slate-400/30"></div>
-                <div className="relative z-10 flex items-center justify-center text-slate-700 font-medium">
-                  <CalendarPlus className="w-4 h-4 mr-2" />
-                  Book Appointment
-                </div>
+                <CalendarPlus className="w-4 h-4 mr-2" />
+                Book Appointment
               </Button>
               <Button 
                 onClick={() => setLocation("/documents")}
-                className="w-full h-12 relative overflow-hidden border-0 shadow-md transition-all duration-200 hover:shadow-lg"
+                className="w-full h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-md transition-all duration-200"
               >
-                {/* Light blue stained glass background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/95" />
-                <div className="absolute inset-0">
-                  <div className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-br from-blue-400/40 via-blue-500/25 to-transparent" />
-                  <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-sky-400/35 via-sky-500/20 to-transparent" />
-                </div>
-                <div className="absolute inset-0 opacity-15">
-                  <div className="absolute top-0 left-1/2 h-full w-px bg-slate-600/60" />
-                </div>
-                <div className="absolute inset-0 rounded border border-slate-400/30"></div>
-                <div className="relative z-10 flex items-center justify-center text-slate-700 font-medium">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Documents
-                </div>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Documents
               </Button>
             </CardContent>
           </Card>

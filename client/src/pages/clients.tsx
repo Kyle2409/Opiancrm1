@@ -45,6 +45,7 @@ import { format } from "date-fns";
 import AddClientModal from "@/components/modals/add-client-modal";
 import CreateAppointmentModal from "@/components/modals/create-appointment-modal";
 import EditClientModal from "@/components/modals/edit-client-modal";
+import ClientDocuments from "@/components/client-documents";
 import type { Client, Appointment } from "@shared/schema";
 
 export default function Clients() {
@@ -53,6 +54,7 @@ export default function Clients() {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -299,7 +301,14 @@ export default function Clients() {
                           >
                             <CalendarPlus className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => {
+                              setSelectedClient(client);
+                              setIsDocumentsModalOpen(true);
+                            }}
+                          >
                             <Upload className="w-4 h-4" />
                           </Button>
                           <Button 
@@ -343,6 +352,19 @@ export default function Clients() {
         }}
         client={selectedClient}
       />
+      
+      <Dialog open={isDocumentsModalOpen} onOpenChange={setIsDocumentsModalOpen}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>
+              Documents - {selectedClient?.firstName} {selectedClient?.surname}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedClient && (
+            <ClientDocuments clientId={selectedClient.id} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -4,14 +4,29 @@ import { storage } from "./storage";
 import { insertClientSchema, insertDocumentSchema, insertAppointmentSchema, insertTeamMemberSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 import { setupAuth, requireAuth } from "./auth";
 
 interface MulterRequest extends Request {
   file?: Express.Multer.File;
 }
 
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const upload = multer({ 
-  storage: multer.memoryStorage(),
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadsDir);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+  }),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
 });
 
@@ -139,6 +154,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Document upload error:", error);
       res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  app.get("/api/documents/:id/download", requireAuth, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const document = await storage.getDocument(id);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      const filePath = path.join(process.cwd(), "uploads", document.name);
+      
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: "File not found" });
+      }
+      
+      res.download(filePath, document.originalName);
+    } catch (error) {
+      console.error("Download error:", error);
+      res.status(500).json({ message: "Failed to download document" });
     }
   });
 

@@ -23,7 +23,7 @@ export const documentsApi = {
     fetch("/api/documents").then(res => res.json()),
   
   getByClient: (clientId: number): Promise<Document[]> =>
-    fetch(`/api/clients/${clientId}/documents`).then(res => res.json()),
+    fetch(`/api/documents/client/${clientId}`).then(res => res.json()),
   
   upload: (file: File, clientId?: number): Promise<Document> => {
     const formData = new FormData();
@@ -40,6 +40,10 @@ export const documentsApi = {
   
   delete: (id: number): Promise<void> =>
     apiRequest("DELETE", `/api/documents/${id}`).then(() => {}),
+    
+  download: (id: number): void => {
+    window.open(`/api/documents/${id}/download`, '_blank');
+  },
 };
 
 export const appointmentsApi = {

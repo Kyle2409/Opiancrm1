@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { insertClientSchema, type InsertClient } from "@shared/schema";
 import { clientsApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { NotificationTriggers } from "@/lib/dynamic-notifications";
 import {
   Dialog,
   DialogContent,
@@ -134,9 +135,14 @@ export default function ComprehensiveClientModal({ isOpen, onClose }: Comprehens
 
   const createClientMutation = useMutation({
     mutationFn: clientsApi.create,
-    onSuccess: () => {
+    onSuccess: (newClient) => {
       queryClient.invalidateQueries({ queryKey: ["/api/clients"] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      
+      // Trigger dynamic notification
+      const clientName = `${newClient.firstName} ${newClient.surname}`;
+      NotificationTriggers.clientCreated(clientName);
+      
       toast({
         title: "Success",
         description: "Client has been created successfully.",

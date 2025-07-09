@@ -4,6 +4,7 @@ import { appointmentsApi } from "@/lib/api";
 import { teamMembersApi } from "@/lib/team-api";
 import { useToast } from "@/hooks/use-toast";
 import { format, addDays, isSameDay, isToday, isBefore, startOfDay } from "date-fns";
+import { NotificationTriggers } from "@/lib/dynamic-notifications";
 import {
   Dialog,
   DialogContent,
@@ -78,9 +79,15 @@ export default function CreateAppointmentModal({
 
   const createAppointmentMutation = useMutation({
     mutationFn: appointmentsApi.create,
-    onSuccess: () => {
+    onSuccess: (newAppointment) => {
       queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      
+      // Trigger dynamic notification
+      const clientName = client ? `${client.firstName} ${client.surname}` : 'Unknown Client';
+      const dateStr = format(selectedDate, 'MMM dd, yyyy');
+      NotificationTriggers.appointmentCreated(clientName, dateStr, selectedTime);
+      
       toast({
         title: "Booking Confirmed!",
         description: "Appointment has been successfully scheduled.",

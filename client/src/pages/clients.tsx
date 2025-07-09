@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { clientsApi, appointmentsApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { NotificationTriggers } from "@/lib/dynamic-notifications";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -71,9 +72,16 @@ export default function Clients() {
 
   const deleteClientMutation = useMutation({
     mutationFn: clientsApi.delete,
-    onSuccess: () => {
+    onSuccess: (_, clientId) => {
+      const client = clients.find(c => c.id === clientId);
+      const clientName = client ? `${client.firstName} ${client.surname}` : 'Client';
+      
       queryClient.invalidateQueries({ queryKey: ["/api/clients"] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      
+      // Trigger dynamic notification
+      NotificationTriggers.clientDeleted(clientName);
+      
       toast({
         title: "Success",
         description: "Client deleted successfully!",

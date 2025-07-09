@@ -43,6 +43,9 @@ export default function AddClientModal({ isOpen, onClose }: AddClientModalProps)
       firstName: "",
       surname: "",
       email: "",
+      cellPhone: "",
+      employer: "",
+      occupation: "",
       status: "active",
       value: 0,
     },
@@ -81,19 +84,35 @@ export default function AddClientModal({ isOpen, onClose }: AddClientModalProps)
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter client name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter first name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="surname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Surname</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter surname" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             
             <FormField
               control={form.control}
@@ -111,24 +130,10 @@ export default function AddClientModal({ isOpen, onClose }: AddClientModalProps)
             
             <FormField
               control={form.control}
-              name="company"
+              name="cellPhone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter company name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel>Cell Phone</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter phone number" {...field} />
                   </FormControl>
@@ -139,12 +144,26 @@ export default function AddClientModal({ isOpen, onClose }: AddClientModalProps)
             
             <FormField
               control={form.control}
-              name="role"
+              name="employer"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel>Employer</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter role/position" {...field} />
+                    <Input placeholder="Enter employer name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="occupation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Occupation</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter occupation" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -179,7 +198,7 @@ export default function AddClientModal({ isOpen, onClose }: AddClientModalProps)
               name="value"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Value ($)</FormLabel>
+                  <FormLabel>Client Value ($)</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 

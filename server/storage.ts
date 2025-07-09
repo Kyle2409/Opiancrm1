@@ -129,11 +129,12 @@ export class DatabaseStorage implements IStorage {
     const [client] = await db
       .insert(clients)
       .values({
-        name: insertClient.name,
+        firstName: insertClient.firstName,
+        surname: insertClient.surname,
         email: insertClient.email,
-        company: insertClient.company,
-        phone: insertClient.phone ?? null,
-        role: insertClient.role ?? null,
+        cellPhone: insertClient.cellPhone ?? null,
+        employer: insertClient.employer ?? null,
+        occupation: insertClient.occupation ?? null,
         status: insertClient.status ?? "active",
         value: insertClient.value ?? null,
         userId: insertClient.userId ?? null,

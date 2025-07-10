@@ -382,80 +382,94 @@ export default function Kanban() {
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-3xl animate-pulse -z-10 transform -translate-x-1/2 translate-y-1/2"></div>
       
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Kanban Board</h1>
-          {selectedBoard && (
-            <p className="text-slate-600 mt-1">{selectedBoard.name}</p>
-          )}
-        </div>
-        
-        <div className="flex items-center space-x-3">
-          <Select
-            value={selectedBoard?.id?.toString() || ""}
-            onValueChange={(value) => {
-              if (value && !isNaN(parseInt(value))) {
-                const board = boards.find(b => b.id === parseInt(value));
-                setSelectedBoard(board || null);
-              }
-            }}
-          >
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Select a board" />
-            </SelectTrigger>
-            <SelectContent>
-              {Array.isArray(boards) && boards.map((board) => (
-                <SelectItem key={board.id} value={board.id.toString()}>
-                  {board.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {/* Enhanced Header Section */}
+      <div className="mb-8">
+        <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/20 overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-blue-50/30 to-transparent"></div>
+          <div className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-2xl animate-pulse"></div>
           
-          <Dialog open={isCreateBoardOpen} onOpenChange={setIsCreateBoardOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Plus className="w-4 h-4 mr-2" />
-                New Board
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Board</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="board-name">Board Name</Label>
-                  <Input
-                    id="board-name"
-                    value={boardForm.name}
-                    onChange={(e) => setBoardForm({ ...boardForm, name: e.target.value })}
-                    placeholder="Enter board name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="board-description">Description (Optional)</Label>
-                  <Textarea
-                    id="board-description"
-                    value={boardForm.description}
-                    onChange={(e) => setBoardForm({ ...boardForm, description: e.target.value })}
-                    placeholder="Enter board description"
-                  />
-                </div>
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setIsCreateBoardOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleCreateBoard}
-                    disabled={createBoardMutation.isPending}
-                  >
-                    {createBoardMutation.isPending ? "Creating..." : "Create Board"}
-                  </Button>
-                </div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 bg-clip-text text-transparent mb-2">
+                  Kanban Board
+                </h1>
+                {selectedBoard && (
+                  <p className="text-xl text-slate-600 font-medium">{selectedBoard.name}</p>
+                )}
+                <p className="text-slate-500 mt-2">Organize and track your project tasks efficiently</p>
               </div>
-            </DialogContent>
-          </Dialog>
+              <div className="flex items-center space-x-3">
+                <Select
+                  value={selectedBoard?.id?.toString() || ""}
+                  onValueChange={(value) => {
+                    if (value && !isNaN(parseInt(value))) {
+                      const board = boards.find(b => b.id === parseInt(value));
+                      setSelectedBoard(board || null);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-48 bg-white/80 backdrop-blur-sm border-slate-300/50 hover:border-primary/50 transition-colors">
+                    <SelectValue placeholder="Select a board" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.isArray(boards) && boards.map((board) => (
+                      <SelectItem key={board.id} value={board.id.toString()}>
+                        {board.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Dialog open={isCreateBoardOpen} onOpenChange={setIsCreateBoardOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group">
+                      <Plus className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:rotate-90" />
+                      New Board
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create New Board</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="board-name">Board Name</Label>
+                        <Input
+                          id="board-name"
+                          value={boardForm.name}
+                          onChange={(e) => setBoardForm({ ...boardForm, name: e.target.value })}
+                          placeholder="Enter board name"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="board-description">Description (Optional)</Label>
+                        <Textarea
+                          id="board-description"
+                          value={boardForm.description}
+                          onChange={(e) => setBoardForm({ ...boardForm, description: e.target.value })}
+                          placeholder="Enter board description"
+                        />
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <Button variant="outline" onClick={() => setIsCreateBoardOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleCreateBoard}
+                          disabled={createBoardMutation.isPending}
+                        >
+                          {createBoardMutation.isPending ? "Creating..." : "Create Board"}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

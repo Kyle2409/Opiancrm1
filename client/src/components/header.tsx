@@ -42,21 +42,14 @@ export default function Header() {
 
   return (
     <>
-      <header className="relative bg-gradient-to-r from-white via-slate-50 to-white shadow-xl border-b border-slate-200/50 px-6 py-4 overflow-hidden">
+      <header className="relative bg-gradient-to-r from-white via-slate-50 to-white shadow-xl border-b border-slate-200/50 px-6 py-4 overflow-hidden ml-64">
         {/* Background decoration */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-blue-50/30"></div>
         <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse"></div>
         
         <div className="relative z-10 flex items-center justify-between">
-          {/* Page Title Section */}
-          <div className="flex items-center space-x-4">
-            <div className="flex flex-col">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                {currentPage.title}
-              </h1>
-              <p className="text-sm text-slate-500 font-medium">{currentPage.subtitle}</p>
-            </div>
-          </div>
+          {/* Empty space for alignment */}
+          <div></div>
           
           {/* Action Section */}
           <div className="flex items-center space-x-4">

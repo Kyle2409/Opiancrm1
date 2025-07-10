@@ -42,7 +42,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="relative bg-gradient-to-r from-white via-slate-50 to-white shadow-xl border-b border-slate-200/50 px-6 py-4 overflow-hidden ml-64">
+      <header className="relative bg-gradient-to-r from-white via-slate-50 to-white shadow-xl border-b border-slate-200/50 px-6 py-6 overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-blue-50/30"></div>
         <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse"></div>

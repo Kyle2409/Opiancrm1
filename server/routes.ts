@@ -1,4 +1,5 @@
 import type { Express, Request } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
@@ -39,6 +40,9 @@ function hasAdminAccess(userRole: string): boolean {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
+  
+  // Serve static files from uploads directory
+  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
   // Client routes
   app.get("/api/clients", requireAuth, async (req: any, res) => {

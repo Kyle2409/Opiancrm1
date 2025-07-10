@@ -123,7 +123,9 @@ export default function Profile() {
       return response.json();
     },
     onSuccess: (data) => {
+      // Force refetch user data
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.refetchQueries({ queryKey: ["/api/user"] });
       setIsCropperOpen(false);
       setSelectedImage(null);
       toast({
@@ -155,6 +157,7 @@ export default function Profile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.refetchQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Success",
         description: "Profile picture removed successfully",

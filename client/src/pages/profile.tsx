@@ -1,6 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation } from "@tanstack/react-query";
+import ReactCrop, { Crop, PixelCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,8 +23,11 @@ import {
   Activity,
   Camera,
   Upload,
-  Trash2
+  Trash2,
+  Scissors,
+  Check
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import { formatDistanceToNow } from "date-fns";
@@ -31,9 +36,19 @@ export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isCropperOpen, setIsCropperOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [crop, setCrop] = useState<Crop>({
+    unit: '%',
+    width: 90,
+    height: 90,
+    x: 5,
+    y: 5,
+  });
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -108,8 +123,9 @@ export default function Profile() {
       return response.json();
     },
     onSuccess: (data) => {
-      setProfileImage(data.imageUrl);
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      setIsCropperOpen(false);
+      setSelectedImage(null);
       toast({
         title: "Success",
         description: "Profile picture updated successfully",
@@ -138,7 +154,6 @@ export default function Profile() {
       return response.json();
     },
     onSuccess: () => {
-      setProfileImage(null);
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Success",
@@ -177,9 +192,95 @@ export default function Profile() {
         return;
       }
       
-      uploadProfilePictureMutation.mutate(file);
+      // Create preview URL and open cropper
+      const reader = new FileReader();
+      reader.onload = () => {
+        setSelectedImage(reader.result as string);
+        setIsCropperOpen(true);
+      };
+      reader.readAsDataURL(file);
     }
   };
+
+  const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    
+    // Center the crop on the image
+    const cropSize = Math.min(naturalWidth, naturalHeight);
+    const x = (naturalWidth - cropSize) / 2;
+    const y = (naturalHeight - cropSize) / 2;
+    
+    setCrop({
+      unit: 'px',
+      width: cropSize,
+      height: cropSize,
+      x: x,
+      y: y,
+    });
+  }, []);
+
+  const getCroppedImg = useCallback((
+    image: HTMLImageElement,
+    crop: PixelCrop,
+    fileName: string
+  ): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) {
+        reject(new Error('Canvas context not available'));
+        return;
+      }
+      
+      // Set canvas size to crop size
+      canvas.width = crop.width;
+      canvas.height = crop.height;
+      
+      // Draw the cropped image
+      ctx.drawImage(
+        image,
+        crop.x,
+        crop.y,
+        crop.width,
+        crop.height,
+        0,
+        0,
+        crop.width,
+        crop.height
+      );
+      
+      // Convert canvas to blob
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const file = new File([blob], fileName, { type: 'image/jpeg' });
+          resolve(file);
+        } else {
+          reject(new Error('Failed to create blob'));
+        }
+      }, 'image/jpeg', 0.9);
+    });
+  }, []);
+
+  const handleCropComplete = useCallback(async () => {
+    if (!completedCrop || !imgRef.current) return;
+    
+    try {
+      const croppedFile = await getCroppedImg(
+        imgRef.current,
+        completedCrop,
+        `profile-${Date.now()}.jpg`
+      );
+      
+      uploadProfilePictureMutation.mutate(croppedFile);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to crop image",
+        variant: "destructive",
+      });
+    }
+  }, [completedCrop, getCroppedImg, uploadProfilePictureMutation, toast]);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -284,9 +385,9 @@ export default function Profile() {
               <div className="flex items-center space-x-6">
                 <div className="relative group">
                   <Avatar className="w-20 h-20">
-                    {profileImage || user?.profileImageUrl ? (
+                    {user?.profileImageUrl ? (
                       <AvatarImage 
-                        src={profileImage || user?.profileImageUrl} 
+                        src={user.profileImageUrl} 
                         alt="Profile picture"
                         className="object-cover"
                       />
@@ -315,7 +416,7 @@ export default function Profile() {
                           <Camera className="w-4 h-4" />
                         )}
                       </Button>
-                      {(profileImage || user?.profileImageUrl) && (
+                      {user?.profileImageUrl && (
                         <Button
                           size="sm"
                           variant="secondary"
@@ -560,6 +661,72 @@ export default function Profile() {
           </Card>
         </div>
       </div>
+
+      {/* Image Cropper Dialog */}
+      <Dialog open={isCropperOpen} onOpenChange={setIsCropperOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <Scissors className="w-5 h-5" />
+              <span>Crop Profile Picture</span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {selectedImage && (
+              <div className="flex justify-center">
+                <ReactCrop
+                  crop={crop}
+                  onChange={(_, percentCrop) => setCrop(percentCrop)}
+                  onComplete={(c) => setCompletedCrop(c)}
+                  aspect={1}
+                  circularCrop
+                  className="max-w-full max-h-96"
+                >
+                  <img
+                    ref={imgRef}
+                    src={selectedImage}
+                    alt="Crop preview"
+                    onLoad={onImageLoad}
+                    className="max-w-full max-h-96 object-contain"
+                  />
+                </ReactCrop>
+              </div>
+            )}
+            
+            <div className="text-center text-sm text-gray-500">
+              Adjust the circle to crop your profile picture
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsCropperOpen(false);
+                setSelectedImage(null);
+              }}
+              disabled={uploadProfilePictureMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleCropComplete}
+              disabled={uploadProfilePictureMutation.isPending || !completedCrop}
+              className="flex items-center space-x-2"
+            >
+              {uploadProfilePictureMutation.isPending ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Check className="w-4 h-4" />
+              )}
+              <span>
+                {uploadProfilePictureMutation.isPending ? 'Uploading...' : 'Apply Crop'}
+              </span>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

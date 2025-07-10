@@ -201,6 +201,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Profile picture routes
+  app.post("/api/profile-picture", requireAuth, upload.single("file"), async (req: MulterRequest & any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      // Check if file is an image
+      if (!req.file.mimetype.startsWith('image/')) {
+        return res.status(400).json({ message: "Only image files are allowed" });
+      }
+
+      const imageUrl = `/uploads/${req.file.filename}`;
+      
+      // Update user profile with image URL
+      const updatedUser = await storage.updateUser(req.user.id, {
+        profileImageUrl: imageUrl
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({ 
+        imageUrl,
+        message: "Profile picture updated successfully" 
+      });
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      res.status(500).json({ error: "Failed to upload profile picture" });
+    }
+  });
+
+  app.delete("/api/profile-picture/:userId", requireAuth, async (req: any, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      // Check if user can delete this profile picture
+      if (req.user.id !== userId && req.user.role !== 'super_admin') {
+        return res.status(403).json({ error: "Insufficient permissions" });
+      }
+
+      const updatedUser = await storage.updateUser(userId, {
+        profileImageUrl: null
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({ message: "Profile picture deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting profile picture:", error);
+      res.status(500).json({ error: "Failed to delete profile picture" });
+    }
+  });
+
   // Appointment routes
   app.get("/api/appointments", requireAuth, async (req: any, res) => {
     try {

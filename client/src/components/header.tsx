@@ -4,7 +4,7 @@ import { Search, Plus, LogOut, User, Bell, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useNotificationContext } from "@/contexts/notification-context";
 import { NotificationDropdown } from "@/components/notification-dropdown";
@@ -110,6 +110,13 @@ export default function Header() {
                 <Button variant="ghost" className="relative flex items-center space-x-3 p-3 rounded-2xl hover:bg-slate-100/50 transition-all duration-300 group">
                   <div className="relative">
                     <Avatar className="h-10 w-10 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300">
+                      {user?.profileImageUrl ? (
+                        <AvatarImage 
+                          src={user.profileImageUrl} 
+                          alt="Profile picture"
+                          className="object-cover"
+                        />
+                      ) : null}
                       <AvatarFallback className="bg-gradient-to-r from-primary to-blue-600 text-white font-bold">
                         {user?.firstName?.[0]}{user?.lastName?.[0]}
                       </AvatarFallback>

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
@@ -281,11 +282,18 @@ export default function TeamMembers() {
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">
+                    <Avatar className="w-12 h-12">
+                      {member.profileImageUrl ? (
+                        <AvatarImage 
+                          src={member.profileImageUrl} 
+                          alt="Profile picture"
+                          className="object-cover"
+                        />
+                      ) : null}
+                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold text-sm">
                         {(member.firstName && member.lastName) ? `${member.firstName.charAt(0)}${member.lastName.charAt(0)}` : member.username.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <CardTitle className="text-lg">{(member.firstName && member.lastName) ? `${member.firstName} ${member.lastName}` : member.username}</CardTitle>
                       <Badge 

@@ -120,6 +120,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   firstName: text("first_name"),
   lastName: text("last_name"),
+  profileImageUrl: text("profile_image_url"),
   role: text("role").default("user"), // super_admin, admin, user
   isOnline: boolean("is_online").default(false),
   lastSeen: timestamp("last_seen").defaultNow(),

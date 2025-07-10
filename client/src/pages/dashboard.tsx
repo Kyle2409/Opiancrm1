@@ -132,18 +132,18 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-slate-50 to-white h-full relative overflow-x-hidden">
+    <div className="p-4 space-y-4 bg-gradient-to-br from-slate-50 to-white h-full relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-3xl animate-pulse -z-10 transform -translate-x-1/2 translate-y-1/2"></div>
       
       {/* Welcome Section */}
-      <div className="mb-6">
+      <div className="mb-4">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center space-x-3">
-              <h1 className="text-2xl font-bold text-gray-900">Good morning, {user?.username || 'User'}! 👋</h1>
+              <h1 className="text-xl font-bold text-gray-900">Good morning, {user?.username || 'User'}! 👋</h1>
               {user?.role === 'super_admin' && (
                 <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                   Super Admin
@@ -167,7 +167,7 @@ export default function Dashboard() {
       </div>
 
       {/* Enhanced Stats Cards with Stained Glass Effect */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -229,7 +229,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Recent Client Activity - Light Blue Stained Glass */}
         <div className="lg:col-span-2">
           <Card className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group">
@@ -259,9 +259,9 @@ export default function Dashboard() {
             
             {/* Subtle border */}
             <div className="absolute inset-0 rounded-lg border border-slate-400/30 shadow-inner"></div>
-            <CardHeader className="pb-4 relative z-10">
+            <CardHeader className="pb-3 relative z-10">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-xl font-semibold text-slate-700 drop-shadow-sm">Client Activity</CardTitle>
+                <CardTitle className="text-lg font-semibold text-slate-700 drop-shadow-sm">Client Activity</CardTitle>
                 <Button 
                   onClick={() => setLocation("/clients")}
                   variant="ghost" 
@@ -429,17 +429,17 @@ export default function Dashboard() {
             <CardContent className="relative z-10">
               <div className="space-y-3">
                 {todayAppointments.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Calendar className="mx-auto h-10 w-10 text-gray-400 mb-3" />
+                  <div className="text-center py-6">
+                    <Calendar className="mx-auto h-8 w-8 text-gray-400 mb-2" />
                     <p className="text-sm text-gray-500">No meetings today</p>
                     <p className="text-xs text-gray-400 mt-1">Enjoy your free time!</p>
                   </div>
                 ) : (
                   todayAppointments.map((appointment) => (
                     <div key={appointment.id} className="relative">
-                      <div className="flex items-start space-x-3 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 hover:shadow-md transition-all duration-200">
+                      <div className="flex items-start space-x-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 hover:shadow-md transition-all duration-200">
                         <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex flex-col items-center justify-center text-white shadow-md">
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex flex-col items-center justify-center text-white shadow-md">
                             <span className="text-xs font-bold">{appointment.startTime.split(':')[0]}</span>
                             <span className="text-xs">{appointment.startTime.split(':')[1]}</span>
                           </div>
@@ -462,7 +462,7 @@ export default function Dashboard() {
                             </span>
                           </div>
                           {appointment.location && (
-                            <div className="flex items-center space-x-1 mt-2">
+                            <div className="flex items-center space-x-1 mt-1">
                               <MapPin className="w-3 h-3 text-gray-400" />
                               <span className="text-xs text-gray-500 truncate">{appointment.location}</span>
                             </div>

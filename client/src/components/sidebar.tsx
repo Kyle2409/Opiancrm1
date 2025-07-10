@@ -40,14 +40,11 @@ export default function Sidebar() {
       {/* Header */}
       <div className="relative p-6 border-b border-slate-200/50">
         <div className="flex justify-center">
-          <div className="relative">
-            <img 
-              src="/logo.png" 
-              alt="Opian Core" 
-              className="h-12 w-auto object-contain transform hover:scale-105 transition-all duration-300"
-            />
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-bounce"></div>
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="Opian Core" 
+            className="h-12 w-auto object-contain transform hover:scale-105 transition-all duration-300"
+          />
         </div>
       </div>
       

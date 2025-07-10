@@ -104,6 +104,7 @@ export function setupAuth(app: Express) {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          profileImageUrl: user.profileImageUrl,
           role: user.role
         });
       });
@@ -120,6 +121,7 @@ export function setupAuth(app: Express) {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      profileImageUrl: user.profileImageUrl,
       role: user.role
     });
   });
@@ -140,6 +142,7 @@ export function setupAuth(app: Express) {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      profileImageUrl: user.profileImageUrl,
       role: user.role,
       createdAt: user.createdAt
     });

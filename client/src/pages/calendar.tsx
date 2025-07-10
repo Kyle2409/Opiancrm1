@@ -12,11 +12,13 @@ import {
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, startOfWeek, endOfWeek } from "date-fns";
 import AddAppointmentModal from "@/components/modals/add-appointment-modal";
+import { useTheme } from "@/contexts/theme-context";
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"month" | "week" | "day">("month");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const { theme, themes } = useTheme();
 
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ["/api/appointments"],
@@ -76,8 +78,20 @@ export default function Calendar() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <Card>
+      <div 
+        className="p-6 min-h-screen transition-all duration-300"
+        style={{
+          backgroundColor: themes[theme].colors.background,
+          color: themes[theme].colors.text,
+        }}
+      >
+        <Card
+          className="transition-all duration-300"
+          style={{
+            backgroundColor: themes[theme].colors.surface,
+            borderColor: themes[theme].colors.border,
+          }}
+        >
           <CardContent className="p-6">
             <Skeleton className="h-96 w-full" />
           </CardContent>
@@ -90,11 +104,28 @@ export default function Calendar() {
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <div className="p-6">
-      <Card>
+    <div 
+      className="p-6 min-h-screen transition-all duration-300"
+      style={{
+        backgroundColor: themes[theme].colors.background,
+        color: themes[theme].colors.text,
+      }}
+    >
+      <Card
+        className="transition-all duration-300"
+        style={{
+          backgroundColor: themes[theme].colors.surface,
+          borderColor: themes[theme].colors.border,
+        }}
+      >
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Calendar</CardTitle>
+            <CardTitle 
+              className="transition-colors duration-300"
+              style={{ color: themes[theme].colors.text }}
+            >
+              Calendar
+            </CardTitle>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <Button 
@@ -104,7 +135,10 @@ export default function Calendar() {
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <h4 className="text-lg font-medium text-textPrimary">
+                <h4 
+                  className="text-lg font-medium transition-colors duration-300"
+                  style={{ color: themes[theme].colors.text }}
+                >
                   {format(currentDate, 'MMMM yyyy')}
                 </h4>
                 <Button 
@@ -140,7 +174,10 @@ export default function Calendar() {
               </div>
               <Button 
                 onClick={() => setIsAddModalOpen(true)}
-                className="bg-primary hover:bg-primary/90"
+                className="text-white transition-all duration-300"
+                style={{
+                  background: themes[theme].colors.gradient,
+                }}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Event
@@ -153,7 +190,11 @@ export default function Calendar() {
             {/* Calendar Header */}
             <div className="grid grid-cols-7 gap-1 mb-4">
               {weekDays.map(day => (
-                <div key={day} className="text-center py-2 text-sm font-medium text-gray-500">
+                <div 
+                  key={day} 
+                  className="text-center py-2 text-sm font-medium transition-colors duration-300"
+                  style={{ color: themes[theme].colors.textSecondary }}
+                >
                   {day}
                 </div>
               ))}
@@ -169,14 +210,30 @@ export default function Calendar() {
                 return (
                   <div 
                     key={index} 
-                    className={`min-h-24 p-2 border border-gray-100 hover:bg-gray-50 ${
-                      !isCurrentMonth ? 'bg-gray-50 text-gray-400' : ''
-                    } ${isDayToday ? 'bg-blue-50 border-primary' : ''}`}
+                    className={`min-h-24 p-2 border transition-all duration-300 ${
+                      !isCurrentMonth ? 'opacity-50' : ''
+                    }`}
+                    style={{
+                      backgroundColor: isDayToday 
+                        ? `${themes[theme].colors.primary}20` 
+                        : (!isCurrentMonth ? themes[theme].colors.surface : themes[theme].colors.background),
+                      borderColor: isDayToday 
+                        ? themes[theme].colors.primary 
+                        : themes[theme].colors.border,
+                      color: themes[theme].colors.text,
+                    }}
                   >
-                    <div className={`text-sm mb-1 ${
-                      isDayToday ? 'font-bold text-primary' : 
-                      isCurrentMonth ? 'text-textPrimary' : 'text-gray-400'
-                    }`}>
+                    <div 
+                      className={`text-sm mb-1 transition-colors duration-300 ${
+                        isDayToday ? 'font-bold' : 
+                        isCurrentMonth ? 'font-medium' : 'font-normal'
+                      }`}
+                      style={{
+                        color: isDayToday 
+                          ? themes[theme].colors.primary 
+                          : (isCurrentMonth ? themes[theme].colors.text : themes[theme].colors.textSecondary)
+                      }}
+                    >
                       {format(day, 'd')}
                     </div>
                     

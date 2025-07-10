@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { clientsApi, appointmentsApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/contexts/theme-context";
 import { NotificationTriggers } from "@/lib/dynamic-notifications";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,7 @@ export default function Clients() {
   const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { theme, themes } = useTheme();
 
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ["/api/clients"],
@@ -174,8 +176,20 @@ export default function Clients() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <Card>
+      <div 
+        className="p-6 min-h-screen transition-all duration-300"
+        style={{
+          backgroundColor: themes[theme].colors.background,
+          color: themes[theme].colors.text,
+        }}
+      >
+        <Card 
+          className="backdrop-blur-sm shadow-xl border transition-all duration-300"
+          style={{
+            backgroundColor: themes[theme].colors.glassBg,
+            borderColor: themes[theme].colors.border,
+          }}
+        >
           <CardContent className="p-6">
             <div className="space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -189,15 +203,42 @@ export default function Clients() {
   }
 
   return (
-    <div className="p-6 space-y-6 relative min-h-screen overflow-x-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
+    <div 
+      className="p-6 space-y-6 relative min-h-screen overflow-x-hidden transition-all duration-300"
+      style={{
+        backgroundColor: themes[theme].colors.background,
+        color: themes[theme].colors.text,
+      }}
+    >
+      {/* Theme-aware background decoration */}
+      <div 
+        className="absolute inset-0 -z-10"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}05, transparent, ${themes[theme].colors.secondary}30)`
+        }}
+      ></div>
+      <div 
+        className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}20, ${themes[theme].colors.secondary}20)`
+        }}
+      ></div>
       
-      <Card className="bg-white/80 backdrop-blur-sm border border-slate-200/50 shadow-xl">
+      <Card 
+        className="backdrop-blur-sm shadow-xl border transition-all duration-300"
+        style={{
+          backgroundColor: themes[theme].colors.glassBg,
+          borderColor: themes[theme].colors.border,
+        }}
+      >
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Client Management</CardTitle>
+            <CardTitle 
+              className="text-2xl font-bold transition-colors duration-300"
+              style={{ color: themes[theme].colors.text }}
+            >
+              Client Management
+            </CardTitle>
             <div className="flex items-center space-x-4">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-40">

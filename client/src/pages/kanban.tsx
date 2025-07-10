@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { KanbanCardModal } from "@/components/kanban-card-modal";
+import { useTheme } from "@/contexts/theme-context";
 import { 
   Plus, 
   MoreHorizontal, 
@@ -82,6 +83,7 @@ const PRIORITY_COLORS = {
 export default function Kanban() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { theme, themes } = useTheme();
   const [selectedBoard, setSelectedBoard] = useState<KanbanBoard | null>(null);
   const [isCreateBoardOpen, setIsCreateBoardOpen] = useState(false);
   const [isCreateColumnOpen, setIsCreateColumnOpen] = useState(false);
@@ -285,11 +287,20 @@ export default function Kanban() {
 
   if (boardsLoading) {
     return (
-      <div className="p-6">
+      <div 
+        className="p-6 min-h-screen transition-all duration-300"
+        style={{
+          backgroundColor: themes[theme].colors.background,
+          color: themes[theme].colors.text,
+        }}
+      >
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading kanban boards...</p>
+            <div 
+              className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+              style={{ borderColor: themes[theme].colors.primary }}
+            ></div>
+            <p style={{ color: themes[theme].colors.textSecondary }}>Loading kanban boards...</p>
           </div>
         </div>
       </div>
@@ -312,17 +323,42 @@ export default function Kanban() {
 
   if (!Array.isArray(boards) || boards.length === 0) {
     return (
-      <div className="p-6">
+      <div 
+        className="p-6 min-h-screen transition-all duration-300"
+        style={{
+          backgroundColor: themes[theme].colors.background,
+          color: themes[theme].colors.text,
+        }}
+      >
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Kanban Board</h1>
+          <h1 
+            className="text-2xl font-bold transition-colors duration-300"
+            style={{ color: themes[theme].colors.text }}
+          >
+            Kanban Board
+          </h1>
         </div>
         
         <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <Plus className="w-8 h-8 text-primary" />
+          <div 
+            className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+            style={{ backgroundColor: `${themes[theme].colors.primary}10` }}
+          >
+            <Plus 
+              className="w-8 h-8"
+              style={{ color: themes[theme].colors.primary }}
+            />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No boards yet</h3>
-          <p className="text-gray-600 mb-6 max-w-md">
+          <h3 
+            className="text-lg font-semibold mb-2 transition-colors duration-300"
+            style={{ color: themes[theme].colors.text }}
+          >
+            No boards yet
+          </h3>
+          <p 
+            className="mb-6 max-w-md transition-colors duration-300"
+            style={{ color: themes[theme].colors.textSecondary }}
+          >
             Create your first kanban board to start organizing tasks and projects visually.
           </p>
           
@@ -376,24 +412,69 @@ export default function Kanban() {
   }
 
   return (
-    <div className="p-6 bg-gradient-to-br from-slate-50 to-white h-full relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-3xl animate-pulse -z-10 transform -translate-x-1/2 translate-y-1/2"></div>
+    <div 
+      className="p-6 h-full relative overflow-hidden transition-all duration-300"
+      style={{
+        backgroundColor: themes[theme].colors.background,
+        color: themes[theme].colors.text,
+      }}
+    >
+      {/* Theme-aware background decoration */}
+      <div 
+        className="absolute inset-0 -z-10"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}05, transparent, ${themes[theme].colors.secondary}30)`
+        }}
+      ></div>
+      <div 
+        className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}20, ${themes[theme].colors.secondary}20)`
+        }}
+      ></div>
+      <div 
+        className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl animate-pulse -z-10 transform -translate-x-1/2 translate-y-1/2"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.secondary}20, ${themes[theme].colors.primary}20)`
+        }}
+      ></div>
       
       {/* Enhanced Header Section */}
       <div className="mb-8">
-        <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/20 overflow-hidden">
+        <div 
+          className="relative backdrop-blur-sm rounded-3xl p-8 shadow-2xl border overflow-hidden transition-all duration-300"
+          style={{
+            backgroundColor: themes[theme].colors.glassBg,
+            borderColor: themes[theme].colors.border,
+          }}
+        >
           {/* Background decoration */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-blue-50/30 to-transparent"></div>
-          <div className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-2xl animate-pulse"></div>
-          <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-2xl animate-pulse"></div>
+          <div 
+            className="absolute inset-0 opacity-20"
+            style={{
+              background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}10, ${themes[theme].colors.surface}30, transparent)`
+            }}
+          ></div>
+          <div 
+            className="absolute -top-8 -right-8 w-32 h-32 rounded-full blur-2xl animate-pulse"
+            style={{
+              background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}20, ${themes[theme].colors.secondary}20)`
+            }}
+          ></div>
+          <div 
+            className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full blur-2xl animate-pulse"
+            style={{
+              background: `linear-gradient(to bottom right, ${themes[theme].colors.secondary}20, ${themes[theme].colors.primary}20)`
+            }}
+          ></div>
           
           <div className="relative z-10">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 bg-clip-text text-transparent mb-2">
+                <h1 
+                  className="text-4xl font-bold mb-2 transition-colors duration-300"
+                  style={{ color: themes[theme].colors.text }}
+                >
                   Kanban Board
                 </h1>
                 {selectedBoard && (

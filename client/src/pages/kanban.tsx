@@ -376,12 +376,17 @@ export default function Kanban() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-gradient-to-br from-slate-50 to-white h-full relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-3xl animate-pulse -z-10 transform -translate-x-1/2 translate-y-1/2"></div>
+      
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Kanban Board</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Kanban Board</h1>
           {selectedBoard && (
-            <p className="text-gray-600 mt-1">{selectedBoard.name}</p>
+            <p className="text-slate-600 mt-1">{selectedBoard.name}</p>
           )}
         </div>
         
@@ -459,16 +464,43 @@ export default function Kanban() {
           <div className="flex space-x-4 overflow-x-auto pb-4">
             {Array.isArray(columns) && columns.map((column) => (
               <div key={column.id} className="flex-shrink-0 w-80">
-                <Card>
-                  <CardHeader className="pb-3">
+                <Card className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group transform hover:scale-105">
+                  {/* Light blue stained glass base */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/98 via-white/95 to-white/98" />
+                  
+                  {/* Light blue stained glass segments */}
+                  <div className="absolute inset-0">
+                    <div className="absolute top-0 left-0 w-1/2 h-1/3 bg-gradient-to-br from-blue-200/40 via-blue-300/25 to-transparent" />
+                    <div className="absolute top-0 right-0 w-1/2 h-2/5 bg-gradient-to-bl from-sky-200/35 via-sky-300/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 w-2/3 h-1/2 bg-gradient-to-tr from-cyan-200/30 via-cyan-300/18 to-transparent" />
+                    <div className="absolute bottom-0 right-0 w-1/2 h-1/3 bg-gradient-to-tl from-indigo-200/35 via-indigo-300/20 to-transparent" />
+                    <div className="absolute top-1/3 left-1/4 w-1/2 h-1/3 bg-gradient-to-br from-blue-300/25 via-blue-400/15 to-transparent" />
+                    <div className="absolute top-1/2 right-1/4 w-1/3 h-1/4 bg-gradient-to-bl from-slate-300/30 via-slate-400/18 to-transparent" />
+                  </div>
+                  
+                  {/* Lead lines effect */}
+                  <div className="absolute inset-0 opacity-20">
+                    <div className="absolute top-1/3 left-0 w-full h-px bg-slate-500/50" />
+                    <div className="absolute top-2/3 left-0 w-full h-px bg-slate-500/50" />
+                    <div className="absolute top-0 left-1/3 h-full w-px bg-slate-500/50" />
+                    <div className="absolute top-0 left-2/3 h-full w-px bg-slate-500/50" />
+                  </div>
+                  
+                  {/* Glass reflection */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-white/15 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  {/* Subtle border */}
+                  <div className="absolute inset-0 rounded-lg border border-slate-400/30 shadow-inner"></div>
+                  
+                  <CardHeader className="pb-3 relative z-10 backdrop-blur-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <div 
-                          className="w-3 h-3 rounded-full" 
+                          className="w-3 h-3 rounded-full shadow-lg border border-white/50" 
                           style={{ backgroundColor: column.color }}
                         />
-                        <CardTitle className="text-lg font-semibold">{column.name}</CardTitle>
-                        <Badge variant="secondary" className="text-xs">
+                        <CardTitle className="text-lg font-semibold text-slate-800 drop-shadow-sm">{column.name}</CardTitle>
+                        <Badge variant="secondary" className="text-xs bg-white/60 backdrop-blur-sm border border-slate-300/50">
                           {getCardsForColumn(column.id).length}
                         </Badge>
                       </div>
@@ -479,19 +511,20 @@ export default function Kanban() {
                           setSelectedColumn(column);
                           setIsCreateCardOpen(true);
                         }}
+                        className="hover:bg-white/50 backdrop-blur-sm"
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-4 h-4 text-slate-700" />
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="relative z-10 backdrop-blur-sm">
                     <Droppable droppableId={column.id.toString()}>
                       {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.droppableProps}
                           className={`space-y-3 min-h-[200px] p-2 rounded-lg transition-colors ${
-                            snapshot.isDraggingOver ? 'bg-gray-50' : ''
+                            snapshot.isDraggingOver ? 'bg-white/50 backdrop-blur-sm' : ''
                           }`}
                         >
                           {getCardsForColumn(column.id).map((card, index) => (
@@ -581,11 +614,15 @@ export default function Kanban() {
             <div className="flex-shrink-0 w-80">
               <Dialog open={isCreateColumnOpen} onOpenChange={setIsCreateColumnOpen}>
                 <DialogTrigger asChild>
-                  <Card className="h-fit cursor-pointer hover:bg-gray-50 transition-colors border-dashed">
-                    <CardContent className="flex items-center justify-center py-8">
+                  <Card className="h-fit cursor-pointer hover:shadow-xl transition-all duration-300 border-dashed border-2 border-slate-300/50 hover:border-primary/50 relative overflow-hidden group">
+                    {/* Light background for add column */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50/90 via-white/95 to-slate-50/90" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    <CardContent className="flex items-center justify-center py-8 relative z-10">
                       <div className="text-center">
-                        <Plus className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-600">Add Column</p>
+                        <Plus className="w-8 h-8 text-slate-400 group-hover:text-primary mx-auto mb-2 transition-colors duration-300" />
+                        <p className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors duration-300 font-medium">Add Column</p>
                       </div>
                     </CardContent>
                   </Card>

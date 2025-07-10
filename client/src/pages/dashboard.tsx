@@ -149,7 +149,7 @@ export default function Dashboard() {
           <div className="relative z-10">
             <div className="flex items-center space-x-4 mb-4">
               <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 bg-clip-text text-transparent">
-                Good morning, {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || 'User'}! 👋
+                Good morning, {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || 'User'}!
               </h1>
               {user?.role === 'super_admin' && (
                 <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg px-3 py-1 text-sm font-semibold">

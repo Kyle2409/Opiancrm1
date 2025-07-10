@@ -519,17 +519,42 @@ export default function Dashboard() {
 
         {/* Right Sidebar */}
         <div className="space-y-6">
-          {/* Quick Actions - Light Blue Stained Glass */}
+          {/* Quick Actions - Theme-aware Stained Glass */}
           <Card className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group">
-            {/* Light blue stained glass base */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/98 via-white/95 to-white/98" />
+            {/* Theme-aware stained glass base */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(to bottom right, ${themes[theme].colors.surface}F8, ${themes[theme].colors.surface}F0, ${themes[theme].colors.surface}F8)`
+              }}
+            />
             
-            {/* Light blue stained glass segments */}
+            {/* Theme-aware stained glass segments */}
             <div className="absolute inset-0">
-              <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-br from-blue-200/35 via-blue-300/20 to-transparent" />
-              <div className="absolute top-1/3 left-0 w-2/3 h-1/3 bg-gradient-to-bl from-sky-200/30 via-sky-300/18 to-transparent" />
-              <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-tr from-cyan-200/25 via-cyan-300/15 to-transparent" />
-              <div className="absolute top-1/4 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-indigo-200/30 via-indigo-300/18 to-transparent" />
+              <div 
+                className="absolute top-0 left-0 w-full h-1/3"
+                style={{
+                  background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}35, ${themes[theme].colors.primary}20, transparent)`
+                }}
+              />
+              <div 
+                className="absolute top-1/3 left-0 w-2/3 h-1/3"
+                style={{
+                  background: `linear-gradient(to bottom left, ${themes[theme].colors.secondary}30, ${themes[theme].colors.secondary}18, transparent)`
+                }}
+              />
+              <div 
+                className="absolute bottom-0 left-0 w-full h-1/3"
+                style={{
+                  background: `linear-gradient(to top right, ${themes[theme].colors.accent}25, ${themes[theme].colors.accent}15, transparent)`
+                }}
+              />
+              <div 
+                className="absolute top-1/4 right-0 w-1/2 h-1/2"
+                style={{
+                  background: `linear-gradient(to top left, ${themes[theme].colors.primary}30, ${themes[theme].colors.primary}18, transparent)`
+                }}
+              />
             </div>
             
             {/* Lead lines pattern */}
@@ -545,26 +570,40 @@ export default function Dashboard() {
             {/* Subtle border */}
             <div className="absolute inset-0 rounded-lg border border-slate-400/30 shadow-inner"></div>
             <CardHeader className="pb-4 relative z-10">
-              <CardTitle className="text-lg font-semibold text-slate-700 drop-shadow-sm">Quick Actions</CardTitle>
+              <CardTitle 
+                className="text-lg font-semibold drop-shadow-sm transition-colors duration-300"
+                style={{ color: themes[theme].colors.text }}
+              >
+                Quick Actions
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 relative z-10">
               <Button 
                 onClick={() => setLocation("/clients")}
-                className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md transition-all duration-200"
+                className="w-full h-12 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+                style={{
+                  background: themes[theme].colors.gradient,
+                }}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Client
               </Button>
               <Button 
                 onClick={() => setLocation("/booking")}
-                className="w-full h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md transition-all duration-200"
+                className="w-full h-12 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+                style={{
+                  background: `linear-gradient(to right, ${themes[theme].colors.primary}DD, ${themes[theme].colors.secondary}DD)`,
+                }}
               >
                 <CalendarPlus className="w-4 h-4 mr-2" />
                 Book Appointment
               </Button>
               <Button 
                 onClick={() => setLocation("/documents")}
-                className="w-full h-12 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white shadow-md transition-all duration-200"
+                className="w-full h-12 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+                style={{
+                  background: `linear-gradient(to right, ${themes[theme].colors.secondary}DD, ${themes[theme].colors.accent}DD)`,
+                }}
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Upload Documents
@@ -572,17 +611,42 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Today's Schedule - Enhanced with Light Blue Stained Glass */}
+          {/* Today's Schedule - Theme-aware Stained Glass */}
           <Card className="relative overflow-hidden border-0 shadow-2xl backdrop-blur-sm">
-            {/* Light blue stained glass base */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/98 via-white/95 to-white/98" />
+            {/* Theme-aware stained glass base */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(to bottom right, ${themes[theme].colors.surface}F8, ${themes[theme].colors.surface}F0, ${themes[theme].colors.surface}F8)`
+              }}
+            />
             
-            {/* Light blue stained glass segments */}
+            {/* Theme-aware stained glass segments */}
             <div className="absolute inset-0">
-              <div className="absolute top-0 left-0 w-2/3 h-1/2 bg-gradient-to-br from-blue-200/35 via-blue-300/20 to-transparent" />
-              <div className="absolute top-0 right-0 w-1/2 h-2/3 bg-gradient-to-bl from-sky-200/30 via-sky-300/18 to-transparent" />
-              <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-cyan-200/25 via-cyan-300/15 to-transparent" />
-              <div className="absolute bottom-0 right-0 w-2/3 h-1/3 bg-gradient-to-tl from-indigo-200/30 via-indigo-300/18 to-transparent" />
+              <div 
+                className="absolute top-0 left-0 w-2/3 h-1/2"
+                style={{
+                  background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}35, ${themes[theme].colors.primary}20, transparent)`
+                }}
+              />
+              <div 
+                className="absolute top-0 right-0 w-1/2 h-2/3"
+                style={{
+                  background: `linear-gradient(to bottom left, ${themes[theme].colors.secondary}30, ${themes[theme].colors.secondary}18, transparent)`
+                }}
+              />
+              <div 
+                className="absolute bottom-0 left-0 w-1/2 h-1/2"
+                style={{
+                  background: `linear-gradient(to top right, ${themes[theme].colors.accent}25, ${themes[theme].colors.accent}15, transparent)`
+                }}
+              />
+              <div 
+                className="absolute bottom-0 right-0 w-2/3 h-1/3"
+                style={{
+                  background: `linear-gradient(to top left, ${themes[theme].colors.primary}30, ${themes[theme].colors.primary}18, transparent)`
+                }}
+              />
             </div>
             
             {/* Lead lines pattern */}
@@ -595,8 +659,20 @@ export default function Dashboard() {
             <div className="absolute inset-0 rounded-lg border border-slate-400/30 shadow-inner"></div>
             <CardHeader className="pb-4 relative z-10">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-slate-700 drop-shadow-sm">Today's Schedule</CardTitle>
-                <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                <CardTitle 
+                  className="text-lg font-semibold drop-shadow-sm transition-colors duration-300"
+                  style={{ color: themes[theme].colors.text }}
+                >
+                  Today's Schedule
+                </CardTitle>
+                <Badge 
+                  variant="secondary" 
+                  className="transition-colors duration-300"
+                  style={{ 
+                    backgroundColor: `${themes[theme].colors.primary}20`,
+                    color: themes[theme].colors.primary 
+                  }}
+                >
                   {todayAppointments.length} meetings
                 </Badge>
               </div>

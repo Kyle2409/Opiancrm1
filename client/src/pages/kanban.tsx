@@ -560,17 +560,52 @@ export default function Kanban() {
             {Array.isArray(columns) && columns.map((column) => (
               <div key={column.id} className="flex-shrink-0 w-80">
                 <Card className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group transform hover:scale-105">
-                  {/* Light blue stained glass base */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/98 via-white/95 to-white/98" />
+                  {/* Theme-aware stained glass base */}
+                  <div 
+                    className="absolute inset-0"
+                    style={{
+                      background: `linear-gradient(to bottom right, ${themes[theme].colors.surface}F8, ${themes[theme].colors.surface}F0, ${themes[theme].colors.surface}F8)`
+                    }}
+                  />
                   
-                  {/* Light blue stained glass segments */}
+                  {/* Theme-aware stained glass segments */}
                   <div className="absolute inset-0">
-                    <div className="absolute top-0 left-0 w-1/2 h-1/3 bg-gradient-to-br from-blue-200/40 via-blue-300/25 to-transparent" />
-                    <div className="absolute top-0 right-0 w-1/2 h-2/5 bg-gradient-to-bl from-sky-200/35 via-sky-300/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 w-2/3 h-1/2 bg-gradient-to-tr from-cyan-200/30 via-cyan-300/18 to-transparent" />
-                    <div className="absolute bottom-0 right-0 w-1/2 h-1/3 bg-gradient-to-tl from-indigo-200/35 via-indigo-300/20 to-transparent" />
-                    <div className="absolute top-1/3 left-1/4 w-1/2 h-1/3 bg-gradient-to-br from-blue-300/25 via-blue-400/15 to-transparent" />
-                    <div className="absolute top-1/2 right-1/4 w-1/3 h-1/4 bg-gradient-to-bl from-slate-300/30 via-slate-400/18 to-transparent" />
+                    <div 
+                      className="absolute top-0 left-0 w-1/2 h-1/3"
+                      style={{
+                        background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}40, ${themes[theme].colors.primary}25, transparent)`
+                      }}
+                    />
+                    <div 
+                      className="absolute top-0 right-0 w-1/2 h-2/5"
+                      style={{
+                        background: `linear-gradient(to bottom left, ${themes[theme].colors.secondary}35, ${themes[theme].colors.secondary}20, transparent)`
+                      }}
+                    />
+                    <div 
+                      className="absolute bottom-0 left-0 w-2/3 h-1/2"
+                      style={{
+                        background: `linear-gradient(to top right, ${themes[theme].colors.accent}30, ${themes[theme].colors.accent}18, transparent)`
+                      }}
+                    />
+                    <div 
+                      className="absolute bottom-0 right-0 w-1/2 h-1/3"
+                      style={{
+                        background: `linear-gradient(to top left, ${themes[theme].colors.primary}35, ${themes[theme].colors.primary}20, transparent)`
+                      }}
+                    />
+                    <div 
+                      className="absolute top-1/3 left-1/4 w-1/2 h-1/3"
+                      style={{
+                        background: `linear-gradient(to bottom right, ${themes[theme].colors.secondary}25, ${themes[theme].colors.secondary}15, transparent)`
+                      }}
+                    />
+                    <div 
+                      className="absolute top-1/2 right-1/4 w-1/3 h-1/4"
+                      style={{
+                        background: `linear-gradient(to bottom left, ${themes[theme].colors.text}30, ${themes[theme].colors.text}18, transparent)`
+                      }}
+                    />
                   </div>
                   
                   {/* Lead lines effect */}
@@ -594,8 +629,21 @@ export default function Kanban() {
                           className="w-3 h-3 rounded-full shadow-lg border border-white/50" 
                           style={{ backgroundColor: column.color }}
                         />
-                        <CardTitle className="text-lg font-semibold text-slate-800 drop-shadow-sm">{column.name}</CardTitle>
-                        <Badge variant="secondary" className="text-xs bg-white/60 backdrop-blur-sm border border-slate-300/50">
+                        <CardTitle 
+                          className="text-lg font-semibold drop-shadow-sm transition-colors duration-300"
+                          style={{ color: themes[theme].colors.text }}
+                        >
+                          {column.name}
+                        </CardTitle>
+                        <Badge 
+                          variant="secondary" 
+                          className="text-xs backdrop-blur-sm border transition-colors duration-300"
+                          style={{ 
+                            backgroundColor: `${themes[theme].colors.surface}60`,
+                            borderColor: `${themes[theme].colors.border}50`,
+                            color: themes[theme].colors.text
+                          }}
+                        >
                           {getCardsForColumn(column.id).length}
                         </Badge>
                       </div>
@@ -606,9 +654,16 @@ export default function Kanban() {
                           setSelectedColumn(column);
                           setIsCreateCardOpen(true);
                         }}
-                        className="hover:bg-white/50 backdrop-blur-sm"
+                        className="backdrop-blur-sm transition-colors duration-300"
+                        style={{ 
+                          '--tw-bg-opacity': '0.5',
+                          backgroundColor: `${themes[theme].colors.surface}80`
+                        }}
                       >
-                        <Plus className="w-4 h-4 text-slate-700" />
+                        <Plus 
+                          className="w-4 h-4 transition-colors duration-300"
+                          style={{ color: themes[theme].colors.text }}
+                        />
                       </Button>
                     </div>
                   </CardHeader>
@@ -619,8 +674,13 @@ export default function Kanban() {
                           ref={provided.innerRef}
                           {...provided.droppableProps}
                           className={`space-y-3 min-h-[200px] p-2 rounded-lg transition-colors ${
-                            snapshot.isDraggingOver ? 'bg-white/50 backdrop-blur-sm' : ''
+                            snapshot.isDraggingOver ? 'backdrop-blur-sm' : ''
                           }`}
+                          style={{
+                            backgroundColor: snapshot.isDraggingOver 
+                              ? `${themes[theme].colors.surface}50` 
+                              : 'transparent'
+                          }}
                         >
                           {getCardsForColumn(column.id).map((card, index) => (
                             <Draggable key={card.id} draggableId={card.id.toString()} index={index}>
@@ -629,25 +689,38 @@ export default function Kanban() {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className={`bg-white border rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-grab ${
+                                  className={`border rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 cursor-grab ${
                                     snapshot.isDragging ? 'rotate-2 shadow-lg' : ''
                                   }`}
+                                  style={{
+                                    backgroundColor: themes[theme].colors.surface,
+                                    borderColor: themes[theme].colors.border,
+                                  }}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setSelectedCard(card);
                                   }}
                                 >
                                   <div className="flex items-start justify-between mb-2">
-                                    <h4 className="font-medium text-sm text-gray-900 flex-1">
+                                    <h4 
+                                      className="font-medium text-sm flex-1 transition-colors duration-300"
+                                      style={{ color: themes[theme].colors.text }}
+                                    >
                                       {card.title}
                                     </h4>
                                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                                      <MoreHorizontal className="w-3 h-3" />
+                                      <MoreHorizontal 
+                                        className="w-3 h-3 transition-colors duration-300"
+                                        style={{ color: themes[theme].colors.textSecondary }}
+                                      />
                                     </Button>
                                   </div>
                                   
                                   {card.description && (
-                                    <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+                                    <p 
+                                      className="text-xs mb-3 line-clamp-2 transition-colors duration-300"
+                                      style={{ color: themes[theme].colors.textSecondary }}
+                                    >
                                       {card.description}
                                     </p>
                                   )}

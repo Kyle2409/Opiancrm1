@@ -46,6 +46,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { useTheme } from "@/contexts/theme-context";
 import { usePresence } from "@/hooks/use-presence";
 import { PresenceIndicator } from "@/components/presence-indicator";
 // AddTeamMemberModal replaced by user creation
@@ -54,6 +55,7 @@ export default function TeamMembers() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { users: presenceUsers, refreshUsers } = usePresence();
+  const { theme, themes } = useTheme();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
@@ -242,11 +244,27 @@ export default function TeamMembers() {
 
   return (
     <>
-      <div className="p-6 space-y-6">
+      <div 
+        className="p-6 space-y-6 min-h-screen transition-all duration-300"
+        style={{
+          backgroundColor: themes[theme].colors.background,
+          color: themes[theme].colors.text,
+        }}
+      >
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Team Members</h1>
-            <p className="text-gray-600">All system users with their roles and access levels</p>
+            <h1 
+              className="text-2xl font-bold transition-colors duration-300"
+              style={{ color: themes[theme].colors.text }}
+            >
+              Team Members
+            </h1>
+            <p 
+              className="transition-colors duration-300"
+              style={{ color: themes[theme].colors.textSecondary }}
+            >
+              All system users with their roles and access levels
+            </p>
             <div className="flex items-center space-x-4 mt-2">
               {user?.role === 'super_admin' && (
                 <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
@@ -267,7 +285,10 @@ export default function TeamMembers() {
           </div>
           <Button 
             onClick={() => setIsAddModalOpen(true)}
-            className="bg-primary hover:bg-primary/90"
+            className="text-white transition-all duration-300"
+            style={{
+              background: themes[theme].colors.gradient,
+            }}
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Team Member
@@ -278,7 +299,14 @@ export default function TeamMembers() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {usersWithPresence.map((member) => (
-            <Card key={member.id} className="hover:shadow-lg transition-shadow">
+            <Card 
+              key={member.id} 
+              className="hover:shadow-lg transition-all duration-300"
+              style={{
+                backgroundColor: themes[theme].colors.surface,
+                borderColor: themes[theme].colors.border,
+              }}
+            >
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
@@ -295,7 +323,12 @@ export default function TeamMembers() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <CardTitle className="text-lg">{(member.firstName && member.lastName) ? `${member.firstName} ${member.lastName}` : member.username}</CardTitle>
+                      <CardTitle 
+                        className="text-lg transition-colors duration-300"
+                        style={{ color: themes[theme].colors.text }}
+                      >
+                        {(member.firstName && member.lastName) ? `${member.firstName} ${member.lastName}` : member.username}
+                      </CardTitle>
                       <Badge 
                         variant="secondary" 
                         className={`text-xs ${
@@ -320,16 +353,25 @@ export default function TeamMembers() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <div 
+                    className="flex items-center space-x-2 text-sm transition-colors duration-300"
+                    style={{ color: themes[theme].colors.textSecondary }}
+                  >
                     <Mail className="w-4 h-4" />
                     <span>{member.email}</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <div 
+                    className="flex items-center space-x-2 text-sm transition-colors duration-300"
+                    style={{ color: themes[theme].colors.textSecondary }}
+                  >
                     <Building className="w-4 h-4" />
                     <span>System User</span>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-xs text-gray-500">
+                    <div 
+                      className="text-xs transition-colors duration-300"
+                      style={{ color: themes[theme].colors.textSecondary }}
+                    >
                       Joined: {new Date(member.createdAt).toLocaleDateString()}
                     </div>
                     <div className="flex items-center space-x-2">
@@ -338,7 +380,10 @@ export default function TeamMembers() {
                   </div>
                   
                   {isSuperAdmin && (
-                    <div className="flex items-center space-x-2 pt-3 border-t">
+                    <div 
+                      className="flex items-center space-x-2 pt-3 border-t transition-colors duration-300"
+                      style={{ borderColor: themes[theme].colors.border }}
+                    >
                       <Button 
                         variant="outline" 
                         size="sm" 

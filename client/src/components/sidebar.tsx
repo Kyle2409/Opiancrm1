@@ -41,9 +41,11 @@ export default function Sidebar() {
       <div className="relative p-6 border-b border-slate-200/50">
         <div className="flex items-center space-x-3 group">
           <div className="relative">
-            <div className="w-10 h-10 bg-gradient-to-r from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-all duration-300">
-              <Sparkles className="w-5 h-5 text-white animate-pulse" />
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="Opian Core" 
+              className="w-10 h-10 object-contain transform group-hover:scale-105 transition-all duration-300"
+            />
             <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-bounce"></div>
           </div>
           <div className="flex flex-col">

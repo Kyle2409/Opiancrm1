@@ -75,6 +75,13 @@ export default function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
+            <div className="flex justify-center mb-6">
+              <img 
+                src="/logo.png" 
+                alt="Opian Core" 
+                className="w-16 h-16 object-contain"
+              />
+            </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Opian Core</h1>
             <p className="text-gray-600">Manage your clients and grow your business</p>
           </div>

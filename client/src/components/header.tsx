@@ -51,9 +51,11 @@ export default function Header() {
           {/* Page Title Section */}
           <div className="flex items-center space-x-4">
             <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-r from-primary to-blue-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-all duration-300">
-                <Sparkles className="w-6 h-6 text-white animate-pulse" />
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="Opian Core" 
+                className="w-12 h-12 object-contain transform hover:scale-105 transition-all duration-300"
+              />
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-bounce"></div>
             </div>
             <div className="flex flex-col">

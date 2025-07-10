@@ -20,6 +20,7 @@ import BookingCalendar from "@/pages/booking-calendar";
 import Settings from "@/pages/settings";
 import Users from "@/pages/users";
 import Kanban from "@/pages/kanban";
+import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
 import PresenceProvider from "@/components/presence-provider";
 
@@ -43,6 +44,7 @@ function Router() {
               <ProtectedRoute path="/booking" component={Booking} />
               <ProtectedRoute path="/booking-calendar" component={BookingCalendar} />
               <ProtectedRoute path="/kanban" component={Kanban} />
+              <ProtectedRoute path="/profile" component={Profile} />
               <ProtectedRoute path="/settings" component={Settings} />
               <Route component={NotFound} />
             </Switch>

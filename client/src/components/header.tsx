@@ -18,6 +18,7 @@ const pageTitles = {
   "/documents": { title: "Documents", subtitle: "Upload and organize client documents" },
   "/calendar": { title: "Calendar", subtitle: "View and manage your schedule" },
   "/appointments": { title: "Appointments", subtitle: "Schedule and track meetings" },
+  "/profile": { title: "Profile", subtitle: "Manage your account settings and preferences" },
 };
 
 export default function Header() {
@@ -126,7 +127,9 @@ export default function Header() {
               <DropdownMenuContent align="end" className="w-64 bg-white/95 backdrop-blur-sm border border-slate-200/50 shadow-xl rounded-2xl p-2">
                 <DropdownMenuLabel className="text-slate-700 font-bold px-3 py-2">My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-slate-200/50" />
-                <DropdownMenuItem className="rounded-xl hover:bg-slate-50 transition-all duration-200 cursor-pointer px-3 py-2">
+                <DropdownMenuItem 
+                  onClick={() => window.location.href = "/profile"}
+                  className="rounded-xl hover:bg-slate-50 transition-all duration-200 cursor-pointer px-3 py-2">
                   <User className="mr-3 h-4 w-4 text-slate-600" />
                   <span className="font-medium text-slate-700">Profile</span>
                 </DropdownMenuItem>

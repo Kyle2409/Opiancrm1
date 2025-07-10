@@ -139,13 +139,20 @@ export default function Dashboard() {
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-3xl animate-pulse -z-10 transform -translate-x-1/2 translate-y-1/2"></div>
       
       {/* Welcome Section */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center space-x-3">
-              <h1 className="text-xl font-bold text-gray-900">Good morning, {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || 'User'}! 👋</h1>
+      <div className="mb-8">
+        <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/20 overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-blue-50/30 to-transparent"></div>
+          <div className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-2xl animate-pulse"></div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center space-x-4 mb-4">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 bg-clip-text text-transparent">
+                Good morning, {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || 'User'}! 👋
+              </h1>
               {user?.role === 'super_admin' && (
-                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg px-3 py-1 text-sm font-semibold">
                   Super Admin
                 </Badge>
               )}
@@ -155,13 +162,18 @@ export default function Dashboard() {
                 </Badge>
               )}
             </div>
-            <p className="text-gray-600 mt-1">Here's what's happening with your business today.</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
-              <Activity className="w-3 h-3 mr-1" />
-              All systems operational
-            </Badge>
+            <p className="text-xl text-slate-600 mt-2 font-medium">Here's what's happening with your business today.</p>
+            
+            <div className="flex items-center space-x-3 mt-6">
+              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50/80 backdrop-blur-sm px-3 py-1.5">
+                <Activity className="w-4 h-4 mr-2" />
+                All systems operational
+              </Badge>
+              <div className="flex items-center space-x-2 text-sm text-slate-500">
+                <Clock className="w-4 h-4" />
+                <span>Last updated: {new Date().toLocaleTimeString()}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -283,11 +283,11 @@ export default function TeamMembers() {
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                       <span className="text-white font-semibold text-sm">
-                        {member.username.charAt(0).toUpperCase()}
+                        {(member.firstName && member.lastName) ? `${member.firstName.charAt(0)}${member.lastName.charAt(0)}` : member.username.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div>
-                      <CardTitle className="text-lg">{member.username}</CardTitle>
+                      <CardTitle className="text-lg">{(member.firstName && member.lastName) ? `${member.firstName} ${member.lastName}` : member.username}</CardTitle>
                       <Badge 
                         variant="secondary" 
                         className={`text-xs ${

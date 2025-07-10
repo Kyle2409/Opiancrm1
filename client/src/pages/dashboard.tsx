@@ -143,7 +143,7 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center space-x-3">
-              <h1 className="text-xl font-bold text-gray-900">Good morning, {user?.username || 'User'}! 👋</h1>
+              <h1 className="text-xl font-bold text-gray-900">Good morning, {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || 'User'}! 👋</h1>
               {user?.role === 'super_admin' && (
                 <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                   Super Admin

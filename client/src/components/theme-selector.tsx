@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Palette, Check, Moon, Sun, Waves, TreePine, Sunset, Building } from 'lucide-react';
+import { Palette, Check, Moon, Sun, Waves, TreePine, Sunset, Building, Heart } from 'lucide-react';
 
 const themeIcons = {
   light: Sun,
@@ -13,6 +13,7 @@ const themeIcons = {
   forest: TreePine,
   sunset: Sunset,
   corporate: Building,
+  pink: Heart,
 };
 
 export default function ThemeSelector() {
@@ -45,7 +46,7 @@ export default function ThemeSelector() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
           {Object.entries(themes).map(([key, config]) => {
-            const Icon = themeIcons[key as Theme];
+            const Icon = themeIcons[key as Theme] || Palette;
             const isActive = theme === key;
             
             return (

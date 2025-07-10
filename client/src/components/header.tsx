@@ -11,6 +11,7 @@ import { NotificationDropdown } from "@/components/notification-dropdown";
 import AddClientModal from "@/components/modals/add-client-modal";
 import ComprehensiveClientModal from "@/components/modals/comprehensive-client-modal";
 import AddAppointmentModal from "@/components/modals/add-appointment-modal";
+import ThemeSelector from "@/components/theme-selector";
 
 const pageTitles = {
   "/": { title: "Dashboard", subtitle: "Welcome back! Here's your overview" },
@@ -79,6 +80,9 @@ export default function Header() {
                 {location === "/appointments" || location === "/calendar" ? "Add Meeting" : "Add Client"}
               </span>
             </Button>
+            
+            {/* Theme Selector */}
+            <ThemeSelector />
             
             {/* Enhanced Notification Dropdown */}
             <div className="relative">

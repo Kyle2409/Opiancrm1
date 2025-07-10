@@ -39,6 +39,18 @@
   --sidebar-accent-foreground: hsl(210, 11%, 20%);
   --sidebar-border: hsl(214, 32%, 91%);
   --sidebar-ring: hsl(210, 11%, 20%);
+  
+  /* Theme Variables */
+  --theme-primary: #0073EA;
+  --theme-secondary: #00C875;
+  --theme-accent: #FF6B6B;
+  --theme-background: #FFFFFF;
+  --theme-surface: #F8FAFC;
+  --theme-text: #1E293B;
+  --theme-textSecondary: #64748B;
+  --theme-border: #E2E8F0;
+  --theme-gradient: linear-gradient(135deg, #0073EA 0%, #00C875 100%);
+  --theme-glassBg: rgba(248, 250, 252, 0.9);
 }
 
 .dark {
@@ -98,6 +110,58 @@
 
   .nav-item.active:hover {
     @apply bg-primary opacity-90;
+  }
+  
+  /* Theme-aware utility classes */
+  .theme-bg {
+    background-color: var(--theme-background);
+  }
+
+  .theme-surface {
+    background-color: var(--theme-surface);
+  }
+
+  .theme-text {
+    color: var(--theme-text);
+  }
+
+  .theme-text-secondary {
+    color: var(--theme-textSecondary);
+  }
+
+  .theme-border {
+    border-color: var(--theme-border);
+  }
+
+  .theme-gradient {
+    background: var(--theme-gradient);
+  }
+
+  .theme-glass {
+    background: var(--theme-glassBg);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Theme-aware components */
+  .theme-card {
+    background-color: var(--theme-surface);
+    border-color: var(--theme-border);
+    color: var(--theme-text);
+  }
+
+  .theme-button-primary {
+    background: var(--theme-gradient);
+    color: white;
+    border: none;
+  }
+
+  .theme-button-primary:hover {
+    filter: brightness(1.1);
+  }
+
+  /* Smooth theme transitions */
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
 
   .nav-item i {

@@ -27,11 +27,13 @@ import { format, isToday, isTomorrow, isThisWeek, startOfWeek, endOfWeek } from 
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { usePresence } from "@/hooks/use-presence";
+import { useTheme } from "@/contexts/theme-context";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const { users: presenceUsers } = usePresence();
+  const { theme, themes } = useTheme();
   
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/stats"],
@@ -68,6 +70,16 @@ export default function Dashboard() {
   const activeClients = Array.isArray(clients) ? clients.filter(c => c.status === 'active') : [];
   const prospectClients = Array.isArray(clients) ? clients.filter(c => c.status === 'prospect') : [];
   const totalRevenue = clients.reduce((sum, client) => sum + (client.value || 0), 0);
+
+  // Theme-aware styles
+  const currentTheme = themes[theme];
+  const themeStyles = {
+    background: currentTheme.colors.background,
+    surface: currentTheme.colors.surface,
+    text: currentTheme.colors.text,
+    primary: currentTheme.colors.primary,
+    gradient: currentTheme.colors.gradient,
+  };
   const avgDealSize = totalRevenue / clients.length || 0;
 
   const getClientName = (clientId: number | null) => {

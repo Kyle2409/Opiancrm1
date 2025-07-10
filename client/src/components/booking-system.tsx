@@ -16,6 +16,7 @@ import { teamMembersApi } from "@/lib/team-api";
 import { useAuth } from "@/hooks/use-auth";
 import { useNotifications } from "@/hooks/use-notifications";
 import { useNotificationContext } from "@/contexts/notification-context";
+import { useTheme } from "@/contexts/theme-context";
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -50,6 +51,7 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { showNewAppointment } = useNotifications();
+  const { theme, themes } = useTheme();
   
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -196,8 +198,16 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Select Date</h2>
-            <p className="text-gray-600">
+            <h2 
+              className="text-2xl font-bold mb-2 transition-colors duration-300"
+              style={{ color: themes[theme].colors.text }}
+            >
+              Select Date
+            </h2>
+            <p 
+              className="transition-colors duration-300"
+              style={{ color: themes[theme].colors.textSecondary }}
+            >
               {bookingData.bookingFor === "self" 
                 ? "Choose your preferred appointment date" 
                 : `Choose appointment date for ${teamMembers.find(m => m.id === bookingData.assignedToId)?.username || "team member"}`
@@ -223,19 +233,35 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
             return (
               <Card 
                 key={date.toISOString()} 
-                className={`cursor-pointer transition-all hover:shadow-md ${
-                  isDisabled ? 'opacity-50 border-red-200' : 'hover:border-primary'
+                className={`cursor-pointer transition-all duration-300 hover:shadow-md ${
+                  isDisabled ? 'opacity-50' : ''
                 }`}
+                style={{
+                  backgroundColor: themes[theme].colors.surface,
+                  borderColor: isDisabled 
+                    ? themes[theme].colors.border 
+                    : (isSameDay(date, selectedDate) ? themes[theme].colors.primary : themes[theme].colors.border),
+                  borderWidth: isSameDay(date, selectedDate) ? '2px' : '1px',
+                }}
                 onClick={() => !isDisabled && handleDateSelect(date)}
               >
                 <CardContent className="p-4 text-center">
-                  <div className="text-sm font-medium text-gray-600 mb-1">
+                  <div 
+                    className="text-sm font-medium mb-1 transition-colors duration-300"
+                    style={{ color: themes[theme].colors.textSecondary }}
+                  >
                     {format(date, 'EEE')}
                   </div>
-                  <div className="text-lg font-bold text-gray-900 mb-2">
+                  <div 
+                    className="text-lg font-bold mb-2 transition-colors duration-300"
+                    style={{ color: themes[theme].colors.text }}
+                  >
                     {format(date, 'd')}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div 
+                    className="text-xs transition-colors duration-300"
+                    style={{ color: themes[theme].colors.textSecondary }}
+                  >
                     {format(date, 'MMM')}
                   </div>
                   {isToday(date) && (
@@ -274,8 +300,16 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Select Time</h2>
-            <p className="text-gray-600">
+            <h2 
+              className="text-2xl font-bold mb-2 transition-colors duration-300"
+              style={{ color: themes[theme].colors.text }}
+            >
+              Select Time
+            </h2>
+            <p 
+              className="transition-colors duration-300"
+              style={{ color: themes[theme].colors.textSecondary }}
+            >
               {format(selectedDate, 'EEEE, MMMM d, yyyy')}
             </p>
           </div>
@@ -475,7 +509,10 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
         <div className="flex justify-center">
           <Button 
             onClick={() => setStep(2)}
-            className="px-8 py-3 bg-primary hover:bg-primary/90"
+            className="px-8 py-3 text-white transition-all duration-300"
+            style={{
+              background: themes[theme].colors.gradient,
+            }}
             disabled={bookingData.bookingFor === "team_member" && !bookingData.assignedToId}
           >
             Continue to Calendar
@@ -490,8 +527,16 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Booking Details</h2>
-            <p className="text-gray-600">
+            <h2 
+              className="text-2xl font-bold mb-2 transition-colors duration-300"
+              style={{ color: themes[theme].colors.text }}
+            >
+              Booking Details
+            </h2>
+            <p 
+              className="transition-colors duration-300"
+              style={{ color: themes[theme].colors.textSecondary }}
+            >
               {format(selectedDate, 'EEEE, MMMM d')} at {selectedTime}
             </p>
           </div>
@@ -505,7 +550,13 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
           </Button>
         </div>
         
-        <Card>
+        <Card 
+          className="transition-all duration-300"
+          style={{
+            backgroundColor: themes[theme].colors.surface,
+            borderColor: themes[theme].colors.border,
+          }}
+        >
           <CardContent className="p-6 space-y-4">
             <div className="space-y-2">
               <Label htmlFor="appointment-type">Appointment Type</Label>
@@ -650,10 +701,21 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div 
+      className="max-w-4xl mx-auto p-6 min-h-screen transition-all duration-300"
+      style={{
+        backgroundColor: themes[theme].colors.background,
+        color: themes[theme].colors.text,
+      }}
+    >
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Book Appointment</h1>
+          <h1 
+            className="text-3xl font-bold transition-colors duration-300"
+            style={{ color: themes[theme].colors.text }}
+          >
+            Book Appointment
+          </h1>
           {onClose && (
             <Button variant="ghost" onClick={onClose} size="sm">
               ×
@@ -665,15 +727,31 @@ export default function BookingSystem({ onClose }: BookingSystemProps) {
         <div className="flex items-center space-x-4 mb-8">
           {[1, 2, 3, 4, 5].map((stepNum) => (
             <div key={stepNum} className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                step >= stepNum ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'
-              }`}>
+              <div 
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
+                  step >= stepNum 
+                    ? 'text-white shadow-lg' 
+                    : 'text-gray-600'
+                }`}
+                style={{
+                  backgroundColor: step >= stepNum 
+                    ? themes[theme].colors.primary 
+                    : themes[theme].colors.surface,
+                  borderColor: themes[theme].colors.border,
+                  borderWidth: '1px',
+                }}
+              >
                 {stepNum}
               </div>
               {stepNum < 5 && (
-                <div className={`w-12 h-0.5 mx-2 ${
-                  step > stepNum ? 'bg-primary' : 'bg-gray-200'
-                }`} />
+                <div 
+                  className={`w-12 h-0.5 mx-2 transition-all duration-300`}
+                  style={{
+                    backgroundColor: step > stepNum 
+                      ? themes[theme].colors.primary 
+                      : themes[theme].colors.border,
+                  }}
+                />
               )}
             </div>
           ))}

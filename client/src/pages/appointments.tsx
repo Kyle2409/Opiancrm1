@@ -134,8 +134,20 @@ export default function Appointments() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <Card>
+      <div 
+        className="p-6 min-h-screen transition-all duration-300"
+        style={{
+          backgroundColor: themes[theme].colors.background,
+          color: themes[theme].colors.text,
+        }}
+      >
+        <Card
+          className="transition-all duration-300"
+          style={{
+            backgroundColor: themes[theme].colors.surface,
+            borderColor: themes[theme].colors.border,
+          }}
+        >
           <CardContent className="p-6">
             <div className="space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -149,15 +161,42 @@ export default function Appointments() {
   }
 
   return (
-    <div className="p-6 space-y-6 relative min-h-screen overflow-x-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
+    <div 
+      className="p-6 space-y-6 relative min-h-screen overflow-x-hidden transition-all duration-300"
+      style={{
+        backgroundColor: themes[theme].colors.background,
+        color: themes[theme].colors.text,
+      }}
+    >
+      {/* Theme-aware background decoration */}
+      <div 
+        className="absolute inset-0 -z-10"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}05, transparent, ${themes[theme].colors.surface}30)`
+        }}
+      ></div>
+      <div 
+        className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}20, ${themes[theme].colors.secondary}20)`
+        }}
+      ></div>
       
-      <Card className="bg-white/80 backdrop-blur-sm border border-slate-200/50 shadow-xl">
+      <Card 
+        className="backdrop-blur-sm shadow-xl transition-all duration-300"
+        style={{
+          backgroundColor: `${themes[theme].colors.surface}80`,
+          borderColor: `${themes[theme].colors.border}50`,
+        }}
+      >
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Appointments</CardTitle>
+            <CardTitle 
+              className="text-2xl font-bold transition-colors duration-300"
+              style={{ color: themes[theme].colors.text }}
+            >
+              Appointments
+            </CardTitle>
             <div className="flex items-center space-x-4">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-40">
@@ -174,7 +213,10 @@ export default function Appointments() {
               </Select>
               <Button 
                 onClick={() => setIsAddModalOpen(true)}
-                className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group"
+                className="text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group"
+                style={{
+                  background: themes[theme].colors.gradient,
+                }}
               >
                 <Plus className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:rotate-90" />
                 Schedule Meeting
@@ -186,10 +228,16 @@ export default function Appointments() {
           {filteredAppointments.length === 0 ? (
             <div className="text-center py-12">
               <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-textPrimary mb-2">
+              <h3 
+                className="text-lg font-medium mb-2 transition-colors duration-300"
+                style={{ color: themes[theme].colors.text }}
+              >
                 {statusFilter === "all" ? "No appointments scheduled" : `No ${statusFilter} appointments found`}
               </h3>
-              <p className="text-gray-500 mb-4">
+              <p 
+                className="mb-4 transition-colors duration-300"
+                style={{ color: themes[theme].colors.textSecondary }}
+              >
                 {statusFilter === "all" 
                   ? "Schedule your first appointment to get started."
                   : `Try adjusting your filter or schedule a new appointment.`
@@ -197,7 +245,10 @@ export default function Appointments() {
               </p>
               <Button 
                 onClick={() => setIsAddModalOpen(true)}
-                className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group"
+                className="text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group"
+                style={{
+                  background: themes[theme].colors.gradient,
+                }}
               >
                 <Plus className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:rotate-90" />
                 Schedule Appointment
@@ -206,7 +257,14 @@ export default function Appointments() {
           ) : (
             <div className="space-y-4">
               {filteredAppointments.map((appointment) => (
-                <Card key={appointment.id} className="border border-slate-200/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white/80 backdrop-blur-sm">
+                <Card 
+                  key={appointment.id} 
+                  className="hover:shadow-xl transition-all duration-300 transform hover:scale-105 backdrop-blur-sm"
+                  style={{
+                    backgroundColor: `${themes[theme].colors.surface}80`,
+                    borderColor: `${themes[theme].colors.border}50`,
+                  }}
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
@@ -214,18 +272,39 @@ export default function Appointments() {
                           {getAppointmentIcon(appointment.type)}
                         </div>
                         <div>
-                          <h4 className="text-lg font-medium text-textPrimary">{appointment.title}</h4>
-                          <p className="text-sm text-gray-500">{getClientName(appointment.clientId)}</p>
+                          <h4 
+                            className="text-lg font-medium transition-colors duration-300"
+                            style={{ color: themes[theme].colors.text }}
+                          >
+                            {appointment.title}
+                          </h4>
+                          <p 
+                            className="text-sm transition-colors duration-300"
+                            style={{ color: themes[theme].colors.textSecondary }}
+                          >
+                            {getClientName(appointment.clientId)}
+                          </p>
                           {appointment.description && (
-                            <p className="text-sm text-gray-600 mt-1">{appointment.description}</p>
+                            <p 
+                              className="text-sm mt-1 transition-colors duration-300"
+                              style={{ color: themes[theme].colors.textSecondary }}
+                            >
+                              {appointment.description}
+                            </p>
                           )}
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium text-textPrimary">
+                        <p 
+                          className="text-sm font-medium transition-colors duration-300"
+                          style={{ color: themes[theme].colors.text }}
+                        >
                           {format(new Date(appointment.date), 'EEE, MMM d, yyyy')}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p 
+                          className="text-sm transition-colors duration-300"
+                          style={{ color: themes[theme].colors.textSecondary }}
+                        >
                           {appointment.startTime} - {appointment.endTime}
                         </p>
                       </div>

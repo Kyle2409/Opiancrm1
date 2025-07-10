@@ -109,6 +109,7 @@ Changelog:
 - July 10, 2025. Document management restructuring - Removed standalone documents page and integrated client-specific document management directly into client profiles with upload, download, and delete functionality
 - July 10, 2025. Theme system enhancement - Made all pages fully theme-aware with Dashboard, Clients, Kanban, and Appointments pages now properly responding to theme changes including backgrounds, cards, text colors, and the new Pink theme
 - July 10, 2025. Complete theme system integration - Added comprehensive theme support across all remaining components including Quick Actions, Today's Schedule, Kanban columns/cards, and Team Members page with stained glass effects, smooth 300ms transitions, and full compatibility with all theme colors
+- July 10, 2025. Appointments and booking system theme integration - Updated appointments page, calendar components, and booking system with full theme awareness including stained glass backgrounds, dynamic color coordination, and responsive theme switching for all text, cards, and interactive elements
 ```
 
 ## User Preferences

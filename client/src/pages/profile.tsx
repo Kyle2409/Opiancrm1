@@ -195,6 +195,13 @@ export default function Profile() {
         return;
       }
       
+      // For debugging: Option to upload directly without cropping
+      // Hold Ctrl/Cmd while selecting to skip cropping
+      if (event.ctrlKey || event.metaKey) {
+        uploadProfilePictureMutation.mutate(file);
+        return;
+      }
+      
       // Create preview URL and open cropper
       const reader = new FileReader();
       reader.onload = () => {
@@ -208,8 +215,8 @@ export default function Profile() {
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { naturalWidth, naturalHeight } = e.currentTarget;
     
-    // Center the crop on the image
-    const cropSize = Math.min(naturalWidth, naturalHeight);
+    // Center the crop on the image and make it circular
+    const cropSize = Math.min(naturalWidth, naturalHeight) * 0.8; // Use 80% of the smaller dimension
     const x = (naturalWidth - cropSize) / 2;
     const y = (naturalHeight - cropSize) / 2;
     
@@ -236,24 +243,37 @@ export default function Profile() {
         return;
       }
       
-      // Set canvas size to crop size
-      canvas.width = crop.width;
-      canvas.height = crop.height;
+      // Validate crop dimensions
+      if (crop.width <= 0 || crop.height <= 0) {
+        reject(new Error('Invalid crop dimensions'));
+        return;
+      }
+      
+      // Set canvas size to crop size (minimum 50x50)
+      const finalWidth = Math.max(50, Math.floor(crop.width));
+      const finalHeight = Math.max(50, Math.floor(crop.height));
+      
+      canvas.width = finalWidth;
+      canvas.height = finalHeight;
+      
+      // Fill canvas with white background first
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, finalWidth, finalHeight);
       
       // Draw the cropped image
       ctx.drawImage(
         image,
-        crop.x,
-        crop.y,
-        crop.width,
-        crop.height,
+        Math.floor(crop.x),
+        Math.floor(crop.y),
+        Math.floor(crop.width),
+        Math.floor(crop.height),
         0,
         0,
-        crop.width,
-        crop.height
+        finalWidth,
+        finalHeight
       );
       
-      // Convert canvas to blob
+      // Convert canvas to blob with higher quality
       canvas.toBlob((blob) => {
         if (blob) {
           const file = new File([blob], fileName, { type: 'image/jpeg' });
@@ -261,7 +281,7 @@ export default function Profile() {
         } else {
           reject(new Error('Failed to create blob'));
         }
-      }, 'image/jpeg', 0.9);
+      }, 'image/jpeg', 0.95);
     });
   }, []);
 

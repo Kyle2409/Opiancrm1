@@ -144,23 +144,68 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="p-4 space-y-4 bg-gradient-to-br from-slate-50 to-white h-full relative overflow-hidden">
+    <div 
+      className="p-4 space-y-4 h-full relative overflow-hidden transition-all duration-300"
+      style={{ 
+        backgroundColor: themes[theme].colors.background,
+        color: themes[theme].colors.text 
+      }}
+    >
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-3xl animate-pulse -z-10 transform -translate-x-1/2 translate-y-1/2"></div>
+      <div 
+        className="absolute inset-0 -z-10 opacity-20"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}10, transparent, ${themes[theme].colors.secondary}20)`
+        }}
+      ></div>
+      <div 
+        className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}30, ${themes[theme].colors.secondary}20)`
+        }}
+      ></div>
+      <div 
+        className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl animate-pulse -z-10 transform -translate-x-1/2 translate-y-1/2"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.secondary}20, ${themes[theme].colors.primary}30)`
+        }}
+      ></div>
       
       {/* Welcome Section */}
       <div className="mb-8">
-        <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/20 overflow-hidden">
+        <div 
+          className="relative backdrop-blur-sm rounded-3xl p-8 shadow-2xl border overflow-hidden transition-all duration-300"
+          style={{
+            backgroundColor: themes[theme].colors.glassBg,
+            borderColor: themes[theme].colors.border,
+          }}
+        >
           {/* Background decoration */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-blue-50/30 to-transparent"></div>
-          <div className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-2xl animate-pulse"></div>
-          <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-2xl animate-pulse"></div>
+          <div 
+            className="absolute inset-0 opacity-20"
+            style={{
+              background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}20, ${themes[theme].colors.surface}50, transparent)`
+            }}
+          ></div>
+          <div 
+            className="absolute -top-8 -right-8 w-32 h-32 rounded-full blur-2xl animate-pulse"
+            style={{
+              background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}30, ${themes[theme].colors.secondary}20)`
+            }}
+          ></div>
+          <div 
+            className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full blur-2xl animate-pulse"
+            style={{
+              background: `linear-gradient(to bottom right, ${themes[theme].colors.secondary}20, ${themes[theme].colors.primary}30)`
+            }}
+          ></div>
           
           <div className="relative z-10">
             <div className="flex items-center space-x-4 mb-4">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 bg-clip-text text-transparent">
+              <h1 
+                className="text-4xl font-bold transition-colors duration-300"
+                style={{ color: themes[theme].colors.text }}
+              >
                 Good morning, {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || 'User'}!
               </h1>
               {user?.role === 'super_admin' && (
@@ -174,7 +219,12 @@ export default function Dashboard() {
                 </Badge>
               )}
             </div>
-            <p className="text-xl text-slate-600 mt-2 font-medium">Here's what's happening with your business today.</p>
+            <p 
+              className="text-xl mt-2 font-medium transition-colors duration-300"
+              style={{ color: themes[theme].colors.textSecondary }}
+            >
+              Here's what's happening with your business today.
+            </p>
             
             <div className="flex items-center space-x-3 mt-6">
               <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50/80 backdrop-blur-sm px-3 py-1.5">
@@ -195,18 +245,56 @@ export default function Dashboard() {
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group transform hover:scale-105 hover:-translate-y-2">
-              {/* Light blue stained glass base */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/98 via-white/95 to-white/98" />
+            <Card 
+              key={index} 
+              className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group transform hover:scale-105 hover:-translate-y-2"
+            >
+              {/* Theme-aware stained glass base */}
+              <div 
+                className="absolute inset-0" 
+                style={{
+                  background: `linear-gradient(to bottom right, ${themes[theme].colors.surface}F8, ${themes[theme].colors.surface}F0, ${themes[theme].colors.surface}F8)`
+                }}
+              />
               
-              {/* Light blue stained glass segments */}
+              {/* Theme-aware stained glass segments */}
               <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-1/2 h-1/3 bg-gradient-to-br from-blue-200/40 via-blue-300/25 to-transparent" />
-                <div className="absolute top-0 right-0 w-1/2 h-2/5 bg-gradient-to-bl from-sky-200/35 via-sky-300/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 w-2/3 h-1/2 bg-gradient-to-tr from-cyan-200/30 via-cyan-300/18 to-transparent" />
-                <div className="absolute bottom-0 right-0 w-1/2 h-1/3 bg-gradient-to-tl from-indigo-200/35 via-indigo-300/20 to-transparent" />
-                <div className="absolute top-1/3 left-1/4 w-1/2 h-1/3 bg-gradient-to-br from-blue-300/25 via-blue-400/15 to-transparent" />
-                <div className="absolute top-1/2 right-1/4 w-1/3 h-1/4 bg-gradient-to-bl from-slate-300/30 via-slate-400/18 to-transparent" />
+                <div 
+                  className="absolute top-0 left-0 w-1/2 h-1/3"
+                  style={{
+                    background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}40, ${themes[theme].colors.primary}25, transparent)`
+                  }}
+                />
+                <div 
+                  className="absolute top-0 right-0 w-1/2 h-2/5"
+                  style={{
+                    background: `linear-gradient(to bottom left, ${themes[theme].colors.secondary}35, ${themes[theme].colors.secondary}20, transparent)`
+                  }}
+                />
+                <div 
+                  className="absolute bottom-0 left-0 w-2/3 h-1/2"
+                  style={{
+                    background: `linear-gradient(to top right, ${themes[theme].colors.accent}30, ${themes[theme].colors.accent}18, transparent)`
+                  }}
+                />
+                <div 
+                  className="absolute bottom-0 right-0 w-1/2 h-1/3"
+                  style={{
+                    background: `linear-gradient(to top left, ${themes[theme].colors.primary}35, ${themes[theme].colors.primary}20, transparent)`
+                  }}
+                />
+                <div 
+                  className="absolute top-1/3 left-1/4 w-1/2 h-1/3"
+                  style={{
+                    background: `linear-gradient(to bottom right, ${themes[theme].colors.secondary}25, ${themes[theme].colors.secondary}15, transparent)`
+                  }}
+                />
+                <div 
+                  className="absolute top-1/2 right-1/4 w-1/3 h-1/4"
+                  style={{
+                    background: `linear-gradient(to bottom left, ${themes[theme].colors.text}30, ${themes[theme].colors.text}18, transparent)`
+                  }}
+                />
               </div>
               
               {/* Lead lines effect */}
@@ -226,22 +314,50 @@ export default function Dashboard() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <p className="text-sm font-semibold text-slate-700 drop-shadow-sm">{stat.title}</p>
+                      <p 
+                        className="text-sm font-semibold drop-shadow-sm"
+                        style={{ color: themes[theme].colors.text }}
+                      >
+                        {stat.title}
+                      </p>
                       {stat.changeType === 'positive' && (
-                        <ArrowUpRight className="w-3 h-3 text-emerald-600 drop-shadow-sm" />
+                        <ArrowUpRight 
+                          className="w-3 h-3 drop-shadow-sm" 
+                          style={{ color: themes[theme].colors.secondary }}
+                        />
                       )}
                     </div>
-                    <p className="text-2xl font-bold text-slate-800 mb-1 drop-shadow-sm">{stat.value}</p>
-                    <p className="text-xs text-slate-600 mb-2 drop-shadow-sm">{stat.subtitle}</p>
+                    <p 
+                      className="text-2xl font-bold mb-1 drop-shadow-sm"
+                      style={{ color: themes[theme].colors.text }}
+                    >
+                      {stat.value}
+                    </p>
+                    <p 
+                      className="text-xs mb-2 drop-shadow-sm"
+                      style={{ color: themes[theme].colors.textSecondary }}
+                    >
+                      {stat.subtitle}
+                    </p>
                     <div className="flex items-center space-x-1">
-                      <span className={`text-sm font-semibold drop-shadow-sm ${
-                        stat.changeType === 'positive' ? 'text-emerald-700' : 'text-slate-600'
-                      }`}>
+                      <span 
+                        className="text-sm font-semibold drop-shadow-sm"
+                        style={{ 
+                          color: stat.changeType === 'positive' 
+                            ? themes[theme].colors.secondary 
+                            : themes[theme].colors.textSecondary 
+                        }}
+                      >
                         {stat.change}
                       </span>
                     </div>
                   </div>
-                  <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-all duration-300 backdrop-blur-sm border border-white/50 relative`}>
+                  <div 
+                    className="w-12 h-12 rounded-xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-all duration-300 backdrop-blur-sm border border-white/50 relative"
+                    style={{
+                      background: themes[theme].colors.gradient
+                    }}
+                  >
                     <Icon className="w-6 h-6 text-white drop-shadow-md" />
                     <div className="absolute inset-0 bg-white/25 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
@@ -257,17 +373,52 @@ export default function Dashboard() {
         {/* Recent Client Activity - Light Blue Stained Glass */}
         <div className="lg:col-span-2">
           <Card className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group">
-            {/* Light blue stained glass base */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/98 via-white/95 to-white/98" />
+            {/* Theme-aware stained glass base */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(to bottom right, ${themes[theme].colors.surface}F8, ${themes[theme].colors.surface}F0, ${themes[theme].colors.surface}F8)`
+              }}
+            />
             
-            {/* Light blue stained glass segments */}
+            {/* Theme-aware stained glass segments */}
             <div className="absolute inset-0">
-              <div className="absolute top-0 left-0 w-1/2 h-1/3 bg-gradient-to-br from-blue-200/40 via-blue-300/25 to-transparent" />
-              <div className="absolute top-0 right-0 w-1/2 h-2/5 bg-gradient-to-bl from-sky-200/35 via-sky-300/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 w-2/3 h-1/2 bg-gradient-to-tr from-cyan-200/30 via-cyan-300/18 to-transparent" />
-              <div className="absolute bottom-0 right-0 w-1/2 h-1/3 bg-gradient-to-tl from-indigo-200/35 via-indigo-300/20 to-transparent" />
-              <div className="absolute top-1/3 left-1/4 w-1/2 h-1/3 bg-gradient-to-br from-blue-300/25 via-blue-400/15 to-transparent" />
-              <div className="absolute top-1/2 right-1/4 w-1/3 h-1/4 bg-gradient-to-bl from-slate-300/30 via-slate-400/18 to-transparent" />
+              <div 
+                className="absolute top-0 left-0 w-1/2 h-1/3"
+                style={{
+                  background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}40, ${themes[theme].colors.primary}25, transparent)`
+                }}
+              />
+              <div 
+                className="absolute top-0 right-0 w-1/2 h-2/5"
+                style={{
+                  background: `linear-gradient(to bottom left, ${themes[theme].colors.secondary}35, ${themes[theme].colors.secondary}20, transparent)`
+                }}
+              />
+              <div 
+                className="absolute bottom-0 left-0 w-2/3 h-1/2"
+                style={{
+                  background: `linear-gradient(to top right, ${themes[theme].colors.accent}30, ${themes[theme].colors.accent}18, transparent)`
+                }}
+              />
+              <div 
+                className="absolute bottom-0 right-0 w-1/2 h-1/3"
+                style={{
+                  background: `linear-gradient(to top left, ${themes[theme].colors.primary}35, ${themes[theme].colors.primary}20, transparent)`
+                }}
+              />
+              <div 
+                className="absolute top-1/3 left-1/4 w-1/2 h-1/3"
+                style={{
+                  background: `linear-gradient(to bottom right, ${themes[theme].colors.secondary}25, ${themes[theme].colors.secondary}15, transparent)`
+                }}
+              />
+              <div 
+                className="absolute top-1/2 right-1/4 w-1/3 h-1/4"
+                style={{
+                  background: `linear-gradient(to bottom left, ${themes[theme].colors.text}30, ${themes[theme].colors.text}18, transparent)`
+                }}
+              />
             </div>
             
             {/* Lead lines effect */}

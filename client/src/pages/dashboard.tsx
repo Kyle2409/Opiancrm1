@@ -132,18 +132,18 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-white min-h-screen relative overflow-x-hidden">
+    <div className="p-6 space-y-6 bg-gradient-to-br from-slate-50 to-white h-full relative overflow-x-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-50/30 -z-10"></div>
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-600/20 to-primary/20 rounded-full blur-3xl animate-pulse -z-10 transform -translate-x-1/2 translate-y-1/2"></div>
       
       {/* Welcome Section */}
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center space-x-3">
-              <h1 className="text-3xl font-bold text-gray-900">Good morning, {user?.username || 'User'}! 👋</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Good morning, {user?.username || 'User'}! 👋</h1>
               {user?.role === 'super_admin' && (
                 <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                   Super Admin
@@ -198,7 +198,7 @@ export default function Dashboard() {
               
               {/* Subtle border */}
               <div className="absolute inset-0 rounded-lg border border-slate-400/30 shadow-inner"></div>
-              <CardContent className="p-6 relative z-10 backdrop-blur-sm">
+              <CardContent className="p-4 relative z-10 backdrop-blur-sm">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
@@ -207,8 +207,8 @@ export default function Dashboard() {
                         <ArrowUpRight className="w-3 h-3 text-emerald-600 drop-shadow-sm" />
                       )}
                     </div>
-                    <p className="text-3xl font-bold text-slate-800 mb-1 drop-shadow-sm">{stat.value}</p>
-                    <p className="text-xs text-slate-600 mb-3 drop-shadow-sm">{stat.subtitle}</p>
+                    <p className="text-2xl font-bold text-slate-800 mb-1 drop-shadow-sm">{stat.value}</p>
+                    <p className="text-xs text-slate-600 mb-2 drop-shadow-sm">{stat.subtitle}</p>
                     <div className="flex items-center space-x-1">
                       <span className={`text-sm font-semibold drop-shadow-sm ${
                         stat.changeType === 'positive' ? 'text-emerald-700' : 'text-slate-600'
@@ -217,8 +217,8 @@ export default function Dashboard() {
                       </span>
                     </div>
                   </div>
-                  <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-all duration-300 backdrop-blur-sm border border-white/50 relative`}>
-                    <Icon className="w-7 h-7 text-white drop-shadow-md" />
+                  <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-all duration-300 backdrop-blur-sm border border-white/50 relative`}>
+                    <Icon className="w-6 h-6 text-white drop-shadow-md" />
                     <div className="absolute inset-0 bg-white/25 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 </div>
@@ -272,25 +272,25 @@ export default function Dashboard() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="relative z-10">
-              <div className="space-y-4">
+            <CardContent className="relative z-10 p-4">
+              <div className="space-y-3">
                 {recentClients.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <div className="text-center py-8">
+                    <Users className="mx-auto h-10 w-10 text-gray-400 mb-3" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No clients yet</h3>
                     <p className="text-gray-500">Add your first client to get started</p>
                   </div>
                 ) : (
                   recentClients.map((client) => (
                     <div key={client.id} className="group relative">
-                      <div className="flex items-center space-x-4 p-4 rounded-xl border-2 border-white/80 bg-white/95 hover:border-blue-400 hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 backdrop-blur-md shadow-lg">
+                      <div className="flex items-center space-x-3 p-3 rounded-xl border-2 border-white/80 bg-white/95 hover:border-blue-400 hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 backdrop-blur-md shadow-lg">
                         <div className="relative">
-                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
                             <span className="text-white font-semibold text-sm">
                               {(client.firstName?.[0] || '') + (client.surname?.[0] || '')}
                             </span>
                           </div>
-                          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+                          <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
                             client.status === 'active' ? 'bg-green-500' : 
                             client.status === 'prospect' ? 'bg-yellow-500' : 'bg-gray-400'
                           }`} />
@@ -320,7 +320,7 @@ export default function Dashboard() {
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-4 mt-3">
+                          <div className="flex items-center space-x-4 mt-2">
                             <div className="flex items-center space-x-1 text-xs text-gray-500">
                               <Mail className="w-3 h-3" />
                               <span>{client.email}</span>

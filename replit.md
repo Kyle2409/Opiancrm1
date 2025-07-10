@@ -106,6 +106,7 @@ Changelog:
 - July 08, 2025. User management unification - Merged team members and users into single concept using users table only, removed team_members table, added super admin user management capabilities with edit/delete permissions
 - July 09, 2025. Real-time presence tracking - Added WebSocket-based online presence system showing who is online and their last seen status, with real-time updates for team member activities
 - July 09, 2025. Role-based access control - Implemented admin and super user privileges allowing them to view all clients, documents, appointments, stats, and kanban boards across all users instead of just their own data
+- July 10, 2025. Document management restructuring - Removed standalone documents page and integrated client-specific document management directly into client profiles with upload, download, and delete functionality
 ```
 
 ## User Preferences

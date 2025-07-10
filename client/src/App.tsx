@@ -10,7 +10,7 @@ import Sidebar from "@/components/sidebar";
 import Header from "@/components/header";
 import Dashboard from "@/pages/dashboard";
 import Clients from "@/pages/clients";
-import Documents from "@/pages/documents";
+
 import Calendar from "@/pages/calendar";
 import Appointments from "@/pages/appointments";
 import AuthPage from "@/pages/auth-page";
@@ -36,7 +36,7 @@ function Router() {
             <Switch>
               <ProtectedRoute path="/" component={Dashboard} />
               <ProtectedRoute path="/clients" component={Clients} />
-              <ProtectedRoute path="/documents" component={Documents} />
+
               <ProtectedRoute path="/calendar" component={Calendar} />
               <ProtectedRoute path="/appointments" component={Appointments} />
               <ProtectedRoute path="/team-members" component={TeamMembers} />

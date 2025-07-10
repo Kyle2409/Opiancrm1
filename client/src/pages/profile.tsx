@@ -235,68 +235,93 @@ export default function Profile() {
     fileName: string
   ): Promise<File> => {
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      
-      if (!ctx) {
-        reject(new Error('Canvas context not available'));
-        return;
-      }
-      
-      // Validate crop dimensions
-      if (crop.width <= 0 || crop.height <= 0) {
-        reject(new Error('Invalid crop dimensions'));
-        return;
-      }
-      
-      // Set canvas size to crop size (minimum 50x50)
-      const finalWidth = Math.max(50, Math.floor(crop.width));
-      const finalHeight = Math.max(50, Math.floor(crop.height));
-      
-      canvas.width = finalWidth;
-      canvas.height = finalHeight;
-      
-      // Fill canvas with white background first
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, finalWidth, finalHeight);
-      
-      // Draw the cropped image
-      ctx.drawImage(
-        image,
-        Math.floor(crop.x),
-        Math.floor(crop.y),
-        Math.floor(crop.width),
-        Math.floor(crop.height),
-        0,
-        0,
-        finalWidth,
-        finalHeight
-      );
-      
-      // Convert canvas to blob with higher quality
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const file = new File([blob], fileName, { type: 'image/jpeg' });
-          resolve(file);
-        } else {
-          reject(new Error('Failed to create blob'));
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          reject(new Error('Canvas context not available'));
+          return;
         }
-      }, 'image/jpeg', 0.95);
+        
+        // Validate crop dimensions
+        if (crop.width <= 0 || crop.height <= 0) {
+          reject(new Error('Invalid crop dimensions'));
+          return;
+        }
+        
+        // Set canvas size to a fixed size for profile pictures
+        const size = 200; // Fixed size for profile pictures
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Calculate scale factors
+        const scaleX = image.naturalWidth / image.width;
+        const scaleY = image.naturalHeight / image.height;
+        
+        // Calculate actual crop dimensions in original image coordinates
+        const actualCropX = crop.x * scaleX;
+        const actualCropY = crop.y * scaleY;
+        const actualCropWidth = crop.width * scaleX;
+        const actualCropHeight = crop.height * scaleY;
+        
+        // Clear canvas and fill with white background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, size, size);
+        
+        // Draw the cropped image
+        ctx.drawImage(
+          image,
+          actualCropX,
+          actualCropY,
+          actualCropWidth,
+          actualCropHeight,
+          0,
+          0,
+          size,
+          size
+        );
+        
+        // Convert canvas to blob
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], fileName, { type: 'image/jpeg' });
+            resolve(file);
+          } else {
+            reject(new Error('Failed to create blob'));
+          }
+        }, 'image/jpeg', 0.90);
+      } catch (error) {
+        reject(error);
+      }
     });
   }, []);
 
   const handleCropComplete = useCallback(async () => {
-    if (!completedCrop || !imgRef.current) return;
+    if (!completedCrop || !imgRef.current) {
+      console.log('Missing crop data:', { completedCrop, imgRef: imgRef.current });
+      return;
+    }
     
     try {
+      console.log('Crop data:', completedCrop);
+      console.log('Image dimensions:', {
+        width: imgRef.current.width,
+        height: imgRef.current.height,
+        naturalWidth: imgRef.current.naturalWidth,
+        naturalHeight: imgRef.current.naturalHeight
+      });
+      
       const croppedFile = await getCroppedImg(
         imgRef.current,
         completedCrop,
         `profile-${Date.now()}.jpg`
       );
       
+      console.log('Cropped file:', croppedFile);
       uploadProfilePictureMutation.mutate(croppedFile);
     } catch (error) {
+      console.error('Crop error:', error);
       toast({
         title: "Error",
         description: "Failed to crop image",

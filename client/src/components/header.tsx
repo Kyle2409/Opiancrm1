@@ -12,6 +12,7 @@ import AddClientModal from "@/components/modals/add-client-modal";
 import ComprehensiveClientModal from "@/components/modals/comprehensive-client-modal";
 import AddAppointmentModal from "@/components/modals/add-appointment-modal";
 import ThemeSelector from "@/components/theme-selector";
+import { useTheme } from "@/contexts/theme-context";
 
 const pageTitles = {
   "/": { title: "Dashboard", subtitle: "Welcome back! Here's your overview" },
@@ -30,8 +31,15 @@ export default function Header() {
   const [searchTerm, setSearchTerm] = useState("");
   const { user, logoutMutation } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } = useNotificationContext();
+  const { theme, themes } = useTheme();
 
   const currentPage = pageTitles[location as keyof typeof pageTitles] || pageTitles["/"];
+  
+  const headerStyle = {
+    backgroundColor: themes[theme].colors.surface,
+    borderColor: themes[theme].colors.border,
+    color: themes[theme].colors.text,
+  };
 
   const handleAddButtonClick = () => {
     if (location === "/appointments" || location === "/calendar") {
@@ -43,10 +51,23 @@ export default function Header() {
 
   return (
     <>
-      <header className="relative bg-gradient-to-r from-white via-slate-50 to-white shadow-xl border-b border-slate-200/50 px-6 py-6 overflow-hidden">
+      <header 
+        className="relative shadow-xl border-b px-6 py-6 overflow-hidden transition-all duration-300"
+        style={headerStyle}
+      >
         {/* Background decoration */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-blue-50/30"></div>
-        <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-full blur-3xl animate-pulse"></div>
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            background: `linear-gradient(to right, ${themes[theme].colors.primary}08, transparent, ${themes[theme].colors.secondary}10)`
+          }}
+        ></div>
+        <div 
+          className="absolute -top-6 -right-6 w-32 h-32 rounded-full blur-3xl animate-pulse"
+          style={{
+            background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}30, ${themes[theme].colors.secondary}20)`
+          }}
+        ></div>
         
         <div className="relative z-10 flex items-center justify-between">
           {/* Empty space for alignment */}
@@ -72,7 +93,10 @@ export default function Header() {
             {/* Enhanced Add Button */}
             <Button 
               onClick={handleAddButtonClick}
-              className="relative bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group overflow-hidden"
+              className="relative text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group overflow-hidden"
+              style={{
+                background: themes[theme].colors.gradient,
+              }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <Plus className="w-5 h-5 mr-2 relative z-10 transition-transform duration-300 group-hover:rotate-90" />

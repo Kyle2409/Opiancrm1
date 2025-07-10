@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type Theme = 'light' | 'dark' | 'ocean' | 'forest' | 'sunset' | 'corporate';
+export type Theme = 'light' | 'dark' | 'ocean' | 'forest' | 'sunset' | 'corporate' | 'pink';
 
 interface ThemeContextType {
   theme: Theme;
@@ -120,6 +120,22 @@ const themeConfigs = {
       border: '#E4E4E7',
       gradient: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
       glassBg: 'rgba(244, 244, 245, 0.9)',
+    },
+  },
+  pink: {
+    name: 'Pink',
+    description: 'Playful pink theme',
+    colors: {
+      primary: '#EC4899',
+      secondary: '#F472B6',
+      accent: '#8B5CF6',
+      background: '#FDF2F8',
+      surface: '#FCE7F3',
+      text: '#831843',
+      textSecondary: '#BE185D',
+      border: '#F9A8D4',
+      gradient: 'linear-gradient(135deg, #EC4899 0%, #F472B6 100%)',
+      glassBg: 'rgba(253, 242, 248, 0.9)',
     },
   },
 };

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { useTheme } from "@/contexts/theme-context";
 
 const navigationItems = [
   { path: "/", label: "Dashboard", icon: BarChart3 },
@@ -29,9 +30,19 @@ const navigationItems = [
 export default function Sidebar() {
   const [location] = useLocation();
   const { logoutMutation } = useAuth();
+  const { theme, themes } = useTheme();
+
+  const sidebarStyle = {
+    backgroundColor: themes[theme].colors.surface,
+    borderColor: themes[theme].colors.border,
+    color: themes[theme].colors.text,
+  };
 
   return (
-    <nav className="w-64 bg-gradient-to-b from-slate-50 to-white shadow-xl border-r border-slate-200/50 flex flex-col relative overflow-hidden">
+    <nav 
+      className="w-64 shadow-xl border-r flex flex-col relative overflow-hidden transition-all duration-300"
+      style={sidebarStyle}
+    >
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent"></div>
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
@@ -53,16 +64,43 @@ export default function Sidebar() {
           const Icon = item.icon;
           const isActive = location === item.path;
           
+          const navItemStyle = isActive 
+            ? {
+                background: themes[theme].colors.gradient,
+                color: '#ffffff',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              }
+            : {
+                color: themes[theme].colors.textSecondary,
+              };
+          
           return (
             <Link key={item.path} href={item.path}>
               <div 
                 className={cn(
                   "group relative flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 ease-out",
-                  "hover:bg-gradient-to-r hover:from-primary/10 hover:to-blue-50/80 hover:shadow-sm",
-                  "transform hover:translate-x-1",
-                  isActive && "bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg translate-x-1"
+                  "hover:shadow-sm transform hover:translate-x-1",
+                  isActive && "translate-x-1"
                 )}
-                style={{ animationDelay: `${index * 50}ms` }}
+                style={{
+                  animationDelay: `${index * 50}ms`,
+                  ...navItemStyle,
+                  ...(isActive ? {} : {
+                    ':hover': {
+                      backgroundColor: themes[theme].colors.primary + '20',
+                    }
+                  })
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = themes[theme].colors.primary + '20';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
               >
                 {/* Active indicator */}
                 {isActive && (

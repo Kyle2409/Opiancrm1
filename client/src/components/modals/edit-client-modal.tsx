@@ -176,7 +176,8 @@ export default function EditClientModal({
   const updateClientMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: any }) =>
       clientsApi.update(id, data),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Update successful:", data);
       queryClient.invalidateQueries({ queryKey: ["/api/clients"] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
@@ -185,7 +186,8 @@ export default function EditClientModal({
       });
       onClose();
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Update failed:", error);
       toast({
         title: "Error",
         description: "Failed to update client. Please try again.",
@@ -197,7 +199,12 @@ export default function EditClientModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log("Form submission started");
+    console.log("Current client:", client);
+    console.log("Form data:", formData);
+    
     if (!client || !formData.firstName || !formData.surname || !formData.email) {
+      console.log("Validation failed - missing required fields");
       toast({
         title: "Error",
         description: "Please fill in all required fields.",
@@ -271,14 +278,20 @@ export default function EditClientModal({
       value: formData.value ? parseInt(formData.value) : null,
     };
 
+    console.log("Sending update data:", updateData);
     updateClientMutation.mutate({ id: client.id, data: updateData });
   };
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    console.log(`Field "${field}" changed to:`, value);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [field]: value
+      };
+      console.log("New form data:", newData);
+      return newData;
+    });
   };
 
   if (!client) return null;

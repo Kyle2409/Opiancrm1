@@ -90,17 +90,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/clients/:id", requireAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
+      console.log("Updating client with ID:", id);
+      console.log("Update data received:", req.body);
+      
       const result = insertClientSchema.partial().safeParse(req.body);
       if (!result.success) {
+        console.log("Validation errors:", result.error.issues);
         return res.status(400).json({ message: "Invalid client data", errors: result.error.issues });
       }
+      
+      console.log("Validated data:", result.data);
       const client = await storage.updateClient(id, result.data);
       if (!client) {
+        console.log("Client not found with ID:", id);
         return res.status(404).json({ message: "Client not found" });
       }
+      
+      console.log("Client updated successfully:", client);
       res.json(client);
     } catch (error) {
-      res.status(500).json({ message: "Failed to update client" });
+      console.error("Client update error:", error);
+      res.status(500).json({ message: "Failed to update client", error: error.message });
     }
   });
 

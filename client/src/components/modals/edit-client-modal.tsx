@@ -105,7 +105,9 @@ export default function EditClientModal({
 
   // Populate form when client changes
   useEffect(() => {
+    console.log("useEffect triggered - client:", client);
     if (client) {
+      console.log("Setting form data with client data:", client);
       setFormData({
         title: client.title || "",
         firstName: client.firstName || "",
@@ -170,8 +172,9 @@ export default function EditClientModal({
         status: client.status || "active",
         value: client.value?.toString() || "",
       });
+      console.log("Form data has been set");
     }
-  }, [client]);
+  }, [client, isOpen]);
 
   const updateClientMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: any }) =>

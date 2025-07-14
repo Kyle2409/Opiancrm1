@@ -105,17 +105,31 @@ export default function Calendar() {
 
   return (
     <div 
-      className="p-6 min-h-screen transition-all duration-300"
+      className="p-6 space-y-6 relative min-h-screen overflow-x-hidden transition-all duration-300"
       style={{
         backgroundColor: themes[theme].colors.background,
         color: themes[theme].colors.text,
       }}
     >
-      <Card
-        className="transition-all duration-300"
+      {/* Theme-aware background decoration */}
+      <div 
+        className="absolute inset-0 -z-10"
         style={{
-          backgroundColor: themes[theme].colors.surface,
-          borderColor: themes[theme].colors.border,
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}05, transparent, ${themes[theme].colors.surface}30)`
+        }}
+      ></div>
+      <div 
+        className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl animate-pulse -z-10 transform translate-x-1/2 -translate-y-1/2"
+        style={{
+          background: `linear-gradient(to bottom right, ${themes[theme].colors.primary}20, ${themes[theme].colors.secondary}20)`
+        }}
+      ></div>
+      
+      <Card
+        className="backdrop-blur-sm shadow-xl transition-all duration-300"
+        style={{
+          backgroundColor: `${themes[theme].colors.surface}80`,
+          borderColor: `${themes[theme].colors.border}50`,
         }}
       >
         <CardHeader>
@@ -174,13 +188,13 @@ export default function Calendar() {
               </div>
               <Button 
                 onClick={() => setIsAddModalOpen(true)}
-                className="text-white transition-all duration-300"
+                className="text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group"
                 style={{
                   background: themes[theme].colors.gradient,
                 }}
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Event
+                <Plus className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:rotate-90" />
+                Add Meeting
               </Button>
             </div>
           </div>

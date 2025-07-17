@@ -112,6 +112,7 @@ Changelog:
 - July 10, 2025. Appointments and booking system theme integration - Updated appointments page, calendar components, and booking system with full theme awareness including stained glass backgrounds, dynamic color coordination, and responsive theme switching for all text, cards, and interactive elements
 - July 17, 2025. Project migration - Successfully migrated Opian Core from Replit Agent to standard Replit environment with all functionality preserved, database connected, and authentication working properly
 - July 17, 2025. Calendar visibility enhancement - Modified appointment system to allow all users to see all appointments on the calendar regardless of their role or who created them
+- July 17, 2025. Team member color coding - Added distinct color indicators for each team member on both the calendar and appointments pages, with a visual legend showing which colors represent which team members
 ```
 
 ## User Preferences

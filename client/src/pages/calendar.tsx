@@ -4,11 +4,13 @@ import { appointmentsApi, clientsApi } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import { 
   Calendar as CalendarIcon, 
   ChevronLeft, 
   ChevronRight, 
-  Plus 
+  Plus,
+  User
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, startOfWeek, endOfWeek } from "date-fns";
 import AddAppointmentModal from "@/components/modals/add-appointment-modal";
@@ -28,6 +30,11 @@ export default function Calendar() {
   const { data: clients = [] } = useQuery({
     queryKey: ["/api/clients"],
     queryFn: clientsApi.getAll,
+  });
+
+  const { data: users = [] } = useQuery({
+    queryKey: ["/api/users"],
+    queryFn: () => fetch("/api/users").then(res => res.json()),
   });
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -51,6 +58,33 @@ export default function Calendar() {
       const aptDate = new Date(apt.date);
       return aptDate.toDateString() === date.toDateString();
     });
+  };
+
+  // Team member color mapping
+  const getTeamMemberColor = (userId: number | null) => {
+    if (!userId) return "bg-gray-500 text-white";
+    
+    const userIndex = users.findIndex(user => user.id === userId);
+    const colors = [
+      "bg-blue-500 text-white",
+      "bg-green-500 text-white", 
+      "bg-purple-500 text-white",
+      "bg-orange-500 text-white",
+      "bg-pink-500 text-white",
+      "bg-indigo-500 text-white",
+      "bg-red-500 text-white",
+      "bg-yellow-600 text-white",
+      "bg-teal-500 text-white",
+      "bg-violet-500 text-white",
+    ];
+    
+    return userIndex >= 0 ? colors[userIndex % colors.length] : "bg-gray-500 text-white";
+  };
+
+  const getTeamMemberName = (userId: number | null) => {
+    if (!userId) return "Unassigned";
+    const user = users.find(u => u.id === userId);
+    return user ? (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username) : "Unknown";
   };
 
   const getAppointmentColor = (type: string) => {
@@ -255,12 +289,16 @@ export default function Calendar() {
                       {dayAppointments.map((appointment) => (
                         <div 
                           key={appointment.id}
-                          className={`text-xs px-2 py-1 rounded ${getAppointmentColor(appointment.type)}`}
+                          className={`text-xs px-2 py-1 rounded transition-all duration-200 hover:shadow-md ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
+                          title={`Assigned to: ${getTeamMemberName(appointment.assignedToId || appointment.userId)}`}
                         >
                           <div className="font-medium">{appointment.startTime}</div>
                           <div className="truncate">{appointment.title}</div>
                           <div className="truncate text-xs opacity-90">
                             {getClientName(appointment.clientId)}
+                          </div>
+                          <div className="truncate text-xs opacity-75 font-medium">
+                            {getTeamMemberName(appointment.assignedToId || appointment.userId)}
                           </div>
                         </div>
                       ))}
@@ -272,6 +310,40 @@ export default function Calendar() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Team Member Legend */}
+      {users.length > 0 && (
+        <Card 
+          className="backdrop-blur-sm shadow-xl transition-all duration-300"
+          style={{
+            backgroundColor: `${themes[theme].colors.surface}80`,
+            borderColor: `${themes[theme].colors.border}50`,
+          }}
+        >
+          <CardHeader>
+            <CardTitle 
+              className="text-lg font-bold transition-colors duration-300 flex items-center"
+              style={{ color: themes[theme].colors.text }}
+            >
+              <User className="w-5 h-5 mr-2" />
+              Team Member Legend
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {users.map((user) => (
+                <div key={user.id} className="flex items-center space-x-2">
+                  <Badge 
+                    className={`text-xs px-2 py-1 ${getTeamMemberColor(user.id)}`}
+                  >
+                    {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <AddAppointmentModal 
         isOpen={isAddModalOpen} 

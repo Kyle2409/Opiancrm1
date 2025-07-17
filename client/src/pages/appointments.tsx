@@ -45,6 +45,11 @@ export default function Appointments() {
     queryFn: clientsApi.getAll,
   });
 
+  const { data: users = [] } = useQuery({
+    queryKey: ["/api/users"],
+    queryFn: () => fetch("/api/users").then(res => res.json()),
+  });
+
   const deleteAppointmentMutation = useMutation({
     mutationFn: appointmentsApi.delete,
     onSuccess: () => {
@@ -124,6 +129,33 @@ export default function Appointments() {
       default:
         return "bg-gray-100 text-gray-600";
     }
+  };
+
+  // Team member color mapping
+  const getTeamMemberColor = (userId: number | null) => {
+    if (!userId) return "bg-gray-500 text-white";
+    
+    const userIndex = users.findIndex(user => user.id === userId);
+    const colors = [
+      "bg-blue-500 text-white",
+      "bg-green-500 text-white", 
+      "bg-purple-500 text-white",
+      "bg-orange-500 text-white",
+      "bg-pink-500 text-white",
+      "bg-indigo-500 text-white",
+      "bg-red-500 text-white",
+      "bg-yellow-600 text-white",
+      "bg-teal-500 text-white",
+      "bg-violet-500 text-white",
+    ];
+    
+    return userIndex >= 0 ? colors[userIndex % colors.length] : "bg-gray-500 text-white";
+  };
+
+  const getTeamMemberName = (userId: number | null) => {
+    if (!userId) return "Unassigned";
+    const user = users.find(u => u.id === userId);
+    return user ? (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username) : "Unknown";
   };
 
   const getClientName = (clientId: number | null) => {
@@ -268,7 +300,7 @@ export default function Appointments() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${getAppointmentColor(appointment.type)}`}>
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}>
                           {getAppointmentIcon(appointment.type)}
                         </div>
                         <div>
@@ -312,6 +344,9 @@ export default function Appointments() {
                     
                     <div className="mt-4 flex items-center justify-between">
                       <div className="flex items-center space-x-4">
+                        <Badge className={getTeamMemberColor(appointment.assignedToId || appointment.userId)}>
+                          {getTeamMemberName(appointment.assignedToId || appointment.userId)}
+                        </Badge>
                         <Badge className={getAppointmentColor(appointment.type)}>
                           {appointment.type}
                         </Badge>

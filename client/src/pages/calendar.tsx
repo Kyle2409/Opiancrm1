@@ -439,14 +439,16 @@ export default function Calendar() {
         }}
       >
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
             <CardTitle 
               className="transition-colors duration-300"
               style={{ color: themes[theme].colors.text }}
             >
               Calendar
             </CardTitle>
-            <div className="flex items-center space-x-4">
+            
+            <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+              {/* Navigation Controls */}
               <div className="flex items-center space-x-2">
                 <Button 
                   variant="ghost" 
@@ -456,7 +458,7 @@ export default function Calendar() {
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
                 <h4 
-                  className="text-lg font-medium transition-colors duration-300"
+                  className="text-lg font-medium transition-colors duration-300 min-w-0"
                   style={{ color: themes[theme].colors.text }}
                 >
                   {getViewTitle()}
@@ -469,32 +471,39 @@ export default function Calendar() {
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
-              <div className="flex items-center space-x-2">
+              
+              {/* View Mode Buttons */}
+              <div className="flex items-center space-x-1 border rounded-lg p-1" style={{ borderColor: themes[theme].colors.border }}>
                 <Button 
-                  variant={viewMode === "month" ? "default" : "outline"}
+                  variant={viewMode === "month" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("month")}
+                  className="text-xs"
                 >
                   Month
                 </Button>
                 <Button 
-                  variant={viewMode === "week" ? "default" : "outline"}
+                  variant={viewMode === "week" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("week")}
+                  className="text-xs"
                 >
                   Week
                 </Button>
                 <Button 
-                  variant={viewMode === "day" ? "default" : "outline"}
+                  variant={viewMode === "day" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("day")}
+                  className="text-xs"
                 >
                   Day
                 </Button>
               </div>
+              
+              {/* Add Meeting Button */}
               <Button 
                 onClick={() => setIsAddModalOpen(true)}
-                className="text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group"
+                className="text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-4 py-2 font-medium group"
                 style={{
                   background: themes[theme].colors.gradient,
                 }}

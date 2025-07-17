@@ -136,28 +136,76 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createClient(insertClient: InsertClient): Promise<Client> {
+    // Process the data to convert empty strings to null and handle type conversion
+    const processedData = Object.fromEntries(
+      Object.entries(insertClient).map(([key, value]) => {
+        // Convert empty strings to null
+        if (value === "" || value === undefined) {
+          return [key, null];
+        }
+        
+        // Convert string numbers to actual numbers for numeric fields
+        const numericFields = [
+          'grossAnnualIncome', 'dutySplitAdmin', 'dutySplitTravel', 'dutySplitSupervision', 'dutySplitManual',
+          'monthlyIncome', 'spouseGrossAnnualIncome', 'spouseMonthlyIncome', 'pensionFundCurrentValue',
+          'pensionFundProjectedValue', 'providentFundCurrentValue', 'providentFundProjectedValue',
+          'groupLifeCover', 'groupDisabilityCover', 'groupDreadDiseaseCover', 'disabilityIncomeCover',
+          'medicalAidMembers', 'deathMonthlyIncome', 'disabilityCapitalExpenses', 'disabilityMonthlyIncome',
+          'dreadDiseaseCover', 'retirementAge', 'retirementMonthlyIncome', 'childrenEducationAmount',
+          'childrenEducationYear', 'expectedInvestmentReturns', 'expectedInflation', 'value',
+          'spouseDutySplitAdmin', 'spouseDutySplitTravel', 'spouseDutySplitSupervision', 'spouseDutySplitManual'
+        ];
+        
+        if (numericFields.includes(key) && typeof value === 'string') {
+          const numValue = parseFloat(value);
+          return [key, isNaN(numValue) ? null : numValue];
+        }
+        
+        return [key, value];
+      })
+    );
+
     const [client] = await db
       .insert(clients)
-      .values({
-        firstName: insertClient.firstName,
-        surname: insertClient.surname,
-        email: insertClient.email,
-        cellPhone: insertClient.cellPhone ?? null,
-        employer: insertClient.employer ?? null,
-        occupation: insertClient.occupation ?? null,
-        status: insertClient.status ?? "active",
-        value: insertClient.value ?? null,
-        userId: insertClient.userId ?? null,
-      })
+      .values(processedData)
       .returning();
     return client;
   }
 
   async updateClient(id: number, updateData: Partial<InsertClient>): Promise<Client | undefined> {
+    // Process the update data the same way as createClient
+    const processedData = Object.fromEntries(
+      Object.entries(updateData).map(([key, value]) => {
+        // Convert empty strings to null
+        if (value === "" || value === undefined) {
+          return [key, null];
+        }
+        
+        // Convert string numbers to actual numbers for numeric fields
+        const numericFields = [
+          'grossAnnualIncome', 'dutySplitAdmin', 'dutySplitTravel', 'dutySplitSupervision', 'dutySplitManual',
+          'monthlyIncome', 'spouseGrossAnnualIncome', 'spouseMonthlyIncome', 'pensionFundCurrentValue',
+          'pensionFundProjectedValue', 'providentFundCurrentValue', 'providentFundProjectedValue',
+          'groupLifeCover', 'groupDisabilityCover', 'groupDreadDiseaseCover', 'disabilityIncomeCover',
+          'medicalAidMembers', 'deathMonthlyIncome', 'disabilityCapitalExpenses', 'disabilityMonthlyIncome',
+          'dreadDiseaseCover', 'retirementAge', 'retirementMonthlyIncome', 'childrenEducationAmount',
+          'childrenEducationYear', 'expectedInvestmentReturns', 'expectedInflation', 'value',
+          'spouseDutySplitAdmin', 'spouseDutySplitTravel', 'spouseDutySplitSupervision', 'spouseDutySplitManual'
+        ];
+        
+        if (numericFields.includes(key) && typeof value === 'string') {
+          const numValue = parseFloat(value);
+          return [key, isNaN(numValue) ? null : numValue];
+        }
+        
+        return [key, value];
+      })
+    );
+
     const [client] = await db
       .update(clients)
       .set({
-        ...updateData,
+        ...processedData,
         lastContact: new Date(),
       })
       .where(eq(clients.id, id))

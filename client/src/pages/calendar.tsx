@@ -12,7 +12,7 @@ import {
   Plus,
   User
 } from "lucide-react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, startOfWeek, endOfWeek } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, startOfWeek, endOfWeek, addDays, subDays, addWeeks, subWeeks, startOfDay, endOfDay, eachHourOfInterval, addHours } from "date-fns";
 import AddAppointmentModal from "@/components/modals/add-appointment-modal";
 import { useTheme } from "@/contexts/theme-context";
 
@@ -37,12 +37,26 @@ export default function Calendar() {
     queryFn: () => fetch("/api/users").then(res => res.json()),
   });
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
+  const navigate = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate);
-    if (direction === 'prev') {
-      newDate.setMonth(currentDate.getMonth() - 1);
-    } else {
-      newDate.setMonth(currentDate.getMonth() + 1);
+    if (viewMode === 'month') {
+      if (direction === 'prev') {
+        newDate.setMonth(currentDate.getMonth() - 1);
+      } else {
+        newDate.setMonth(currentDate.getMonth() + 1);
+      }
+    } else if (viewMode === 'week') {
+      if (direction === 'prev') {
+        newDate.setDate(currentDate.getDate() - 7);
+      } else {
+        newDate.setDate(currentDate.getDate() + 7);
+      }
+    } else if (viewMode === 'day') {
+      if (direction === 'prev') {
+        newDate.setDate(currentDate.getDate() - 1);
+      } else {
+        newDate.setDate(currentDate.getDate() + 1);
+      }
     }
     setCurrentDate(newDate);
   };
@@ -53,10 +67,45 @@ export default function Calendar() {
     return eachDayOfInterval({ start, end });
   };
 
+  const getDaysInWeek = () => {
+    const start = startOfWeek(currentDate);
+    const end = endOfWeek(currentDate);
+    return eachDayOfInterval({ start, end });
+  };
+
+  const getHoursInDay = () => {
+    const start = startOfDay(currentDate);
+    const end = endOfDay(currentDate);
+    return eachHourOfInterval({ start, end });
+  };
+
+  const getViewTitle = () => {
+    switch (viewMode) {
+      case 'month':
+        return format(currentDate, 'MMMM yyyy');
+      case 'week':
+        const weekStart = startOfWeek(currentDate);
+        const weekEnd = endOfWeek(currentDate);
+        return `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`;
+      case 'day':
+        return format(currentDate, 'MMMM d, yyyy');
+      default:
+        return format(currentDate, 'MMMM yyyy');
+    }
+  };
+
   const getAppointmentsForDate = (date: Date) => {
     return appointments.filter(apt => {
       const aptDate = new Date(apt.date);
       return aptDate.toDateString() === date.toDateString();
+    });
+  };
+
+  const getAppointmentsForHour = (date: Date, hour: number) => {
+    return appointments.filter(apt => {
+      const aptDate = new Date(apt.date);
+      const aptHour = parseInt(apt.startTime.split(':')[0]);
+      return aptDate.toDateString() === date.toDateString() && aptHour === hour;
     });
   };
 
@@ -137,6 +186,229 @@ export default function Calendar() {
   const days = getDaysInMonth();
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+  const renderMonthView = () => (
+    <div className="space-y-4">
+      {/* Calendar Header */}
+      <div className="grid grid-cols-7 gap-1 mb-4">
+        {weekDays.map(day => (
+          <div 
+            key={day} 
+            className="text-center py-2 text-sm font-medium transition-colors duration-300"
+            style={{ color: themes[theme].colors.textSecondary }}
+          >
+            {day}
+          </div>
+        ))}
+      </div>
+
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7 gap-1">
+        {days.map((day, index) => {
+          const dayAppointments = getAppointmentsForDate(day);
+          const isCurrentMonth = isSameMonth(day, currentDate);
+          const isDayToday = isToday(day);
+
+          return (
+            <div 
+              key={index} 
+              className={`min-h-24 p-2 border transition-all duration-300 ${
+                !isCurrentMonth ? 'opacity-50' : ''
+              }`}
+              style={{
+                backgroundColor: isDayToday 
+                  ? `${themes[theme].colors.primary}20` 
+                  : (!isCurrentMonth ? themes[theme].colors.surface : themes[theme].colors.background),
+                borderColor: isDayToday 
+                  ? themes[theme].colors.primary 
+                  : themes[theme].colors.border,
+                color: themes[theme].colors.text,
+              }}
+            >
+              <div 
+                className={`text-sm mb-1 transition-colors duration-300 ${
+                  isDayToday ? 'font-bold' : 
+                  isCurrentMonth ? 'font-medium' : 'font-normal'
+                }`}
+                style={{
+                  color: isDayToday 
+                    ? themes[theme].colors.primary 
+                    : (isCurrentMonth ? themes[theme].colors.text : themes[theme].colors.textSecondary)
+                }}
+              >
+                {format(day, 'd')}
+              </div>
+              
+              <div className="space-y-1">
+                {dayAppointments.map((appointment) => (
+                  <div 
+                    key={appointment.id}
+                    className={`text-xs px-2 py-1 rounded transition-all duration-200 hover:shadow-md ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
+                    title={`Assigned to: ${getTeamMemberName(appointment.assignedToId || appointment.userId)}`}
+                  >
+                    <div className="font-medium">{appointment.startTime}</div>
+                    <div className="truncate">{appointment.title}</div>
+                    <div className="truncate text-xs opacity-90">
+                      {getClientName(appointment.clientId)}
+                    </div>
+                    <div className="truncate text-xs opacity-75 font-medium">
+                      {getTeamMemberName(appointment.assignedToId || appointment.userId)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const renderWeekView = () => {
+    const weekDays = getDaysInWeek();
+    
+    return (
+      <div className="space-y-4">
+        {/* Week Header */}
+        <div className="grid grid-cols-7 gap-1 mb-4">
+          {weekDays.map(day => (
+            <div 
+              key={day.toISOString()} 
+              className="text-center py-2 text-sm font-medium transition-colors duration-300"
+              style={{ color: themes[theme].colors.textSecondary }}
+            >
+              <div>{format(day, 'EEE')}</div>
+              <div className={`text-lg ${isToday(day) ? 'font-bold' : 'font-normal'}`}
+                style={{ color: isToday(day) ? themes[theme].colors.primary : themes[theme].colors.text }}
+              >
+                {format(day, 'd')}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Week Grid */}
+        <div className="grid grid-cols-7 gap-1">
+          {weekDays.map((day, index) => {
+            const dayAppointments = getAppointmentsForDate(day);
+            const isDayToday = isToday(day);
+
+            return (
+              <div 
+                key={index} 
+                className="min-h-96 p-2 border transition-all duration-300"
+                style={{
+                  backgroundColor: isDayToday 
+                    ? `${themes[theme].colors.primary}20` 
+                    : themes[theme].colors.background,
+                  borderColor: isDayToday 
+                    ? themes[theme].colors.primary 
+                    : themes[theme].colors.border,
+                  color: themes[theme].colors.text,
+                }}
+              >
+                <div className="space-y-1">
+                  {dayAppointments.map((appointment) => (
+                    <div 
+                      key={appointment.id}
+                      className={`text-xs px-2 py-1 rounded transition-all duration-200 hover:shadow-md ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
+                      title={`Assigned to: ${getTeamMemberName(appointment.assignedToId || appointment.userId)}`}
+                    >
+                      <div className="font-medium">{appointment.startTime}</div>
+                      <div className="truncate">{appointment.title}</div>
+                      <div className="truncate text-xs opacity-90">
+                        {getClientName(appointment.clientId)}
+                      </div>
+                      <div className="truncate text-xs opacity-75 font-medium">
+                        {getTeamMemberName(appointment.assignedToId || appointment.userId)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderDayView = () => {
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+    const dayAppointments = getAppointmentsForDate(currentDate);
+    
+    return (
+      <div className="space-y-4">
+        {/* Day Header */}
+        <div className="text-center py-4 mb-4">
+          <div 
+            className="text-2xl font-bold transition-colors duration-300"
+            style={{ color: themes[theme].colors.text }}
+          >
+            {format(currentDate, 'EEEE')}
+          </div>
+          <div 
+            className="text-lg transition-colors duration-300"
+            style={{ color: themes[theme].colors.textSecondary }}
+          >
+            {format(currentDate, 'MMMM d, yyyy')}
+          </div>
+        </div>
+
+        {/* Day Grid */}
+        <div className="space-y-1">
+          {hours.map(hour => {
+            const hourAppointments = getAppointmentsForHour(currentDate, hour);
+            const hourTime = `${hour.toString().padStart(2, '0')}:00`;
+            
+            return (
+              <div 
+                key={hour}
+                className="flex border-b transition-all duration-300"
+                style={{
+                  backgroundColor: themes[theme].colors.background,
+                  borderColor: themes[theme].colors.border,
+                }}
+              >
+                <div 
+                  className="w-20 py-2 px-3 text-sm font-medium transition-colors duration-300"
+                  style={{ color: themes[theme].colors.textSecondary }}
+                >
+                  {hourTime}
+                </div>
+                <div 
+                  className="flex-1 p-2 min-h-16 transition-all duration-300"
+                  style={{
+                    backgroundColor: themes[theme].colors.surface,
+                    color: themes[theme].colors.text,
+                  }}
+                >
+                  <div className="space-y-1">
+                    {hourAppointments.map((appointment) => (
+                      <div 
+                        key={appointment.id}
+                        className={`text-sm px-3 py-2 rounded transition-all duration-200 hover:shadow-md ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
+                        title={`Assigned to: ${getTeamMemberName(appointment.assignedToId || appointment.userId)}`}
+                      >
+                        <div className="font-medium">{appointment.startTime} - {appointment.endTime}</div>
+                        <div className="font-semibold">{appointment.title}</div>
+                        <div className="text-sm opacity-90">
+                          {getClientName(appointment.clientId)}
+                        </div>
+                        <div className="text-xs opacity-75 font-medium">
+                          {getTeamMemberName(appointment.assignedToId || appointment.userId)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div 
       className="p-6 space-y-6 relative min-h-screen overflow-x-hidden transition-all duration-300"
@@ -179,7 +451,7 @@ export default function Calendar() {
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onClick={() => navigateMonth('prev')}
+                  onClick={() => navigate('prev')}
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
@@ -187,12 +459,12 @@ export default function Calendar() {
                   className="text-lg font-medium transition-colors duration-300"
                   style={{ color: themes[theme].colors.text }}
                 >
-                  {format(currentDate, 'MMMM yyyy')}
+                  {getViewTitle()}
                 </h4>
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onClick={() => navigateMonth('next')}
+                  onClick={() => navigate('next')}
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Button>
@@ -234,80 +506,9 @@ export default function Calendar() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {/* Calendar Header */}
-            <div className="grid grid-cols-7 gap-1 mb-4">
-              {weekDays.map(day => (
-                <div 
-                  key={day} 
-                  className="text-center py-2 text-sm font-medium transition-colors duration-300"
-                  style={{ color: themes[theme].colors.textSecondary }}
-                >
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1">
-              {days.map((day, index) => {
-                const dayAppointments = getAppointmentsForDate(day);
-                const isCurrentMonth = isSameMonth(day, currentDate);
-                const isDayToday = isToday(day);
-
-                return (
-                  <div 
-                    key={index} 
-                    className={`min-h-24 p-2 border transition-all duration-300 ${
-                      !isCurrentMonth ? 'opacity-50' : ''
-                    }`}
-                    style={{
-                      backgroundColor: isDayToday 
-                        ? `${themes[theme].colors.primary}20` 
-                        : (!isCurrentMonth ? themes[theme].colors.surface : themes[theme].colors.background),
-                      borderColor: isDayToday 
-                        ? themes[theme].colors.primary 
-                        : themes[theme].colors.border,
-                      color: themes[theme].colors.text,
-                    }}
-                  >
-                    <div 
-                      className={`text-sm mb-1 transition-colors duration-300 ${
-                        isDayToday ? 'font-bold' : 
-                        isCurrentMonth ? 'font-medium' : 'font-normal'
-                      }`}
-                      style={{
-                        color: isDayToday 
-                          ? themes[theme].colors.primary 
-                          : (isCurrentMonth ? themes[theme].colors.text : themes[theme].colors.textSecondary)
-                      }}
-                    >
-                      {format(day, 'd')}
-                    </div>
-                    
-                    <div className="space-y-1">
-                      {dayAppointments.map((appointment) => (
-                        <div 
-                          key={appointment.id}
-                          className={`text-xs px-2 py-1 rounded transition-all duration-200 hover:shadow-md ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
-                          title={`Assigned to: ${getTeamMemberName(appointment.assignedToId || appointment.userId)}`}
-                        >
-                          <div className="font-medium">{appointment.startTime}</div>
-                          <div className="truncate">{appointment.title}</div>
-                          <div className="truncate text-xs opacity-90">
-                            {getClientName(appointment.clientId)}
-                          </div>
-                          <div className="truncate text-xs opacity-75 font-medium">
-                            {getTeamMemberName(appointment.assignedToId || appointment.userId)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          {viewMode === 'month' && renderMonthView()}
+          {viewMode === 'week' && renderWeekView()}
+          {viewMode === 'day' && renderDayView()}
         </CardContent>
       </Card>
 

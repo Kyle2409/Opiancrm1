@@ -275,9 +275,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Appointment routes
   app.get("/api/appointments", requireAuth, async (req: any, res) => {
     try {
-      // Admin and super admin can see all appointments, regular users see only their own
-      const userId = hasAdminAccess(req.user.role) ? undefined : req.user.id;
-      const appointments = await storage.getAppointments(userId);
+      // All users can see all appointments on the calendar
+      const appointments = await storage.getAppointments();
       res.json(appointments);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch appointments" });

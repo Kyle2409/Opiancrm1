@@ -211,9 +211,7 @@ export class DatabaseStorage implements IStorage {
 
   // Appointment methods
   async getAppointments(userId?: number): Promise<Appointment[]> {
-    if (userId) {
-      return await db.select().from(appointments).where(eq(appointments.userId, userId));
-    }
+    // Always return all appointments regardless of userId - all users can see all appointments
     return await db.select().from(appointments);
   }
 

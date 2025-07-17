@@ -67,6 +67,11 @@ export default function Clients() {
     queryFn: clientsApi.getAll,
   });
 
+  const { data: users = [] } = useQuery({
+    queryKey: ["/api/users"],
+    queryFn: () => fetch("/api/users").then(res => res.json()),
+  });
+
   const { data: appointments = [] } = useQuery({
     queryKey: ["/api/appointments"],
     queryFn: appointmentsApi.getAll,
@@ -102,6 +107,12 @@ export default function Clients() {
     if (statusFilter === "all") return true;
     return client.status === statusFilter;
   });
+
+  const getCreatedByName = (userId: number | null) => {
+    if (!userId) return "Unknown";
+    const user = users.find(u => u.id === userId);
+    return user ? (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username) : "Unknown";
+  };
 
   const handleDeleteClient = (id: number) => {
     if (window.confirm("Are you sure you want to delete this client?")) {
@@ -290,6 +301,7 @@ export default function Clients() {
                     <TableHead>Client</TableHead>
                     <TableHead>Company</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Created By</TableHead>
                     <TableHead>Appointment Status</TableHead>
                     <TableHead>Last Contact</TableHead>
                     <TableHead>Value</TableHead>
@@ -318,6 +330,11 @@ export default function Clients() {
                         <Badge className={getStatusColor(client.status)}>
                           {client.status}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm font-medium text-textPrimary">
+                          {getCreatedByName(client.userId)}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">

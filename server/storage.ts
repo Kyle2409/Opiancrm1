@@ -33,6 +33,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
   
   // Client methods
   getClients(userId?: number): Promise<Client[]>;
@@ -122,11 +123,17 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  // Client methods
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  // Client methods - All users see all clients
   async getClients(userId?: number): Promise<Client[]> {
-    if (userId) {
-      return await db.select().from(clients).where(eq(clients.userId, userId));
-    }
+    // Always return all clients regardless of user role
     return await db.select().from(clients);
   }
 

@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, startOfWeek, endOfWeek, startOfDay, endOfDay, eachHourOfInterval } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { appointmentsApi, clientsApi } from "@/lib/api";
 import { teamMembersApi } from "@/lib/team-api";
 import { ChevronLeft, ChevronRight, Clock, Users } from "lucide-react";
+import { useTheme } from "@/contexts/theme-context";
 
 export default function BookingCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [viewMode, setViewMode] = useState<"month" | "week" | "day">("month");
+  const { theme, themes } = useTheme();
 
   const { data: appointments = [] } = useQuery({
     queryKey: ["/api/appointments"],
@@ -31,11 +34,64 @@ export default function BookingCalendar() {
   const monthEnd = endOfMonth(currentDate);
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
+  const navigate = (direction: 'prev' | 'next') => {
+    const newDate = new Date(currentDate);
+    if (viewMode === 'month') {
+      if (direction === 'prev') {
+        newDate.setMonth(currentDate.getMonth() - 1);
+      } else {
+        newDate.setMonth(currentDate.getMonth() + 1);
+      }
+    } else if (viewMode === 'week') {
+      if (direction === 'prev') {
+        newDate.setDate(currentDate.getDate() - 7);
+      } else {
+        newDate.setDate(currentDate.getDate() + 7);
+      }
+    } else if (viewMode === 'day') {
+      if (direction === 'prev') {
+        newDate.setDate(currentDate.getDate() - 1);
+      } else {
+        newDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+    setCurrentDate(newDate);
+  };
+
+  const getDaysInWeek = () => {
+    const start = startOfWeek(currentDate);
+    const end = endOfWeek(currentDate);
+    return eachDayOfInterval({ start, end });
+  };
+
   const getAppointmentsForDate = (date: Date) => {
     return appointments.filter(apt => {
       const aptDate = new Date(apt.date);
       return isSameDay(aptDate, date);
     });
+  };
+
+  const getAppointmentsForHour = (date: Date, hour: number) => {
+    return appointments.filter(apt => {
+      const aptDate = new Date(apt.date);
+      const aptHour = parseInt(apt.startTime.split(':')[0]);
+      return aptDate.toDateString() === date.toDateString() && aptHour === hour;
+    });
+  };
+
+  const getViewTitle = () => {
+    switch (viewMode) {
+      case 'month':
+        return format(currentDate, 'MMMM yyyy');
+      case 'week':
+        const weekStart = startOfWeek(currentDate);
+        const weekEnd = endOfWeek(currentDate);
+        return `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`;
+      case 'day':
+        return format(currentDate, 'MMMM d, yyyy');
+      default:
+        return format(currentDate, 'MMMM yyyy');
+    }
   };
 
   const getClientName = (clientId: number | null) => {
@@ -50,15 +106,173 @@ export default function BookingCalendar() {
     return member ? member.username : "Unknown member";
   };
 
-  const previousMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-  };
-
-  const nextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-  };
-
   const selectedDateAppointments = selectedDate ? getAppointmentsForDate(selectedDate) : [];
+
+  const renderCalendarView = () => {
+    if (viewMode === 'month') {
+      return (
+        <>
+          <div className="grid grid-cols-7 gap-2 mb-4">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+              <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+                {day}
+              </div>
+            ))}
+          </div>
+          
+          <div className="grid grid-cols-7 gap-2">
+            {monthDays.map((date) => {
+              const dayAppointments = getAppointmentsForDate(date);
+              const isSelected = selectedDate && isSameDay(date, selectedDate);
+              
+              return (
+                <div
+                  key={date.toISOString()}
+                  className={`
+                    min-h-[80px] p-2 border rounded-lg cursor-pointer transition-all
+                    ${isSelected ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}
+                    ${isToday(date) ? 'bg-blue-50 border-blue-300' : ''}
+                    ${!isSameMonth(date, currentDate) ? 'opacity-50' : ''}
+                  `}
+                  onClick={() => setSelectedDate(date)}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-sm font-medium ${
+                      isToday(date) ? 'text-blue-600' : 'text-gray-900'
+                    }`}>
+                      {format(date, 'd')}
+                    </span>
+                    {dayAppointments.length > 0 && (
+                      <Badge variant="secondary" className="text-xs">
+                        {dayAppointments.length}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-1">
+                    {dayAppointments.slice(0, 2).map((apt) => (
+                      <div
+                        key={apt.id}
+                        className="text-xs p-1 rounded bg-primary/10 text-primary"
+                        title={`${apt.startTime} - ${apt.endTime}: ${apt.title} (${getClientName(apt.clientId)})`}
+                      >
+                        <div className="truncate font-medium">{apt.startTime}-{apt.endTime.slice(0, 5)} {apt.title}</div>
+                        <div className="truncate text-primary/70">{getClientName(apt.clientId)}</div>
+                      </div>
+                    ))}
+                    {dayAppointments.length > 2 && (
+                      <div className="text-xs text-gray-500">
+                        +{dayAppointments.length - 2} more
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      );
+    }
+
+    if (viewMode === 'week') {
+      return (
+        <>
+          <div className="grid grid-cols-7 gap-2 mb-4">
+            {getDaysInWeek().map(day => (
+              <div key={day.toISOString()} className="text-center text-sm font-medium text-gray-500 py-2">
+                <div>{format(day, 'EEE')}</div>
+                <div className={`text-lg ${isToday(day) ? 'font-bold text-blue-600' : 'font-normal text-gray-900'}`}>
+                  {format(day, 'd')}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7 gap-2">
+            {getDaysInWeek().map((day, index) => {
+              const dayAppointments = getAppointmentsForDate(day);
+              const isDayToday = isToday(day);
+              const isSelected = selectedDate && isSameDay(day, selectedDate);
+
+              return (
+                <div 
+                  key={index} 
+                  className={`
+                    min-h-96 p-2 border rounded-lg cursor-pointer transition-all
+                    ${isSelected ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}
+                    ${isDayToday ? 'bg-blue-50 border-blue-300' : ''}
+                  `}
+                  onClick={() => setSelectedDate(day)}
+                >
+                  <div className="space-y-1">
+                    {dayAppointments.map((appointment) => (
+                      <div 
+                        key={appointment.id}
+                        className="text-xs p-1 rounded bg-primary/10 text-primary"
+                        title={`${appointment.startTime} - ${appointment.endTime}: ${appointment.title} (${getClientName(appointment.clientId)})`}
+                      >
+                        <div className="font-medium">{appointment.startTime}</div>
+                        <div className="truncate">{appointment.title}</div>
+                        <div className="truncate text-primary/70">{getClientName(appointment.clientId)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      );
+    }
+
+    if (viewMode === 'day') {
+      return (
+        <div className="space-y-4">
+          <div className="text-center py-4 mb-4">
+            <div className="text-2xl font-bold text-gray-900">
+              {format(currentDate, 'EEEE')}
+            </div>
+            <div className="text-lg text-gray-600">
+              {format(currentDate, 'MMMM d, yyyy')}
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            {Array.from({ length: 24 }, (_, i) => i).map(hour => {
+              const hourAppointments = getAppointmentsForHour(currentDate, hour);
+              const hourTime = `${hour.toString().padStart(2, '0')}:00`;
+              
+              return (
+                <div key={hour} className="flex border-b border-gray-200">
+                  <div className="w-20 py-2 px-3 text-sm font-medium text-gray-500">
+                    {hourTime}
+                  </div>
+                  <div className="flex-1 p-2 min-h-16 bg-gray-50">
+                    <div className="space-y-1">
+                      {hourAppointments.map((appointment) => (
+                        <div 
+                          key={appointment.id}
+                          className="text-sm px-3 py-2 rounded bg-primary/10 text-primary cursor-pointer"
+                          onClick={() => setSelectedDate(currentDate)}
+                          title={`${appointment.startTime} - ${appointment.endTime}: ${appointment.title} (${getClientName(appointment.clientId)})`}
+                        >
+                          <div className="font-medium">{appointment.startTime} - {appointment.endTime}</div>
+                          <div className="font-semibold">{appointment.title}</div>
+                          <div className="text-sm text-primary/70">{getClientName(appointment.clientId)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -71,77 +285,63 @@ export default function BookingCalendar() {
         {/* Calendar View */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>{format(currentDate, 'MMMM yyyy')}</CardTitle>
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm" onClick={previousMonth}>
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="sm" onClick={nextMonth}>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
+            <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+              <CardTitle>Calendar</CardTitle>
+              
+              <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+                {/* Navigation Controls */}
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate('prev')}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  <h4 className="text-lg font-medium min-w-0">
+                    {getViewTitle()}
+                  </h4>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate('next')}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                {/* View Mode Buttons */}
+                <div className="flex items-center space-x-1 border rounded-lg p-1">
+                  <Button 
+                    variant={viewMode === "month" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("month")}
+                    className="text-xs"
+                  >
+                    Month
+                  </Button>
+                  <Button 
+                    variant={viewMode === "week" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("week")}
+                    className="text-xs"
+                  >
+                    Week
+                  </Button>
+                  <Button 
+                    variant={viewMode === "day" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("day")}
+                    className="text-xs"
+                  >
+                    Day
+                  </Button>
+                </div>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-7 gap-2 mb-4">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
-                  {day}
-                </div>
-              ))}
-            </div>
-            
-            <div className="grid grid-cols-7 gap-2">
-              {monthDays.map((date) => {
-                const dayAppointments = getAppointmentsForDate(date);
-                const isSelected = selectedDate && isSameDay(date, selectedDate);
-                
-                return (
-                  <div
-                    key={date.toISOString()}
-                    className={`
-                      min-h-[80px] p-2 border rounded-lg cursor-pointer transition-all
-                      ${isSelected ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}
-                      ${isToday(date) ? 'bg-blue-50 border-blue-300' : ''}
-                      ${!isSameMonth(date, currentDate) ? 'opacity-50' : ''}
-                    `}
-                    onClick={() => setSelectedDate(date)}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={`text-sm font-medium ${
-                        isToday(date) ? 'text-blue-600' : 'text-gray-900'
-                      }`}>
-                        {format(date, 'd')}
-                      </span>
-                      {dayAppointments.length > 0 && (
-                        <Badge variant="secondary" className="text-xs">
-                          {dayAppointments.length}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-1">
-                      {dayAppointments.slice(0, 2).map((apt) => (
-                        <div
-                          key={apt.id}
-                          className="text-xs p-1 rounded bg-primary/10 text-primary"
-                          title={`${apt.startTime} - ${apt.endTime}: ${apt.title} (${getClientName(apt.clientId)})`}
-                        >
-                          <div className="truncate font-medium">{apt.startTime}-{apt.endTime.slice(0, 5)} {apt.title}</div>
-                          <div className="truncate text-primary/70">{getClientName(apt.clientId)}</div>
-                        </div>
-                      ))}
-                      {dayAppointments.length > 2 && (
-                        <div className="text-xs text-gray-500">
-                          +{dayAppointments.length - 2} more
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            {renderCalendarView()}
           </CardContent>
         </Card>
 
@@ -176,45 +376,12 @@ export default function BookingCalendar() {
                           <Clock className="w-4 h-4" />
                           <span>{apt.startTime} - {apt.endTime}</span>
                         </div>
-                        
                         <div className="flex items-center space-x-2">
                           <Users className="w-4 h-4" />
                           <span>{getClientName(apt.clientId)}</span>
                         </div>
-                        
-                        {apt.assignedToId && (
-                          <div className="flex items-center space-x-2">
-                            <span className="text-gray-600">Assigned to:</span>
-                            <span className="text-purple-600 font-medium">
-                              {getTeamMemberName(apt.assignedToId)}
-                            </span>
-                            {(() => {
-                              const member = teamMembers.find(tm => tm.id === apt.assignedToId);
-                              return member ? (
-                                <span className={`text-xs px-2 py-1 rounded ${
-                                  member.role === 'CEO' ? 'bg-purple-100 text-purple-700' :
-                                  member.role === 'Financial Advisor' ? 'bg-green-100 text-green-700' :
-                                  member.role === 'Admin' ? 'bg-blue-100 text-blue-700' :
-                                  member.role === 'IT' ? 'bg-orange-100 text-orange-700' :
-                                  'bg-gray-100 text-gray-700'
-                                }`}>
-                                  {member.role}
-                                </span>
-                              ) : null;
-                            })()}
-                          </div>
-                        )}
-                        
-                        {apt.location && (
-                          <div className="text-gray-500">
-                            Location: {apt.location}
-                          </div>
-                        )}
-                        
                         {apt.description && (
-                          <div className="text-gray-500 mt-2">
-                            {apt.description}
-                          </div>
+                          <p className="text-gray-700 mt-2">{apt.description}</p>
                         )}
                       </div>
                     </div>
@@ -222,16 +389,14 @@ export default function BookingCalendar() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <Clock className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments</h3>
-                  <p className="text-gray-500">No bookings scheduled for this date</p>
+                  <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500">No appointments scheduled for this date</p>
                 </div>
               )
             ) : (
               <div className="text-center py-8">
-                <Clock className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Select a date</h3>
-                <p className="text-gray-500">Click on a date to view appointments</p>
+                <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">Select a date to view appointments</p>
               </div>
             )}
           </CardContent>

@@ -3,6 +3,7 @@ import {
   documents, 
   appointments, 
   users, 
+  teamMembers,
   kanbanBoards, 
   kanbanColumns, 
   kanbanCards,
@@ -127,10 +128,6 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users);
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users);
-  }
-
   // Client methods - Role-based filtering
   async getClients(userId?: number, userRole?: string): Promise<Client[]> {
     if (userRole === 'advisor' && userId) {
@@ -226,7 +223,10 @@ export class DatabaseStorage implements IStorage {
 
   async deleteClient(id: number): Promise<boolean> {
     try {
-      // Delete related appointments first
+      // Delete related kanban cards
+      await db.delete(kanbanCards).where(eq(kanbanCards.clientId, id));
+      
+      // Delete related appointments
       await db.delete(appointments).where(eq(appointments.clientId, id));
       
       // Delete related documents
@@ -378,7 +378,16 @@ export class DatabaseStorage implements IStorage {
 
   async deleteUser(id: number): Promise<boolean> {
     try {
-      // Delete related appointments first
+      // Delete related kanban tasks first
+      await db.delete(kanbanTasks).where(eq(kanbanTasks.assignedToId, id));
+      
+      // Delete related kanban cards
+      await db.delete(kanbanCards).where(eq(kanbanCards.assignedToId, id));
+      
+      // Delete related kanban boards
+      await db.delete(kanbanBoards).where(eq(kanbanBoards.userId, id));
+      
+      // Delete related appointments
       await db.delete(appointments).where(eq(appointments.userId, id));
       
       // Delete related documents
@@ -386,6 +395,9 @@ export class DatabaseStorage implements IStorage {
       
       // Delete clients created by this user
       await db.delete(clients).where(eq(clients.userId, id));
+      
+      // Delete team member record
+      await db.delete(teamMembers).where(eq(teamMembers.userId, id));
       
       // Delete the user
       const result = await db.delete(users).where(eq(users.id, id));

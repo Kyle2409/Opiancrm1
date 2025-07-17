@@ -480,6 +480,7 @@ export default function TeamMembers() {
                 <SelectContent>
                   <SelectItem value="super_admin">Super Admin</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="advisor">Advisor</SelectItem>
                   <SelectItem value="user">User</SelectItem>
                   <SelectItem value="viewer">Viewer</SelectItem>
                 </SelectContent>
@@ -543,6 +544,7 @@ export default function TeamMembers() {
                 <SelectContent>
                   <SelectItem value="super_admin">Super Admin</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="advisor">Advisor</SelectItem>
                   <SelectItem value="user">User</SelectItem>
                   <SelectItem value="viewer">Viewer</SelectItem>
                 </SelectContent>

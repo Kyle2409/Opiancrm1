@@ -121,7 +121,7 @@ export const users = pgTable("users", {
   firstName: text("first_name"),
   lastName: text("last_name"),
   profileImageUrl: text("profile_image_url"),
-  role: text("role").default("user"), // super_admin, admin, user
+  role: text("role").default("user"), // super_admin, admin, advisor, user
   isOnline: boolean("is_online").default(false),
   lastSeen: timestamp("last_seen").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),

@@ -36,7 +36,7 @@ export interface IStorage {
   getAllUsers(): Promise<User[]>;
   
   // Client methods
-  getClients(userId?: number): Promise<Client[]>;
+  getClients(userId?: number, userRole?: string): Promise<Client[]>;
   getClient(id: number): Promise<Client | undefined>;
   createClient(client: InsertClient): Promise<Client>;
   updateClient(id: number, client: Partial<InsertClient>): Promise<Client | undefined>;
@@ -50,7 +50,7 @@ export interface IStorage {
   deleteDocument(id: number): Promise<boolean>;
   
   // Appointment methods
-  getAppointments(userId?: number): Promise<Appointment[]>;
+  getAppointments(userId?: number, userRole?: string): Promise<Appointment[]>;
   getAppointmentsByClient(clientId: number): Promise<Appointment[]>;
   getAppointment(id: number): Promise<Appointment | undefined>;
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
@@ -63,7 +63,7 @@ export interface IStorage {
   deleteUser(id: number): Promise<boolean>;
   
   // Stats methods
-  getStats(userId?: number): Promise<{
+  getStats(userId?: number, userRole?: string): Promise<{
     totalClients: number;
     activeProjects: number;
     upcomingMeetings: number;
@@ -131,9 +131,13 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users);
   }
 
-  // Client methods - All users see all clients
-  async getClients(userId?: number): Promise<Client[]> {
-    // Always return all clients regardless of user role
+  // Client methods - Role-based filtering
+  async getClients(userId?: number, userRole?: string): Promise<Client[]> {
+    if (userRole === 'advisor' && userId) {
+      // Advisors see only their own clients
+      return await db.select().from(clients).where(eq(clients.userId, userId));
+    }
+    // All other roles see all clients
     return await db.select().from(clients);
   }
 
@@ -221,8 +225,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteClient(id: number): Promise<boolean> {
-    const result = await db.delete(clients).where(eq(clients.id, id));
-    return (result.rowCount ?? 0) > 0;
+    try {
+      // Delete related appointments first
+      await db.delete(appointments).where(eq(appointments.clientId, id));
+      
+      // Delete related documents
+      await db.delete(documents).where(eq(documents.clientId, id));
+      
+      // Delete the client
+      const result = await db.delete(clients).where(eq(clients.id, id));
+      return (result.rowCount ?? 0) > 0;
+    } catch (error) {
+      console.error('Error deleting client:', error);
+      throw error;
+    }
   }
 
   // Document methods
@@ -265,8 +281,29 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Appointment methods
-  async getAppointments(userId?: number): Promise<Appointment[]> {
-    // Always return all appointments regardless of userId - all users can see all appointments
+  async getAppointments(userId?: number, userRole?: string): Promise<Appointment[]> {
+    if (userRole === 'advisor' && userId) {
+      // Advisors see only appointments for their own clients
+      return await db.select({
+        id: appointments.id,
+        title: appointments.title,
+        description: appointments.description,
+        clientId: appointments.clientId,
+        userId: appointments.userId,
+        assignedToId: appointments.assignedToId,
+        date: appointments.date,
+        startTime: appointments.startTime,
+        endTime: appointments.endTime,
+        type: appointments.type,
+        location: appointments.location,
+        status: appointments.status,
+        appointmentStatus: appointments.appointmentStatus,
+        createdAt: appointments.createdAt,
+      }).from(appointments)
+        .innerJoin(clients, eq(appointments.clientId, clients.id))
+        .where(eq(clients.userId, userId));
+    }
+    // All other roles see all appointments
     return await db.select().from(appointments);
   }
 
@@ -340,24 +377,64 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteUser(id: number): Promise<boolean> {
-    const result = await db.delete(users).where(eq(users.id, id));
-    return (result.rowCount ?? 0) > 0;
+    try {
+      // Delete related appointments first
+      await db.delete(appointments).where(eq(appointments.userId, id));
+      
+      // Delete related documents
+      await db.delete(documents).where(eq(documents.userId, id));
+      
+      // Delete clients created by this user
+      await db.delete(clients).where(eq(clients.userId, id));
+      
+      // Delete the user
+      const result = await db.delete(users).where(eq(users.id, id));
+      return (result.rowCount ?? 0) > 0;
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw error;
+    }
   }
 
   // Stats methods
-  async getStats(userId?: number): Promise<{
+  async getStats(userId?: number, userRole?: string): Promise<{
     totalClients: number;
     activeProjects: number;
     upcomingMeetings: number;
     revenue: number;
   }> {
-    const clientQuery = userId ? 
-      db.select().from(clients).where(eq(clients.userId, userId)) :
-      db.select().from(clients);
+    let clientQuery, appointmentQuery;
     
-    const appointmentQuery = userId ?
-      db.select().from(appointments).where(eq(appointments.userId, userId)) :
-      db.select().from(appointments);
+    if (userRole === 'advisor' && userId) {
+      // Advisors see only their own clients and appointments
+      clientQuery = db.select().from(clients).where(eq(clients.userId, userId));
+      appointmentQuery = db.select({
+        id: appointments.id,
+        title: appointments.title,
+        description: appointments.description,
+        clientId: appointments.clientId,
+        userId: appointments.userId,
+        assignedToId: appointments.assignedToId,
+        date: appointments.date,
+        startTime: appointments.startTime,
+        endTime: appointments.endTime,
+        type: appointments.type,
+        location: appointments.location,
+        status: appointments.status,
+        appointmentStatus: appointments.appointmentStatus,
+        createdAt: appointments.createdAt,
+      }).from(appointments)
+        .innerJoin(clients, eq(appointments.clientId, clients.id))
+        .where(eq(clients.userId, userId));
+    } else if (userRole === 'admin' || userRole === 'super_admin') {
+      // Admin and super admin see all data
+      clientQuery = db.select().from(clients);
+      appointmentQuery = db.select().from(appointments);
+    } else {
+      // Default: see all data (backward compatibility)
+      clientQuery = db.select().from(clients);
+      appointmentQuery = db.select().from(appointments);
+    }
     
     const [clientResults, appointmentResults] = await Promise.all([
       clientQuery,

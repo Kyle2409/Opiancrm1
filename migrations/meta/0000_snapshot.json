@@ -1,0 +1,1287 @@
+{
+  "id": "54eae930-0583-4850-9706-cc1244191f46",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.appointments": {
+      "name": "appointments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assigned_to_id": {
+          "name": "assigned_to_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_time": {
+          "name": "start_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "end_time": {
+          "name": "end_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'scheduled'"
+        },
+        "appointment_status": {
+          "name": "appointment_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "appointments_client_id_clients_id_fk": {
+          "name": "appointments_client_id_clients_id_fk",
+          "tableFrom": "appointments",
+          "tableTo": "clients",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "appointments_user_id_users_id_fk": {
+          "name": "appointments_user_id_users_id_fk",
+          "tableFrom": "appointments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "appointments_assigned_to_id_users_id_fk": {
+          "name": "appointments_assigned_to_id_users_id_fk",
+          "tableFrom": "appointments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "assigned_to_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.clients": {
+      "name": "clients",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "surname": {
+          "name": "surname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "second_name": {
+          "name": "second_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_number": {
+          "name": "id_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_of_birth": {
+          "name": "date_of_birth",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "smoker_status": {
+          "name": "smoker_status",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "cell_phone": {
+          "name": "cell_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "home_phone": {
+          "name": "home_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "work_phone": {
+          "name": "work_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "physical_address": {
+          "name": "physical_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address": {
+          "name": "postal_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "physical_postal_code": {
+          "name": "physical_postal_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_code": {
+          "name": "postal_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "occupation": {
+          "name": "occupation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "employer": {
+          "name": "employer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "education_level": {
+          "name": "education_level",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gross_annual_income": {
+          "name": "gross_annual_income",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duty_split_admin": {
+          "name": "duty_split_admin",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duty_split_travel": {
+          "name": "duty_split_travel",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duty_split_supervision": {
+          "name": "duty_split_supervision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duty_split_manual": {
+          "name": "duty_split_manual",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hobbies": {
+          "name": "hobbies",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "marital_status": {
+          "name": "marital_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "marriage_type": {
+          "name": "marriage_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_of_marriage": {
+          "name": "date_of_marriage",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_name": {
+          "name": "spouse_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_maiden_name": {
+          "name": "spouse_maiden_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_date_of_birth": {
+          "name": "spouse_date_of_birth",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_smoker_status": {
+          "name": "spouse_smoker_status",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_occupation": {
+          "name": "spouse_occupation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_employer": {
+          "name": "spouse_employer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_education_level": {
+          "name": "spouse_education_level",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_gross_annual_income": {
+          "name": "spouse_gross_annual_income",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_duty_split_admin": {
+          "name": "spouse_duty_split_admin",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_duty_split_travel": {
+          "name": "spouse_duty_split_travel",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_duty_split_supervision": {
+          "name": "spouse_duty_split_supervision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_duty_split_manual": {
+          "name": "spouse_duty_split_manual",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "monthly_income": {
+          "name": "monthly_income",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spouse_monthly_income": {
+          "name": "spouse_monthly_income",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pension_fund_current_value": {
+          "name": "pension_fund_current_value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pension_fund_projected_value": {
+          "name": "pension_fund_projected_value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provident_fund_current_value": {
+          "name": "provident_fund_current_value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provident_fund_projected_value": {
+          "name": "provident_fund_projected_value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_life_cover": {
+          "name": "group_life_cover",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_disability_cover": {
+          "name": "group_disability_cover",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_dread_disease_cover": {
+          "name": "group_dread_disease_cover",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "disability_income_cover": {
+          "name": "disability_income_cover",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "medical_aid_scheme": {
+          "name": "medical_aid_scheme",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "medical_aid_membership_no": {
+          "name": "medical_aid_membership_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "medical_aid_members": {
+          "name": "medical_aid_members",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "medical_aid_compulsory": {
+          "name": "medical_aid_compulsory",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "medical_aid_satisfied": {
+          "name": "medical_aid_satisfied",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "death_monthly_income": {
+          "name": "death_monthly_income",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "disability_capital_expenses": {
+          "name": "disability_capital_expenses",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "disability_monthly_income": {
+          "name": "disability_monthly_income",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dread_disease_cover": {
+          "name": "dread_disease_cover",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "retirement_age": {
+          "name": "retirement_age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "retirement_monthly_income": {
+          "name": "retirement_monthly_income",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "children_education_amount": {
+          "name": "children_education_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "children_education_year": {
+          "name": "children_education_year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expected_investment_returns": {
+          "name": "expected_investment_returns",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expected_inflation": {
+          "name": "expected_inflation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_will": {
+          "name": "has_will",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "will_location": {
+          "name": "will_location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "will_last_updated": {
+          "name": "will_last_updated",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "will_executor": {
+          "name": "will_executor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "value": {
+          "name": "value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "last_contact": {
+          "name": "last_contact",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "clients_user_id_users_id_fk": {
+          "name": "clients_user_id_users_id_fk",
+          "tableFrom": "clients",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "clients_email_unique": {
+          "name": "clients_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.documents": {
+      "name": "documents",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "original_name": {
+          "name": "original_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size": {
+          "name": "size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "uploaded_at": {
+          "name": "uploaded_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "documents_client_id_clients_id_fk": {
+          "name": "documents_client_id_clients_id_fk",
+          "tableFrom": "documents",
+          "tableTo": "clients",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "documents_user_id_users_id_fk": {
+          "name": "documents_user_id_users_id_fk",
+          "tableFrom": "documents",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kanban_boards": {
+      "name": "kanban_boards",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "kanban_boards_user_id_users_id_fk": {
+          "name": "kanban_boards_user_id_users_id_fk",
+          "tableFrom": "kanban_boards",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kanban_cards": {
+      "name": "kanban_cards",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "priority": {
+          "name": "priority",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'medium'"
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tags": {
+          "name": "tags",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "column_id": {
+          "name": "column_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assigned_to_id": {
+          "name": "assigned_to_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "kanban_cards_column_id_kanban_columns_id_fk": {
+          "name": "kanban_cards_column_id_kanban_columns_id_fk",
+          "tableFrom": "kanban_cards",
+          "tableTo": "kanban_columns",
+          "columnsFrom": [
+            "column_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "kanban_cards_assigned_to_id_users_id_fk": {
+          "name": "kanban_cards_assigned_to_id_users_id_fk",
+          "tableFrom": "kanban_cards",
+          "tableTo": "users",
+          "columnsFrom": [
+            "assigned_to_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "kanban_cards_client_id_clients_id_fk": {
+          "name": "kanban_cards_client_id_clients_id_fk",
+          "tableFrom": "kanban_cards",
+          "tableTo": "clients",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kanban_columns": {
+      "name": "kanban_columns",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "color": {
+          "name": "color",
+          "type": "varchar(7)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'#0073EA'"
+        },
+        "board_id": {
+          "name": "board_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "kanban_columns_board_id_kanban_boards_id_fk": {
+          "name": "kanban_columns_board_id_kanban_boards_id_fk",
+          "tableFrom": "kanban_columns",
+          "tableTo": "kanban_boards",
+          "columnsFrom": [
+            "board_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kanban_tasks": {
+      "name": "kanban_tasks",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completed": {
+          "name": "completed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "card_id": {
+          "name": "card_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assigned_to_id": {
+          "name": "assigned_to_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "kanban_tasks_card_id_kanban_cards_id_fk": {
+          "name": "kanban_tasks_card_id_kanban_cards_id_fk",
+          "tableFrom": "kanban_tasks",
+          "tableTo": "kanban_cards",
+          "columnsFrom": [
+            "card_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "kanban_tasks_assigned_to_id_users_id_fk": {
+          "name": "kanban_tasks_assigned_to_id_users_id_fk",
+          "tableFrom": "kanban_tasks",
+          "tableTo": "users",
+          "columnsFrom": [
+            "assigned_to_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.team_members": {
+      "name": "team_members",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Admin'"
+        },
+        "department": {
+          "name": "department",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_online": {
+          "name": "is_online",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "last_seen": {
+          "name": "last_seen",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "team_members_user_id_users_id_fk": {
+          "name": "team_members_user_id_users_id_fk",
+          "tableFrom": "team_members",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_image_url": {
+          "name": "profile_image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'user'"
+        },
+        "is_online": {
+          "name": "is_online",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "last_seen": {
+          "name": "last_seen",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        },
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

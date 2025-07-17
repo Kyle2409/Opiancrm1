@@ -20,7 +20,7 @@ const navigationItems = [
   { path: "/", label: "Dashboard", icon: BarChart3 },
   { path: "/clients", label: "Clients", icon: Users },
   { path: "/booking-calendar", label: "Calendar", icon: Calendar },
-  { path: "/booking", label: "Book Appointment", icon: Plus },
+  { path: "/booking", label: "Book Appointment", icon: Plus, hideForRoles: ["advisor"] },
   { path: "/appointments", label: "Appointments", icon: Clock },
   { path: "/kanban", label: "Kanban Board", icon: Kanban },
   { path: "/team-members", label: "Team", icon: Users },
@@ -29,7 +29,7 @@ const navigationItems = [
 
 export default function Sidebar() {
   const [location] = useLocation();
-  const { logoutMutation } = useAuth();
+  const { logoutMutation, user } = useAuth();
   const { theme, themes } = useTheme();
 
   const sidebarStyle = {
@@ -60,7 +60,7 @@ export default function Sidebar() {
       
       {/* Navigation */}
       <div className="flex-1 p-4 space-y-2 relative z-10">
-        {navigationItems.map((item, index) => {
+        {navigationItems.filter(item => !item.hideForRoles?.includes(user?.role || "user")).map((item, index) => {
           const Icon = item.icon;
           const isActive = location === item.path;
           

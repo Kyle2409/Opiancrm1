@@ -47,9 +47,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Client routes
   app.get("/api/clients", requireAuth, async (req: any, res) => {
     try {
-      // Admin and super admin can see all clients, regular users see only their own
-      const userId = hasAdminAccess(req.user.role) ? undefined : req.user.id;
-      const clients = await storage.getClients(userId);
+      // Pass user role to storage layer for role-based filtering
+      const clients = await storage.getClients(req.user.id, req.user.role);
       res.json(clients);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch clients" });
@@ -275,8 +274,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Appointment routes
   app.get("/api/appointments", requireAuth, async (req: any, res) => {
     try {
-      // All users can see all appointments on the calendar
-      const appointments = await storage.getAppointments();
+      // Pass user role to storage layer for role-based filtering
+      const appointments = await storage.getAppointments(req.user.id, req.user.role);
       res.json(appointments);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch appointments" });
@@ -441,9 +440,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stats route
   app.get("/api/stats", requireAuth, async (req: any, res) => {
     try {
-      // Admin and super admin can see all stats, regular users see only their own
-      const userId = hasAdminAccess(req.user.role) ? undefined : req.user.id;
-      const stats = await storage.getStats(userId);
+      // Pass user role to storage layer for role-based filtering
+      const stats = await storage.getStats(req.user.id, req.user.role);
       res.json(stats);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch stats" });

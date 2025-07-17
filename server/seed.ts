@@ -22,50 +22,77 @@ export async function seedDatabase() {
       return;
     }
 
-    // Create a demo user
-    const demoUser = {
-      username: "demo",
-      email: "demo@crmhub.com",
-      password: await hashPassword("demo123"),
-      firstName: "Demo",
-      lastName: "User",
-    };
+    // Create demo users with different roles
+    const demoUsers = [
+      {
+        username: "demo",
+        email: "demo@crmhub.com",
+        password: await hashPassword("demo123"),
+        firstName: "Demo",
+        lastName: "User",
+        role: "admin",
+      },
+      {
+        username: "advisor",
+        email: "advisor@crmhub.com",
+        password: await hashPassword("advisor123"),
+        firstName: "John",
+        lastName: "Advisor",
+        role: "advisor",
+      },
+      {
+        username: "super_admin",
+        email: "super@crmhub.com",
+        password: await hashPassword("super123"),
+        firstName: "Super",
+        lastName: "Admin",
+        role: "super_admin",
+      },
+    ];
 
-    const [insertedUser] = await db.insert(users).values(demoUser).returning();
-    console.log(`Created demo user: ${insertedUser.username}`);
-    const userId = insertedUser.id;
+    const insertedUsers = await db.insert(users).values(demoUsers).returning();
+    console.log(`Created ${insertedUsers.length} demo users`);
+    
+    const adminUserId = insertedUsers[0].id;
+    const advisorUserId = insertedUsers[1].id;
 
-    // Sample clients for the demo user
+    // Sample clients for different users
     const sampleClients = [
       {
-        name: "Sarah Johnson",
+        firstName: "Sarah",
+        surname: "Johnson",
         email: "sarah.johnson@techcorp.com",
-        company: "TechCorp Solutions",
-        phone: "+1 (555) 123-4567",
-        role: "CTO",
+        cellPhone: "+1 (555) 123-4567",
         status: "active",
         value: 75000,
-        userId: userId,
+        userId: adminUserId,
       },
       {
-        name: "Michael Chen",
+        firstName: "Michael",
+        surname: "Chen",
         email: "m.chen@innovatelab.com",
-        company: "InnovateLab",
-        phone: "+1 (555) 987-6543",
-        role: "Product Manager",
+        cellPhone: "+1 (555) 987-6543",
         status: "prospect",
         value: 45000,
-        userId: userId,
+        userId: adminUserId,
       },
       {
-        name: "Emily Rodriguez",
+        firstName: "Emily",
+        surname: "Rodriguez",
         email: "emily.r@digitalwave.com",
-        company: "Digital Wave",
-        phone: "+1 (555) 456-7890",
-        role: "CEO",
+        cellPhone: "+1 (555) 456-7890",
         status: "active",
         value: 120000,
-        userId: userId,
+        userId: advisorUserId,
+      },
+      {
+        firstName: "David",
+        surname: "Wilson",
+        email: "david.wilson@startup.com",
+        cellPhone: "+1 (555) 111-2222",
+        status: "active",
+        value: 85000,
+        userId: advisorUserId,
       },
     ];
 
@@ -85,7 +112,7 @@ export async function seedDatabase() {
         title: "Product Demo Meeting",
         description: "Showcase our latest features and discuss integration options",
         clientId: insertedClients[0].id,
-        userId: userId,
+        userId: adminUserId,
         date: tomorrow,
         startTime: "10:00",
         endTime: "11:00",
@@ -97,7 +124,7 @@ export async function seedDatabase() {
         title: "Weekly Check-in Call",
         description: "Regular project update and planning session",
         clientId: insertedClients[1].id,
-        userId: userId,
+        userId: adminUserId,
         date: today,
         startTime: "14:30",
         endTime: "15:00",
@@ -109,12 +136,24 @@ export async function seedDatabase() {
         title: "Contract Review",
         description: "Review and finalize the service agreement",
         clientId: insertedClients[2].id,
-        userId: userId,
+        userId: advisorUserId,
         date: nextWeek,
         startTime: "09:00",
         endTime: "10:30",
         type: "review",
         location: "Client Office",
+        status: "scheduled",
+      },
+      {
+        title: "Follow-up Meeting",
+        description: "Discuss next steps and project timeline",
+        clientId: insertedClients[3].id,
+        userId: advisorUserId,
+        date: tomorrow,
+        startTime: "15:00",
+        endTime: "16:00",
+        type: "meeting",
+        location: "Video Call",
         status: "scheduled",
       },
     ];

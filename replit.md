@@ -116,6 +116,7 @@ Changelog:
 - July 17, 2025. Database storage fix - Fixed issue where non-required client information wasn't being saved properly by updating the createClient and updateClient methods to handle all optional fields and type conversion correctly
 - July 17, 2025. Comprehensive client editing and visibility - Replaced edit client modal with complete comprehensive form matching add client format with all tabs and fields; enabled all team members to see all clients with 'Created By' column showing which team member added each client
 - July 17, 2025. Calendar view enhancements - Added daily, weekly, and monthly view modes to the calendar with proper navigation controls and view-specific rendering for improved appointment visibility and scheduling
+- July 21, 2025. Booking calendar enhancements - Added team member color coding for appointments across all calendar views with distinct colors for each team member, implemented hourly row structure for weekly calendar view with 24-hour time slots, and added team member color legend showing which colors represent which team members
 ```
 
 ## User Preferences

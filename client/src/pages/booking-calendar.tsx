@@ -106,6 +106,30 @@ export default function BookingCalendar() {
     return member ? member.username : "Unknown member";
   };
 
+  // Team member colors - consistent across the application
+  const getTeamMemberColor = (assignedToId: number | null) => {
+    if (!assignedToId) return "bg-gray-100 text-gray-800 border-gray-200";
+    
+    const colors = [
+      "bg-blue-100 text-blue-800 border-blue-200", // Blue
+      "bg-green-100 text-green-800 border-green-200", // Green  
+      "bg-purple-100 text-purple-800 border-purple-200", // Purple
+      "bg-orange-100 text-orange-800 border-orange-200", // Orange
+      "bg-pink-100 text-pink-800 border-pink-200", // Pink
+      "bg-yellow-100 text-yellow-800 border-yellow-200", // Yellow
+      "bg-indigo-100 text-indigo-800 border-indigo-200", // Indigo
+      "bg-red-100 text-red-800 border-red-200", // Red
+    ];
+    
+    return colors[assignedToId % colors.length];
+  };
+
+  const getTeamMemberInfo = (assignedToId: number | null) => {
+    if (!assignedToId) return null;
+    const user = teamMembers.find(tm => tm.id === assignedToId);
+    return user;
+  };
+
   const selectedDateAppointments = selectedDate ? getAppointmentsForDate(selectedDate) : [];
 
   const renderCalendarView = () => {
@@ -153,11 +177,11 @@ export default function BookingCalendar() {
                     {dayAppointments.slice(0, 2).map((apt) => (
                       <div
                         key={apt.id}
-                        className="text-xs p-1 rounded bg-primary/10 text-primary"
-                        title={`${apt.startTime} - ${apt.endTime}: ${apt.title} (${getClientName(apt.clientId)})`}
+                        className={`text-xs p-1 rounded border ${getTeamMemberColor(apt.assignedToId)}`}
+                        title={`${apt.startTime} - ${apt.endTime}: ${apt.title} (${getClientName(apt.clientId)}) - Assigned to: ${getTeamMemberName(apt.assignedToId) || 'Unassigned'}`}
                       >
                         <div className="truncate font-medium">{apt.startTime}-{apt.endTime.slice(0, 5)} {apt.title}</div>
-                        <div className="truncate text-primary/70">{getClientName(apt.clientId)}</div>
+                        <div className="truncate opacity-70">{getClientName(apt.clientId)}</div>
                       </div>
                     ))}
                     {dayAppointments.length > 2 && (
@@ -175,10 +199,14 @@ export default function BookingCalendar() {
     }
 
     if (viewMode === 'week') {
+      const weekDays = getDaysInWeek();
+      const hours = Array.from({ length: 24 }, (_, i) => i);
+      
       return (
         <>
-          <div className="grid grid-cols-7 gap-2 mb-4">
-            {getDaysInWeek().map(day => (
+          <div className="grid grid-cols-8 gap-1 mb-4">
+            <div className="text-center text-sm font-medium text-gray-500 py-2">Time</div>
+            {weekDays.map(day => (
               <div key={day.toISOString()} className="text-center text-sm font-medium text-gray-500 py-2">
                 <div>{format(day, 'EEE')}</div>
                 <div className={`text-lg ${isToday(day) ? 'font-bold text-blue-600' : 'font-normal text-gray-900'}`}>
@@ -188,38 +216,47 @@ export default function BookingCalendar() {
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-2">
-            {getDaysInWeek().map((day, index) => {
-              const dayAppointments = getAppointmentsForDate(day);
-              const isDayToday = isToday(day);
-              const isSelected = selectedDate && isSameDay(day, selectedDate);
-
-              return (
-                <div 
-                  key={index} 
-                  className={`
-                    min-h-96 p-2 border rounded-lg cursor-pointer transition-all
-                    ${isSelected ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}
-                    ${isDayToday ? 'bg-blue-50 border-blue-300' : ''}
-                  `}
-                  onClick={() => setSelectedDate(day)}
-                >
-                  <div className="space-y-1">
-                    {dayAppointments.map((appointment) => (
-                      <div 
-                        key={appointment.id}
-                        className="text-xs p-1 rounded bg-primary/10 text-primary"
-                        title={`${appointment.startTime} - ${appointment.endTime}: ${appointment.title} (${getClientName(appointment.clientId)})`}
-                      >
-                        <div className="font-medium">{appointment.startTime}</div>
-                        <div className="truncate">{appointment.title}</div>
-                        <div className="truncate text-primary/70">{getClientName(appointment.clientId)}</div>
-                      </div>
-                    ))}
-                  </div>
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            {hours.map(hour => (
+              <div key={hour} className="grid grid-cols-8 border-b border-gray-100 last:border-b-0">
+                {/* Time column */}
+                <div className="bg-gray-50 p-2 text-xs font-medium text-gray-500 border-r border-gray-200 flex items-center">
+                  {hour.toString().padStart(2, '0')}:00
                 </div>
-              );
-            })}
+                
+                {/* Day columns */}
+                {weekDays.map((day, dayIndex) => {
+                  const hourAppointments = getAppointmentsForHour(day, hour);
+                  const isDayToday = isToday(day);
+                  const isSelected = selectedDate && isSameDay(day, selectedDate);
+
+                  return (
+                    <div 
+                      key={`${day.toISOString()}-${hour}`}
+                      className={`
+                        min-h-12 p-1 border-r border-gray-100 last:border-r-0 cursor-pointer transition-all hover:bg-gray-50
+                        ${isSelected ? 'bg-primary/5' : ''}
+                        ${isDayToday ? 'bg-blue-25' : ''}
+                      `}
+                      onClick={() => setSelectedDate(day)}
+                    >
+                      <div className="space-y-1">
+                        {hourAppointments.map((appointment) => (
+                          <div 
+                            key={appointment.id}
+                            className={`text-xs p-1 rounded border ${getTeamMemberColor(appointment.assignedToId)}`}
+                            title={`${appointment.startTime} - ${appointment.endTime}: ${appointment.title} (${getClientName(appointment.clientId)}) - Assigned to: ${getTeamMemberName(appointment.assignedToId) || 'Unassigned'}`}
+                          >
+                            <div className="font-medium truncate">{appointment.title}</div>
+                            <div className="truncate opacity-70">{getClientName(appointment.clientId)}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         </>
       );
@@ -252,13 +289,13 @@ export default function BookingCalendar() {
                       {hourAppointments.map((appointment) => (
                         <div 
                           key={appointment.id}
-                          className="text-sm px-3 py-2 rounded bg-primary/10 text-primary cursor-pointer"
+                          className={`text-sm px-3 py-2 rounded border cursor-pointer ${getTeamMemberColor(appointment.assignedToId)}`}
                           onClick={() => setSelectedDate(currentDate)}
-                          title={`${appointment.startTime} - ${appointment.endTime}: ${appointment.title} (${getClientName(appointment.clientId)})`}
+                          title={`${appointment.startTime} - ${appointment.endTime}: ${appointment.title} (${getClientName(appointment.clientId)}) - Assigned to: ${getTeamMemberName(appointment.assignedToId) || 'Unassigned'}`}
                         >
                           <div className="font-medium">{appointment.startTime} - {appointment.endTime}</div>
                           <div className="font-semibold">{appointment.title}</div>
-                          <div className="text-sm text-primary/70">{getClientName(appointment.clientId)}</div>
+                          <div className="text-sm opacity-70">{getClientName(appointment.clientId)}</div>
                         </div>
                       ))}
                     </div>
@@ -345,19 +382,46 @@ export default function BookingCalendar() {
           </CardContent>
         </Card>
 
-        {/* Appointment Details */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Clock className="w-5 h-5" />
-              <span>
-                {selectedDate 
-                  ? format(selectedDate, 'MMMM d, yyyy')
-                  : 'Select a date'
-                }
-              </span>
-            </CardTitle>
-          </CardHeader>
+        {/* Sidebar with Details and Legend */}
+        <div className="space-y-6">
+          {/* Team Member Legend */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="w-5 h-5" />
+                <span>Team Member Colors</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {teamMembers.map((member) => (
+                  <div key={member.id} className="flex items-center space-x-2">
+                    <div className={`w-4 h-4 rounded border ${getTeamMemberColor(member.id)}`}></div>
+                    <span className="text-sm font-medium">{member.username}</span>
+                    <span className="text-xs text-gray-500">({member.role})</span>
+                  </div>
+                ))}
+                <div className="flex items-center space-x-2 pt-1 border-t">
+                  <div className="w-4 h-4 rounded border bg-gray-100 border-gray-200"></div>
+                  <span className="text-sm font-medium text-gray-500">Unassigned</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Appointment Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Clock className="w-5 h-5" />
+                <span>
+                  {selectedDate 
+                    ? format(selectedDate, 'MMMM d, yyyy')
+                    : 'Select a date'
+                  }
+                </span>
+              </CardTitle>
+            </CardHeader>
           <CardContent>
             {selectedDate ? (
               selectedDateAppointments.length > 0 ? (
@@ -380,6 +444,14 @@ export default function BookingCalendar() {
                           <Users className="w-4 h-4" />
                           <span>{getClientName(apt.clientId)}</span>
                         </div>
+                        {getTeamMemberInfo(apt.assignedToId) && (
+                          <div className="flex items-center space-x-2 mt-2">
+                            <Users className="w-4 h-4" />
+                            <span className={`text-xs px-2 py-1 rounded ${getTeamMemberColor(apt.assignedToId)}`}>
+                              {getTeamMemberName(apt.assignedToId)}
+                            </span>
+                          </div>
+                        )}
                         {apt.description && (
                           <p className="text-gray-700 mt-2">{apt.description}</p>
                         )}
@@ -399,8 +471,9 @@ export default function BookingCalendar() {
                 <p className="text-gray-500">Select a date to view appointments</p>
               </div>
             )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

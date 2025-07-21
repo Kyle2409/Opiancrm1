@@ -103,7 +103,7 @@ export default function BookingCalendar() {
   const getTeamMemberName = (teamMemberId: number | null) => {
     if (!teamMemberId) return null;
     const member = teamMembers.find(tm => tm.id === teamMemberId);
-    return member ? member.username : "Unknown member";
+    return member ? member.name : "Unknown member";
   };
 
   // Team member colors - consistent across the application
@@ -126,8 +126,8 @@ export default function BookingCalendar() {
 
   const getTeamMemberInfo = (assignedToId: number | null) => {
     if (!assignedToId) return null;
-    const user = teamMembers.find(tm => tm.id === assignedToId);
-    return user;
+    const member = teamMembers.find(tm => tm.id === assignedToId);
+    return member;
   };
 
   const selectedDateAppointments = selectedDate ? getAppointmentsForDate(selectedDate) : [];
@@ -136,15 +136,15 @@ export default function BookingCalendar() {
     if (viewMode === 'month') {
       return (
         <>
-          <div className="grid grid-cols-7 gap-2 mb-4">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-4">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+              <div key={day} className="text-center text-xs sm:text-sm font-medium text-gray-500 py-2">
                 {day}
               </div>
             ))}
           </div>
           
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2">
             {monthDays.map((date) => {
               const dayAppointments = getAppointmentsForDate(date);
               const isSelected = selectedDate && isSameDay(date, selectedDate);
@@ -153,7 +153,7 @@ export default function BookingCalendar() {
                 <div
                   key={date.toISOString()}
                   className={`
-                    min-h-[80px] p-2 border rounded-lg cursor-pointer transition-all
+                    min-h-[60px] sm:min-h-[80px] p-1 sm:p-2 border rounded-lg cursor-pointer transition-all
                     ${isSelected ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}
                     ${isToday(date) ? 'bg-blue-50 border-blue-300' : ''}
                     ${!isSameMonth(date, currentDate) ? 'opacity-50' : ''}
@@ -161,13 +161,13 @@ export default function BookingCalendar() {
                   onClick={() => setSelectedDate(date)}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className={`text-sm font-medium ${
+                    <span className={`text-xs sm:text-sm font-medium ${
                       isToday(date) ? 'text-blue-600' : 'text-gray-900'
                     }`}>
                       {format(date, 'd')}
                     </span>
                     {dayAppointments.length > 0 && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-xs px-1 py-0.5">
                         {dayAppointments.length}
                       </Badge>
                     )}
@@ -205,11 +205,11 @@ export default function BookingCalendar() {
       return (
         <>
           <div className="grid grid-cols-8 gap-1 mb-4">
-            <div className="text-center text-sm font-medium text-gray-500 py-2">Time</div>
+            <div className="text-center text-xs sm:text-sm font-medium text-gray-500 py-2">Time</div>
             {weekDays.map(day => (
-              <div key={day.toISOString()} className="text-center text-sm font-medium text-gray-500 py-2">
+              <div key={day.toISOString()} className="text-center text-xs sm:text-sm font-medium text-gray-500 py-2">
                 <div>{format(day, 'EEE')}</div>
-                <div className={`text-lg ${isToday(day) ? 'font-bold text-blue-600' : 'font-normal text-gray-900'}`}>
+                <div className={`text-sm sm:text-lg ${isToday(day) ? 'font-bold text-blue-600' : 'font-normal text-gray-900'}`}>
                   {format(day, 'd')}
                 </div>
               </div>
@@ -220,7 +220,7 @@ export default function BookingCalendar() {
             {hours.map(hour => (
               <div key={hour} className="grid grid-cols-8 border-b border-gray-100 last:border-b-0">
                 {/* Time column */}
-                <div className="bg-gray-50 p-2 text-xs font-medium text-gray-500 border-r border-gray-200 flex items-center">
+                <div className="bg-gray-50 p-1 sm:p-2 text-xs font-medium text-gray-500 border-r border-gray-200 flex items-center">
                   {hour.toString().padStart(2, '0')}:00
                 </div>
                 
@@ -234,7 +234,7 @@ export default function BookingCalendar() {
                     <div 
                       key={`${day.toISOString()}-${hour}`}
                       className={`
-                        min-h-12 p-1 border-r border-gray-100 last:border-r-0 cursor-pointer transition-all hover:bg-gray-50
+                        min-h-8 sm:min-h-12 p-0.5 sm:p-1 border-r border-gray-100 last:border-r-0 cursor-pointer transition-all hover:bg-gray-50
                         ${isSelected ? 'bg-primary/5' : ''}
                         ${isDayToday ? 'bg-blue-25' : ''}
                       `}
@@ -244,11 +244,11 @@ export default function BookingCalendar() {
                         {hourAppointments.map((appointment) => (
                           <div 
                             key={appointment.id}
-                            className={`text-xs p-1 rounded border ${getTeamMemberColor(appointment.assignedToId)}`}
+                            className={`text-xs p-0.5 sm:p-1 rounded border ${getTeamMemberColor(appointment.assignedToId)}`}
                             title={`${appointment.startTime} - ${appointment.endTime}: ${appointment.title} (${getClientName(appointment.clientId)}) - Assigned to: ${getTeamMemberName(appointment.assignedToId) || 'Unassigned'}`}
                           >
-                            <div className="font-medium truncate">{appointment.title}</div>
-                            <div className="truncate opacity-70">{getClientName(appointment.clientId)}</div>
+                            <div className="font-medium truncate text-xs">{appointment.title}</div>
+                            <div className="truncate opacity-70 text-xs hidden sm:block">{getClientName(appointment.clientId)}</div>
                           </div>
                         ))}
                       </div>
@@ -312,22 +312,22 @@ export default function BookingCalendar() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Booking Calendar</h1>
-        <p className="text-gray-600">View all scheduled appointments</p>
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Booking Calendar</h1>
+        <p className="text-sm sm:text-base text-gray-600">View all scheduled appointments</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Calendar View */}
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
               <CardTitle>Calendar</CardTitle>
               
-              <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+              <div className="flex flex-col space-y-3 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-4">
                 {/* Navigation Controls */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-center space-x-2">
                   <Button 
                     variant="ghost" 
                     size="sm"
@@ -335,7 +335,7 @@ export default function BookingCalendar() {
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  <h4 className="text-lg font-medium min-w-0">
+                  <h4 className="text-sm sm:text-lg font-medium min-w-0 text-center">
                     {getViewTitle()}
                   </h4>
                   <Button 
@@ -348,12 +348,12 @@ export default function BookingCalendar() {
                 </div>
                 
                 {/* View Mode Buttons */}
-                <div className="flex items-center space-x-1 border rounded-lg p-1">
+                <div className="flex items-center justify-center space-x-1 border rounded-lg p-1">
                   <Button 
                     variant={viewMode === "month" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setViewMode("month")}
-                    className="text-xs"
+                    className="text-xs px-2 py-1"
                   >
                     Month
                   </Button>
@@ -361,7 +361,7 @@ export default function BookingCalendar() {
                     variant={viewMode === "week" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setViewMode("week")}
-                    className="text-xs"
+                    className="text-xs px-2 py-1"
                   >
                     Week
                   </Button>
@@ -369,7 +369,7 @@ export default function BookingCalendar() {
                     variant={viewMode === "day" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setViewMode("day")}
-                    className="text-xs"
+                    className="text-xs px-2 py-1"
                   >
                     Day
                   </Button>
@@ -397,7 +397,7 @@ export default function BookingCalendar() {
                 {teamMembers.map((member) => (
                   <div key={member.id} className="flex items-center space-x-2">
                     <div className={`w-4 h-4 rounded border ${getTeamMemberColor(member.id)}`}></div>
-                    <span className="text-sm font-medium">{member.username}</span>
+                    <span className="text-sm font-medium">{member.name}</span>
                     <span className="text-xs text-gray-500">({member.role})</span>
                   </div>
                 ))}

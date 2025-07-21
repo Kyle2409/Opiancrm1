@@ -7,6 +7,7 @@ import {
 import { insertUserSchema, User as SelectUser, InsertUser } from "@shared/schema";
 import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useNotifications } from "@/hooks/use-notifications";
 
 type AuthContextType = {
   user: SelectUser | null;
@@ -22,6 +23,7 @@ type LoginData = Pick<InsertUser, "username" | "password">;
 export const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  const { requestPermission } = useNotifications();
   const {
     data: user,
     error,
@@ -36,12 +38,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/login", credentials);
       return await res.json();
     },
-    onSuccess: (user: SelectUser) => {
+    onSuccess: async (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Login successful",
         description: "Welcome back!",
       });
+      
+      // Request push notification permission after successful login
+      try {
+        const permission = await requestPermission();
+        if (permission === 'granted') {
+          toast({
+            title: "Notifications enabled",
+            description: "You'll receive important updates and reminders.",
+          });
+        }
+      } catch (error) {
+        console.log('Push notification permission not granted');
+      }
     },
     onError: (error: Error) => {
       toast({
@@ -57,12 +72,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/register", credentials);
       return await res.json();
     },
-    onSuccess: (user: SelectUser) => {
+    onSuccess: async (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Registration successful",
         description: "Welcome to Opian Core!",
       });
+      
+      // Request push notification permission after successful registration
+      try {
+        const permission = await requestPermission();
+        if (permission === 'granted') {
+          toast({
+            title: "Notifications enabled",
+            description: "You'll receive important updates and reminders.",
+          });
+        }
+      } catch (error) {
+        console.log('Push notification permission not granted');
+      }
     },
     onError: (error: Error) => {
       toast({

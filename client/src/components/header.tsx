@@ -70,13 +70,13 @@ export default function Header() {
         ></div>
         
         <div className="relative z-10 flex items-center justify-between">
-          {/* Empty space for alignment */}
-          <div></div>
+          {/* Mobile spacing */}
+          <div className="lg:hidden"></div>
           
           {/* Action Section */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Enhanced Search Bar */}
-            <div className="relative group">
+            <div className="relative group hidden sm:block">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-600/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 shadow-md hover:shadow-lg transition-all duration-300">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 transition-colors duration-300 group-hover:text-primary" />
@@ -85,7 +85,7 @@ export default function Header() {
                   placeholder="Search clients, documents..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 pr-4 py-3 w-80 bg-transparent border-none focus:ring-0 text-slate-700 placeholder-slate-400 font-medium"
+                  className="pl-12 pr-4 py-3 w-60 lg:w-80 bg-transparent border-none focus:ring-0 text-slate-700 placeholder-slate-400 font-medium"
                 />
               </div>
             </div>
@@ -93,14 +93,14 @@ export default function Header() {
             {/* Enhanced Add Button */}
             <Button 
               onClick={handleAddButtonClick}
-              className="relative text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-6 py-3 font-medium group overflow-hidden"
+              className="relative text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-2xl px-3 sm:px-6 py-2 sm:py-3 font-medium group overflow-hidden"
               style={{
                 background: themes[theme].colors.gradient,
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <Plus className="w-5 h-5 mr-2 relative z-10 transition-transform duration-300 group-hover:rotate-90" />
-              <span className="relative z-10">
+              <Plus className="w-4 sm:w-5 h-4 sm:h-5 sm:mr-2 relative z-10 transition-transform duration-300 group-hover:rotate-90" />
+              <span className="relative z-10 hidden sm:inline">
                 {location === "/appointments" || location === "/calendar" ? "Add Meeting" : "Add Client"}
               </span>
             </Button>

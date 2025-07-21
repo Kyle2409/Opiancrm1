@@ -90,8 +90,8 @@ export default function Dashboard() {
 
   if (statsLoading || clientsLoading || appointmentsLoading) {
     return (
-      <div className="p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 ml-0 lg:ml-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
               <CardContent className="p-6">

@@ -10,11 +10,14 @@ import {
   Plus,
   Settings,
   Kanban,
-  Sparkles
+  Sparkles,
+  Menu,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/contexts/theme-context";
+import { useState } from "react";
 
 const navigationItems = [
   { path: "/", label: "Dashboard", icon: BarChart3 },
@@ -31,6 +34,7 @@ export default function Sidebar() {
   const [location] = useLocation();
   const { logoutMutation, user } = useAuth();
   const { theme, themes } = useTheme();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const sidebarStyle = {
     backgroundColor: themes[theme].colors.surface,
@@ -39,10 +43,34 @@ export default function Sidebar() {
   };
 
   return (
-    <nav 
-      className="w-64 shadow-xl border-r flex flex-col relative overflow-hidden transition-all duration-300"
-      style={sidebarStyle}
-    >
+    <>
+      {/* Mobile Menu Button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        className="fixed top-4 left-4 z-50 lg:hidden"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </Button>
+
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <nav 
+        className={cn(
+          "w-64 shadow-xl border-r flex flex-col relative overflow-hidden transition-all duration-300",
+          "fixed lg:relative h-full z-40 lg:z-auto",
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        )}
+        style={sidebarStyle}
+      >
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent"></div>
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
@@ -76,7 +104,8 @@ export default function Sidebar() {
           
           return (
             <Link key={item.path} href={item.path}>
-              <div 
+              <div
+                onClick={() => setIsMobileMenuOpen(false)} 
                 className={cn(
                   "group relative flex items-center space-x-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 ease-out",
                   "hover:shadow-sm transform hover:translate-x-1",
@@ -150,5 +179,6 @@ export default function Sidebar() {
         </Button>
       </div>
     </nav>
+    </>
   );
 }

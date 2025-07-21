@@ -32,7 +32,7 @@ function Router() {
       <Route path="/*">
         <div className="flex h-screen overflow-hidden bg-crm-bg">
           <Sidebar />
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto ml-0 lg:ml-0">
             <Header />
             <Switch>
               <ProtectedRoute path="/" component={Dashboard} />

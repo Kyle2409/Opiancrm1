@@ -23,7 +23,6 @@ const navigationItems = [
   { path: "/", label: "Dashboard", icon: BarChart3 },
   { path: "/clients", label: "Clients", icon: Users },
   { path: "/booking-calendar", label: "Calendar", icon: Calendar },
-  { path: "/booking", label: "Book Appointment", icon: Plus, hideForRoles: ["advisor"] },
   { path: "/appointments", label: "Appointments", icon: Clock },
   { path: "/kanban", label: "Kanban Board", icon: Kanban },
   { path: "/team-members", label: "Team", icon: Users },

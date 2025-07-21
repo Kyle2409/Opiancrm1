@@ -42,7 +42,7 @@ function Router() {
               <ProtectedRoute path="/appointments" component={Appointments} />
               <ProtectedRoute path="/team-members" component={TeamMembers} />
               <ProtectedRoute path="/users" component={TeamMembers} />
-              <ProtectedRoute path="/booking" component={Booking} />
+
               <ProtectedRoute path="/booking-calendar" component={BookingCalendar} />
               <ProtectedRoute path="/kanban" component={Kanban} />
               <ProtectedRoute path="/profile" component={Profile} />

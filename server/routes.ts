@@ -8,6 +8,8 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { setupAuth, requireAuth } from "./auth";
+import { sendAppointmentConfirmation, sendAppointmentUpdate } from "./email";
+import { format } from "date-fns";
 
 interface MulterRequest extends Request {
   file?: Express.Multer.File;
@@ -327,6 +329,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
       }
+
+      // Send email notifications
+      try {
+        const client = await storage.getClient(appointment.clientId);
+        const assignedUser = appointment.assignedToId ? await storage.getUser(appointment.assignedToId) : null;
+        
+        if (client && assignedUser) {
+          const appointmentDate = format(new Date(appointment.date), 'MMMM d, yyyy');
+          const appointmentTime = `${appointment.startTime} - ${appointment.endTime}`;
+          
+          await sendAppointmentConfirmation({
+            clientName: `${client.firstName} ${client.surname}`,
+            clientEmail: client.email,
+            appointmentTitle: appointment.title,
+            appointmentDate,
+            appointmentTime,
+            teamMemberName: assignedUser.firstName || assignedUser.username,
+            teamMemberEmail: assignedUser.email,
+            description: appointment.description || undefined
+          });
+        }
+      } catch (emailError) {
+        console.error('Failed to send appointment confirmation emails:', emailError);
+        // Don't fail the request if email fails
+      }
       
       res.status(201).json(appointment);
     } catch (error) {
@@ -345,6 +372,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!appointment) {
         return res.status(404).json({ message: "Appointment not found" });
       }
+
+      // Send email notifications for update
+      try {
+        const client = await storage.getClient(appointment.clientId);
+        const assignedUser = appointment.assignedToId ? await storage.getUser(appointment.assignedToId) : null;
+        
+        if (client && assignedUser) {
+          const appointmentDate = format(new Date(appointment.date), 'MMMM d, yyyy');
+          const appointmentTime = `${appointment.startTime} - ${appointment.endTime}`;
+          
+          await sendAppointmentUpdate({
+            clientName: `${client.firstName} ${client.surname}`,
+            clientEmail: client.email,
+            appointmentTitle: appointment.title,
+            appointmentDate,
+            appointmentTime,
+            teamMemberName: assignedUser.firstName || assignedUser.username,
+            teamMemberEmail: assignedUser.email,
+            description: appointment.description || undefined,
+            isUpdate: true
+          });
+        }
+      } catch (emailError) {
+        console.error('Failed to send appointment update emails:', emailError);
+        // Don't fail the request if email fails
+      }
+
       res.json(appointment);
     } catch (error) {
       res.status(500).json({ message: "Failed to update appointment" });
@@ -354,10 +408,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/appointments/:id", requireAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
+      
+      // Get appointment details before deletion for email notification
+      const appointmentToDelete = await storage.getAppointment(id);
+      
       const success = await storage.deleteAppointment(id);
       if (!success) {
         return res.status(404).json({ message: "Appointment not found" });
       }
+
+      // Send email notifications for cancellation
+      if (appointmentToDelete) {
+        try {
+          const client = await storage.getClient(appointmentToDelete.clientId);
+          const assignedUser = appointmentToDelete.assignedToId ? await storage.getUser(appointmentToDelete.assignedToId) : null;
+          
+          if (client && assignedUser) {
+            const appointmentDate = format(new Date(appointmentToDelete.date), 'MMMM d, yyyy');
+            const appointmentTime = `${appointmentToDelete.startTime} - ${appointmentToDelete.endTime}`;
+            
+            await sendAppointmentUpdate({
+              clientName: `${client.firstName} ${client.surname}`,
+              clientEmail: client.email,
+              appointmentTitle: appointmentToDelete.title,
+              appointmentDate,
+              appointmentTime,
+              teamMemberName: assignedUser.firstName || assignedUser.username,
+              teamMemberEmail: assignedUser.email,
+              description: appointmentToDelete.description || undefined,
+              isUpdate: false
+            });
+          }
+        } catch (emailError) {
+          console.error('Failed to send appointment cancellation emails:', emailError);
+          // Don't fail the request if email fails
+        }
+      }
+
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Failed to delete appointment" });

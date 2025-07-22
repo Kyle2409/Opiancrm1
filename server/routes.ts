@@ -81,6 +81,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const clientData = { ...result.data, userId: req.user.id };
       console.log("Processed client data:", clientData);
       const client = await storage.createClient(clientData);
+      
+      // Send notification for new client creation
+      wss.clients.forEach((wsClient: WebSocket) => {
+        if (wsClient.readyState === WebSocket.OPEN) {
+          wsClient.send(JSON.stringify({
+            type: 'notification',
+            data: {
+              id: `client_created_${client.id}`,
+              title: 'New Client Added',
+              body: `${clientData.firstName} ${clientData.surname} has been added to your client list`,
+              timestamp: Date.now(),
+              type: 'client',
+              read: false,
+              url: `/clients`,
+              requirePush: true,
+              createdBy: req.user.username
+            }
+          }));
+        }
+      });
+      
       res.status(201).json(client);
     } catch (error) {
       console.error("Client creation error:", error);
@@ -307,11 +328,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (appointment.assignedToId && appointment.assignedToId !== req.user.id) {
         const assignedUser = await storage.getUser(appointment.assignedToId);
         if (assignedUser) {
-          // Broadcast appointment notification via WebSocket
+          // Broadcast appointment notification via WebSocket with push notification flag
           wss.clients.forEach((client: WebSocket) => {
             if (client.readyState === WebSocket.OPEN) {
               client.send(JSON.stringify({
-                type: 'appointment_notification',
+                type: 'notification',
                 data: {
                   id: `appointment_${appointment.id}`,
                   title: 'New Appointment Assigned',
@@ -320,6 +341,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   type: 'appointment',
                   read: false,
                   url: `/appointments`,
+                  requirePush: true, // Flag to trigger push notification
                   appointmentId: appointment.id,
                   assignedToId: appointment.assignedToId,
                   createdBy: req.user.username

@@ -28,6 +28,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { usePresence } from "@/hooks/use-presence";
 import { useTheme } from "@/contexts/theme-context";
+import PushNotificationPrompt from "@/components/push-notification-prompt";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -170,6 +171,9 @@ export default function Dashboard() {
           background: `linear-gradient(to bottom right, ${themes[theme].colors.secondary}20, ${themes[theme].colors.primary}30)`
         }}
       ></div>
+      
+      {/* Push Notification Prompt */}
+      <PushNotificationPrompt />
       
       {/* Welcome Section */}
       <div className="mb-8">

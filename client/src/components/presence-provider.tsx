@@ -35,6 +35,28 @@ export default function PresenceProvider({ children }: { children: React.ReactNo
         }, 30000); // Send heartbeat every 30 seconds
       };
 
+      ws.current.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'notification' && data.data) {
+            // Handle notifications and dispatch custom event
+            const notificationData = data.data;
+            const customEvent = new CustomEvent('notification', { 
+              detail: {
+                title: notificationData.title,
+                body: notificationData.body,
+                type: notificationData.type || 'system',
+                url: notificationData.url,
+                requirePush: notificationData.requirePush
+              }
+            });
+            window.dispatchEvent(customEvent);
+          }
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      };
+
       ws.current.onclose = () => {
         console.log('Presence WebSocket disconnected');
         if (heartbeatInterval.current) {

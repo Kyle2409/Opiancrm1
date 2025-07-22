@@ -2,6 +2,7 @@ import { createContext, useContext, ReactNode, useEffect, useState } from 'react
 import { useNotificationCount, NotificationItem } from '@/hooks/use-notification-count';
 import { setNotificationContextHandler } from '@/lib/notifications';
 import { useQuery } from '@tanstack/react-query';
+import { showPushNotification, requestNotificationPermission, isPushNotificationSupported } from '@/lib/push-notifications';
 
 interface NotificationContextType {
   notifications: NotificationItem[];
@@ -10,12 +11,45 @@ interface NotificationContextType {
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   clearAll: () => void;
+  requestPushPermission: () => Promise<boolean>;
 }
 
 const NotificationContext = createContext<NotificationContextType | null>(null);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const notificationData = useNotificationCount();
+  const [pushPermissionGranted, setPushPermissionGranted] = useState(false);
+
+  // Enhanced addNotification with push notification support
+  const addNotificationWithPush = (notification: Omit<NotificationItem, 'id' | 'read' | 'timestamp'>) => {
+    // Add to in-app notifications
+    notificationData.addNotification(notification);
+    
+    // Show push notification if permissions are granted
+    if (pushPermissionGranted && isPushNotificationSupported()) {
+      showPushNotification({
+        title: notification.title,
+        body: notification.body,
+        url: notification.url,
+        tag: `opian-${notification.type}`,
+        requireInteraction: notification.type === 'appointment' || notification.type === 'urgent'
+      });
+    }
+  };
+
+  // Request push notification permission
+  const requestPushPermission = async (): Promise<boolean> => {
+    const granted = await requestNotificationPermission();
+    setPushPermissionGranted(granted);
+    return granted;
+  };
+
+  // Check initial permission state
+  useEffect(() => {
+    if (isPushNotificationSupported()) {
+      setPushPermissionGranted(Notification.permission === 'granted');
+    }
+  }, []);
 
   // Fetch dynamic data for notifications
   const { data: clients = [] } = useQuery({ queryKey: ['/api/clients'] });
@@ -26,12 +60,15 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const handleNotificationEvent = (event: any) => {
       const notification = event.detail;
-      notificationData.addNotification(notification);
+      addNotificationWithPush(notification);
     };
 
     window.addEventListener('notification', handleNotificationEvent);
-    return () => window.removeEventListener('notification', handleNotificationEvent);
-  }, [notificationData]);
+    
+    return () => {
+      window.removeEventListener('notification', handleNotificationEvent);
+    };
+  }, [pushPermissionGranted]);
 
   // Track which notifications have been shown to prevent duplicates
   const [shownNotifications, setShownNotifications] = useState<Set<string>>(() => {
@@ -154,7 +191,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         setShownNotifications(prev => new Set([...prev, ...newKeys]));
         
         notificationsToAdd.forEach(item => {
-          notificationData.addNotification(item.notification);
+          addNotificationWithPush(item.notification);
         });
       }
 
@@ -166,24 +203,28 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   // Connect the notification service to context
   useEffect(() => {
     setNotificationContextHandler((notification) => {
-      notificationData.addNotification({
+      addNotificationWithPush({
         title: notification.title,
         body: notification.body,
         type: notification.type || 'system',
         url: notification.url
       });
     });
-  }, [notificationData.addNotification]);
+  }, [pushPermissionGranted]);
 
   // Expose global notification function
   useEffect(() => {
     (window as any).addNotification = (notification: Omit<NotificationItem, 'id' | 'read' | 'timestamp'>) => {
-      notificationData.addNotification(notification);
+      addNotificationWithPush(notification);
     };
-  }, [notificationData.addNotification]);
+  }, [pushPermissionGranted]);
 
   return (
-    <NotificationContext.Provider value={notificationData}>
+    <NotificationContext.Provider value={{
+      ...notificationData,
+      addNotification: addNotificationWithPush,
+      requestPushPermission
+    }}>
       {children}
     </NotificationContext.Provider>
   );

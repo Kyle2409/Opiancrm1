@@ -58,6 +58,8 @@ app.use((req, res, next) => {
     app.use(express.static("public"));
     await setupVite(app, server);
   } else {
+    // Serve static assets from public directory in production
+    app.use(express.static("public"));
     serveStatic(app);
   }
 

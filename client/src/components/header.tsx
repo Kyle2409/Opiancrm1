@@ -70,10 +70,21 @@ export default function Header() {
         ></div>
         
         <div className="relative z-10 flex items-center justify-between">
-          {/* Mobile spacing */}
-          <div className="lg:hidden"></div>
+          {/* Left Section - Page Title */}
+          <div className="flex-1">
+            <div className="hidden lg:block">
+              <h1 className="text-2xl font-bold" style={{ color: themes[theme].colors.text }}>
+                {currentPage.title}
+              </h1>
+              <p className="text-sm opacity-75" style={{ color: themes[theme].colors.textSecondary }}>
+                {currentPage.subtitle}
+              </p>
+            </div>
+            {/* Mobile menu button placeholder */}
+            <div className="lg:hidden w-10"></div>
+          </div>
           
-          {/* Action Section */}
+          {/* Right Section - Action Items */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Enhanced Search Bar */}
             <div className="relative group hidden sm:block">

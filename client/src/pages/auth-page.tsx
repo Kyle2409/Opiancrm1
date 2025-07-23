@@ -75,7 +75,7 @@ export default function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white">
         <div className="w-full max-w-md">
           <div className="text-center mb-6 lg:mb-8">
-            <div className="flex justify-center mb-4 lg:mb-6">
+            <div className="flex justify-center mb-4 lg:mb-6 pt-[25px] pb-[25px]">
               <img 
                 src="/logo.png" 
                 alt="Opian Core" 
@@ -229,7 +229,6 @@ export default function AuthPage() {
           </Tabs>
         </div>
       </div>
-
       {/* Right side - Hero Section */}
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-[#0073EA] to-[#00C875] items-center justify-center p-8">
         <div className="max-w-lg text-white text-center">
@@ -262,7 +261,6 @@ export default function AuthPage() {
           </div>
         </div>
       </div>
-      
       {/* Mobile Footer with Features */}
       <div className="lg:hidden bg-gradient-to-r from-[#0073EA] to-[#00C875] p-4">
         <div className="grid grid-cols-2 gap-4 text-white text-center">

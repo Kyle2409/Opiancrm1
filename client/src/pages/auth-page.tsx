@@ -79,7 +79,7 @@ export default function AuthPage() {
               <img 
                 src="/logo.png" 
                 alt="Opian Core" 
-                className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 object-contain"
+                className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 object-contain"
               />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Welcome to Opian Core</h1>

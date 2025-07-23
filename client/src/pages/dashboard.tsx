@@ -146,7 +146,7 @@ export default function Dashboard() {
 
   return (
     <div 
-      className="p-4 space-y-4 h-full relative overflow-hidden transition-all duration-300"
+      className="p-2 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6 h-full relative overflow-hidden transition-all duration-300"
       style={{ 
         backgroundColor: themes[theme].colors.background,
         color: themes[theme].colors.text 
@@ -176,9 +176,9 @@ export default function Dashboard() {
       <PushNotificationPrompt />
       
       {/* Welcome Section */}
-      <div className="mb-8">
+      <div className="mb-4 sm:mb-6 lg:mb-8">
         <div 
-          className="relative backdrop-blur-sm rounded-3xl p-8 shadow-2xl border overflow-hidden transition-all duration-300"
+          className="relative backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl border overflow-hidden transition-all duration-300"
           style={{
             backgroundColor: themes[theme].colors.glassBg,
             borderColor: themes[theme].colors.border,
@@ -205,9 +205,9 @@ export default function Dashboard() {
           ></div>
           
           <div className="relative z-10">
-            <div className="flex items-center space-x-4 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-4">
               <h1 
-                className="text-4xl font-bold transition-colors duration-300"
+                className="text-xl sm:text-2xl lg:text-4xl font-bold transition-colors duration-300"
                 style={{ color: themes[theme].colors.text }}
               >
                 Good morning, {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || 'User'}!
@@ -224,13 +224,13 @@ export default function Dashboard() {
               )}
             </div>
             <p 
-              className="text-xl mt-2 font-medium transition-colors duration-300"
+              className="text-sm sm:text-base lg:text-xl mt-2 font-medium transition-colors duration-300"
               style={{ color: themes[theme].colors.textSecondary }}
             >
               Here's what's happening with your business today.
             </p>
             
-            <div className="flex items-center space-x-3 mt-6">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mt-4 sm:mt-6">
               <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50/80 backdrop-blur-sm px-3 py-1.5">
                 <Activity className="w-4 h-4 mr-2" />
                 All systems operational
@@ -245,7 +245,7 @@ export default function Dashboard() {
       </div>
 
       {/* Enhanced Stats Cards with Stained Glass Effect */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -314,7 +314,7 @@ export default function Dashboard() {
               
               {/* Subtle border */}
               <div className="absolute inset-0 rounded-lg border border-slate-400/30 shadow-inner"></div>
-              <CardContent className="p-4 relative z-10 backdrop-blur-sm">
+              <CardContent className="p-3 sm:p-4 lg:p-6 relative z-10 backdrop-blur-sm">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
@@ -373,7 +373,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {/* Recent Client Activity - Light Blue Stained Glass */}
         <div className="lg:col-span-2">
           <Card className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group">
@@ -495,7 +495,7 @@ export default function Dashboard() {
                                 ${client.value?.toLocaleString() || 0}
                               </p>
                               <p className="text-xs text-gray-500">
-                                {format(new Date(client.lastContact || client.createdAt), 'MMM d')}
+                                {format(new Date(client.lastContact || client.createdAt || new Date()), 'MMM d')}
                               </p>
                             </div>
                           </div>
@@ -522,7 +522,7 @@ export default function Dashboard() {
         </div>
 
         {/* Right Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-3 sm:space-y-4 lg:space-y-6">
           {/* Quick Actions - Theme-aware Stained Glass */}
           <Card className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group">
             {/* Theme-aware stained glass base */}
@@ -581,10 +581,10 @@ export default function Dashboard() {
                 Quick Actions
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 relative z-10">
+            <CardContent className="space-y-2 sm:space-y-3 relative z-10 p-3 sm:p-4 lg:p-6">
               <Button 
                 onClick={() => setLocation("/clients")}
-                className="w-full h-12 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+                className="w-full h-10 sm:h-12 text-sm sm:text-base text-white shadow-md transition-all duration-200 hover:shadow-lg"
                 style={{
                   background: themes[theme].colors.gradient,
                 }}
@@ -594,7 +594,7 @@ export default function Dashboard() {
               </Button>
               <Button 
                 onClick={() => setLocation("/booking")}
-                className="w-full h-12 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+                className="w-full h-10 sm:h-12 text-sm sm:text-base text-white shadow-md transition-all duration-200 hover:shadow-lg"
                 style={{
                   background: `linear-gradient(to right, ${themes[theme].colors.primary}DD, ${themes[theme].colors.secondary}DD)`,
                 }}
@@ -604,7 +604,7 @@ export default function Dashboard() {
               </Button>
               <Button 
                 onClick={() => setLocation("/documents")}
-                className="w-full h-12 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+                className="w-full h-10 sm:h-12 text-sm sm:text-base text-white shadow-md transition-all duration-200 hover:shadow-lg"
                 style={{
                   background: `linear-gradient(to right, ${themes[theme].colors.secondary}DD, ${themes[theme].colors.accent}DD)`,
                 }}

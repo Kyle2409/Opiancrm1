@@ -87,7 +87,7 @@ export default function Sidebar() {
       
       {/* Navigation */}
       <div className="flex-1 p-4 space-y-2 relative z-10">
-        {navigationItems.filter(item => !item.hideForRoles?.includes(user?.role || "user")).map((item, index) => {
+        {navigationItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = location === item.path;
           

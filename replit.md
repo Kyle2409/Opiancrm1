@@ -120,6 +120,7 @@ Changelog:
 - July 21, 2025. Push notifications and mobile responsiveness - Added push notification permission requests on login/registration, implemented mobile-responsive design with hamburger menu for sidebar navigation, responsive spacing and layouts for all pages, and mobile-friendly header with adaptive controls
 - July 21, 2025. Email notifications and menu cleanup - Removed "Book Appointment" sidebar menu item, integrated Nodemailer for automatic email notifications when appointments are created/updated/deleted, sending professional emails to both clients and assigned team members with appointment details
 - July 22, 2025. Production asset handling fix - Fixed issue where static assets (logo.png, etc.) weren't loading in production after npm build and npm start; created copy-assets.js script and build-production.sh automation to ensure all public assets are properly copied to dist/public directory
+- July 23, 2025. Mobile responsiveness enhancement - Made authentication pages and dashboard fully mobile responsive with adaptive layouts, proper spacing, and mobile-optimized components; improved sidebar hamburger menu behavior and header mobile layout
 ```
 
 ## User Preferences

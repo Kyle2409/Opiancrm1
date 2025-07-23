@@ -80,12 +80,16 @@ export default function Header() {
                 {currentPage.subtitle}
               </p>
             </div>
-            {/* Mobile menu button placeholder */}
-            <div className="lg:hidden w-10"></div>
+            {/* Mobile title on small screens */}
+            <div className="lg:hidden">
+              <h1 className="text-lg font-bold" style={{ color: themes[theme].colors.text }}>
+                {currentPage.title}
+              </h1>
+            </div>
           </div>
           
           {/* Right Section - Action Items */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
             {/* Enhanced Search Bar */}
             <div className="relative group hidden sm:block">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-600/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

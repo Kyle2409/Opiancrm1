@@ -70,20 +70,20 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left side - Auth Forms */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-white">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-6">
+          <div className="text-center mb-6 lg:mb-8">
+            <div className="flex justify-center mb-4 lg:mb-6">
               <img 
                 src="/logo.png" 
                 alt="Opian Core" 
-                className="w-16 h-16 object-contain"
+                className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
               />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Opian Core</h1>
-            <p className="text-gray-600">Manage your clients and grow your business</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Welcome to Opian Core</h1>
+            <p className="text-sm sm:text-base text-gray-600">Manage your clients and grow your business</p>
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -144,7 +144,7 @@ export default function AuthPage() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">First Name</Label>
                         <Input
@@ -231,7 +231,7 @@ export default function AuthPage() {
       </div>
 
       {/* Right side - Hero Section */}
-      <div className="flex-1 bg-gradient-to-br from-[#0073EA] to-[#00C875] flex items-center justify-center p-8">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-[#0073EA] to-[#00C875] items-center justify-center p-8">
         <div className="max-w-lg text-white text-center">
           <div className="mb-8">
             <Building2 className="h-16 w-16 mx-auto mb-4 opacity-90" />
@@ -259,6 +259,20 @@ export default function AuthPage() {
               <BarChart3 className="h-8 w-8 mx-auto mb-2 opacity-80" />
               <div className="text-sm font-medium">Performance Analytics</div>
             </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Mobile Footer with Features */}
+      <div className="lg:hidden bg-gradient-to-r from-[#0073EA] to-[#00C875] p-4">
+        <div className="grid grid-cols-2 gap-4 text-white text-center">
+          <div className="flex flex-col items-center">
+            <Users className="h-6 w-6 mb-1 opacity-80" />
+            <div className="text-xs font-medium">Client Management</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <Calendar className="h-6 w-6 mb-1 opacity-80" />
+            <div className="text-xs font-medium">Scheduling</div>
           </div>
         </div>
       </div>

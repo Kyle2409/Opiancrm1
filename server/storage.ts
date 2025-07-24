@@ -146,7 +146,7 @@ export class DatabaseStorage implements IStorage {
     // Process the data to convert empty strings to null and handle type conversion
     const processedData = Object.fromEntries(
       Object.entries(insertClient).map(([key, value]) => {
-        // Convert empty strings to null
+        // Convert empty strings to null (especially important for email field)
         if (value === "" || value === undefined) {
           return [key, null];
         }
@@ -172,6 +172,8 @@ export class DatabaseStorage implements IStorage {
       })
     );
 
+    console.log("Processed client data:", processedData);
+    
     const [client] = await db
       .insert(clients)
       .values(processedData)

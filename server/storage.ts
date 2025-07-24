@@ -59,7 +59,6 @@ export interface IStorage {
   deleteAppointment(id: number): Promise<boolean>;
   
   // User methods (team members are users)
-  getAllUsers(): Promise<User[]>;
   updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined>;
   deleteUser(id: number): Promise<boolean>;
   
@@ -355,10 +354,6 @@ export class DatabaseStorage implements IStorage {
   async deleteAppointment(id: number): Promise<boolean> {
     const result = await db.delete(appointments).where(eq(appointments.id, id));
     return (result.rowCount ?? 0) > 0;
-  }
-
-  async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users);
   }
 
   async updateUser(id: number, userData: Partial<InsertUser & { isOnline?: boolean; lastSeen?: Date }>): Promise<User | undefined> {

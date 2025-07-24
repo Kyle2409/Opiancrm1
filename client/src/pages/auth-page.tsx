@@ -14,7 +14,7 @@ import { z } from "zod";
 import { Building2, Users, Calendar, FileText, BarChart3 } from "lucide-react";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
+  username: z.string().min(1, "Username or email is required"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -101,12 +101,12 @@ export default function AuthPage() {
                 <CardContent>
                   <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
+                      <Label htmlFor="username">Username or Email</Label>
                       <Input
                         id="username"
                         type="text"
                         {...loginForm.register("username")}
-                        placeholder="Enter your username"
+                        placeholder="Enter your username or email"
                       />
                       {loginForm.formState.errors.username && (
                         <p className="text-sm text-red-600">{loginForm.formState.errors.username.message}</p>

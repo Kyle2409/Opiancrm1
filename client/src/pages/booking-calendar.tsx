@@ -100,11 +100,7 @@ export default function BookingCalendar() {
     return client ? `${client.firstName} ${client.surname}` : "Unknown client";
   };
 
-  const getTeamMemberName = (teamMemberId: number | null) => {
-    if (!teamMemberId) return null;
-    const member = teamMembers.find(tm => tm.id === teamMemberId);
-    return member ? member.name : "Unknown member";
-  };
+
 
   // Team member colors - consistent across the application
   const getTeamMemberColor = (assignedToId: number | null) => {
@@ -128,6 +124,13 @@ export default function BookingCalendar() {
     if (!assignedToId) return null;
     const member = teamMembers.find(tm => tm.id === assignedToId);
     return member;
+  };
+
+  const getTeamMemberName = (assignedToId: number | null) => {
+    if (!assignedToId) return "Unassigned";
+    const member = teamMembers.find(tm => tm.id === assignedToId);
+    if (!member) return "Unknown";
+    return member.firstName && member.lastName ? `${member.firstName} ${member.lastName}` : member.username;
   };
 
   const selectedDateAppointments = selectedDate ? getAppointmentsForDate(selectedDate) : [];
@@ -397,7 +400,9 @@ export default function BookingCalendar() {
                 {teamMembers.map((member) => (
                   <div key={member.id} className="flex items-center space-x-2">
                     <div className={`w-4 h-4 rounded border ${getTeamMemberColor(member.id)}`}></div>
-                    <span className="text-sm font-medium">{member.name}</span>
+                    <span className="text-sm font-medium">
+                      {member.firstName && member.lastName ? `${member.firstName} ${member.lastName}` : member.username}
+                    </span>
                     <span className="text-xs text-gray-500">({member.role})</span>
                   </div>
                 ))}

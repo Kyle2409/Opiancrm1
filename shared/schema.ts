@@ -19,7 +19,7 @@ export const clients = pgTable("clients", {
   cellPhone: text("cell_phone"),
   homePhone: text("home_phone"),
   workPhone: text("work_phone"),
-  email: text("email").notNull().unique(),
+  email: text("email").unique(),
   physicalAddress: text("physical_address"),
   postalAddress: text("postal_address"),
   physicalPostalCode: text("physical_postal_code"),
@@ -211,7 +211,7 @@ export const insertClientSchema = createInsertSchema(clients).omit({
 }).extend({
   firstName: z.string().min(1, "First name is required"),
   surname: z.string().min(1, "Surname is required"),
-  email: z.string().email("Valid email is required"),
+  email: z.string().email("Valid email is required").optional().or(z.literal("")),
   // Make numeric fields coercible and optional
   grossAnnualIncome: z.coerce.number().optional(),
   monthlyIncome: z.coerce.number().optional(),

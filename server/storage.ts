@@ -176,7 +176,7 @@ export class DatabaseStorage implements IStorage {
     
     const [client] = await db
       .insert(clients)
-      .values(processedData)
+      .values(processedData as InsertClient)
       .returning();
     return client;
   }

@@ -124,6 +124,9 @@ export function AppointmentDetailsModal({
               )}
             </div>
           </DialogTitle>
+          <div className="sr-only">
+            Appointment details for {appointment.title} scheduled on {format(new Date(appointment.date), 'MMMM d, yyyy')} from {appointment.startTime} to {appointment.endTime}
+          </div>
         </DialogHeader>
 
         <div className="space-y-6 pt-4">

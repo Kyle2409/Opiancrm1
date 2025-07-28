@@ -134,7 +134,7 @@ export default function BookingCalendar() {
     if (!assignedToId) return "Unassigned";
     const member = teamMembers.find(tm => tm.id === assignedToId);
     if (!member) return "Unknown";
-    return member.firstName && member.lastName ? `${member.firstName} ${member.lastName}` : member.username;
+    return member.name || "Unknown";
   };
 
   const selectedDateAppointments = selectedDate ? getAppointmentsForDate(selectedDate) : [];
@@ -256,8 +256,13 @@ export default function BookingCalendar() {
                         {hourAppointments.map((appointment) => (
                           <div 
                             key={appointment.id}
-                            className={`text-xs p-0.5 sm:p-1 rounded border ${getTeamMemberColor(appointment.assignedToId)}`}
+                            className={`text-xs p-0.5 sm:p-1 rounded border cursor-pointer hover:shadow-sm ${getTeamMemberColor(appointment.assignedToId)}`}
                             title={`${appointment.startTime} - ${appointment.endTime}: ${appointment.title} (${getClientName(appointment.clientId)}) - Assigned to: ${getTeamMemberName(appointment.assignedToId) || 'Unassigned'}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedAppointment(appointment);
+                              setIsDetailsModalOpen(true);
+                            }}
                           >
                             <div className="font-medium truncate text-xs">{appointment.title}</div>
                             <div className="truncate opacity-70 text-xs hidden sm:block">{getClientName(appointment.clientId)}</div>
@@ -301,8 +306,11 @@ export default function BookingCalendar() {
                       {hourAppointments.map((appointment) => (
                         <div 
                           key={appointment.id}
-                          className={`text-sm px-3 py-2 rounded border cursor-pointer ${getTeamMemberColor(appointment.assignedToId)}`}
-                          onClick={() => setSelectedDate(currentDate)}
+                          className={`text-sm px-3 py-2 rounded border cursor-pointer hover:shadow-sm ${getTeamMemberColor(appointment.assignedToId)}`}
+                          onClick={() => {
+                            setSelectedAppointment(appointment);
+                            setIsDetailsModalOpen(true);
+                          }}
                           title={`${appointment.startTime} - ${appointment.endTime}: ${appointment.title} (${getClientName(appointment.clientId)}) - Assigned to: ${getTeamMemberName(appointment.assignedToId) || 'Unassigned'}`}
                         >
                           <div className="font-medium">{appointment.startTime} - {appointment.endTime}</div>
@@ -410,7 +418,7 @@ export default function BookingCalendar() {
                   <div key={member.id} className="flex items-center space-x-2">
                     <div className={`w-4 h-4 rounded border ${getTeamMemberColor(member.id)}`}></div>
                     <span className="text-sm font-medium">
-                      {member.firstName && member.lastName ? `${member.firstName} ${member.lastName}` : member.username}
+                      {member.name}
                     </span>
                     <span className="text-xs text-gray-500">({member.role})</span>
                   </div>

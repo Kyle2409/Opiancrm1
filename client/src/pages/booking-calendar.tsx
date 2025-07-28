@@ -8,11 +8,15 @@ import { appointmentsApi, clientsApi } from "@/lib/api";
 import { teamMembersApi } from "@/lib/team-api";
 import { ChevronLeft, ChevronRight, Clock, Users } from "lucide-react";
 import { useTheme } from "@/contexts/theme-context";
+import { AppointmentDetailsModal } from "@/components/modals/appointment-details-modal";
+import { type Appointment } from "@shared/schema";
 
 export default function BookingCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState<"month" | "week" | "day">("month");
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const { theme, themes } = useTheme();
 
   const { data: appointments = [] } = useQuery({
@@ -180,8 +184,13 @@ export default function BookingCalendar() {
                     {dayAppointments.slice(0, 2).map((apt) => (
                       <div
                         key={apt.id}
-                        className={`text-xs p-1 rounded border ${getTeamMemberColor(apt.assignedToId)}`}
+                        className={`text-xs p-1 rounded border cursor-pointer hover:shadow-sm ${getTeamMemberColor(apt.assignedToId)}`}
                         title={`${apt.startTime} - ${apt.endTime}: ${apt.title} (${getClientName(apt.clientId)}) - Assigned to: ${getTeamMemberName(apt.assignedToId) || 'Unassigned'}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedAppointment(apt);
+                          setIsDetailsModalOpen(true);
+                        }}
                       >
                         <div className="truncate font-medium">{apt.startTime}-{apt.endTime.slice(0, 5)} {apt.title}</div>
                         <div className="truncate opacity-70">{getClientName(apt.clientId)}</div>
@@ -432,7 +441,14 @@ export default function BookingCalendar() {
               selectedDateAppointments.length > 0 ? (
                 <div className="space-y-4">
                   {selectedDateAppointments.map((apt) => (
-                    <div key={apt.id} className="p-4 border border-gray-200 rounded-lg">
+                    <div 
+                      key={apt.id} 
+                      className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => {
+                        setSelectedAppointment(apt);
+                        setIsDetailsModalOpen(true);
+                      }}
+                    >
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-gray-900">{apt.title}</h4>
                         <Badge variant={apt.status === 'scheduled' ? 'default' : 'secondary'}>
@@ -480,6 +496,15 @@ export default function BookingCalendar() {
           </Card>
         </div>
       </div>
+
+      <AppointmentDetailsModal
+        appointment={selectedAppointment}
+        isOpen={isDetailsModalOpen}
+        onClose={() => {
+          setIsDetailsModalOpen(false);
+          setSelectedAppointment(null);
+        }}
+      />
     </div>
   );
 }

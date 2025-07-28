@@ -14,12 +14,16 @@ import {
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, startOfWeek, endOfWeek, addDays, subDays, addWeeks, subWeeks, startOfDay, endOfDay, eachHourOfInterval, addHours } from "date-fns";
 import AddAppointmentModal from "@/components/modals/add-appointment-modal";
+import { AppointmentDetailsModal } from "@/components/modals/appointment-details-modal";
 import { useTheme } from "@/contexts/theme-context";
+import { type Appointment } from "@shared/schema";
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"month" | "week" | "day">("month");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const { theme, themes } = useTheme();
 
   const { data: appointments = [], isLoading } = useQuery({
@@ -242,8 +246,12 @@ export default function Calendar() {
                 {dayAppointments.map((appointment) => (
                   <div 
                     key={appointment.id}
-                    className={`text-xs px-2 py-1 rounded transition-all duration-200 hover:shadow-md ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
+                    className={`text-xs px-2 py-1 rounded transition-all duration-200 hover:shadow-md cursor-pointer ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
                     title={`Assigned to: ${getTeamMemberName(appointment.assignedToId || appointment.userId)}`}
+                    onClick={() => {
+                      setSelectedAppointment(appointment);
+                      setIsDetailsModalOpen(true);
+                    }}
                   >
                     <div className="font-medium">{appointment.startTime}</div>
                     <div className="truncate">{appointment.title}</div>
@@ -310,8 +318,12 @@ export default function Calendar() {
                   {dayAppointments.map((appointment) => (
                     <div 
                       key={appointment.id}
-                      className={`text-xs px-2 py-1 rounded transition-all duration-200 hover:shadow-md ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
+                      className={`text-xs px-2 py-1 rounded transition-all duration-200 hover:shadow-md cursor-pointer ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
                       title={`Assigned to: ${getTeamMemberName(appointment.assignedToId || appointment.userId)}`}
+                      onClick={() => {
+                        setSelectedAppointment(appointment);
+                        setIsDetailsModalOpen(true);
+                      }}
                     >
                       <div className="font-medium">{appointment.startTime}</div>
                       <div className="truncate">{appointment.title}</div>
@@ -386,8 +398,12 @@ export default function Calendar() {
                     {hourAppointments.map((appointment) => (
                       <div 
                         key={appointment.id}
-                        className={`text-sm px-3 py-2 rounded transition-all duration-200 hover:shadow-md ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
+                        className={`text-sm px-3 py-2 rounded transition-all duration-200 hover:shadow-md cursor-pointer ${getTeamMemberColor(appointment.assignedToId || appointment.userId)}`}
                         title={`Assigned to: ${getTeamMemberName(appointment.assignedToId || appointment.userId)}`}
+                        onClick={() => {
+                          setSelectedAppointment(appointment);
+                          setIsDetailsModalOpen(true);
+                        }}
                       >
                         <div className="font-medium">{appointment.startTime} - {appointment.endTime}</div>
                         <div className="font-semibold">{appointment.title}</div>
@@ -558,6 +574,15 @@ export default function Calendar() {
       <AddAppointmentModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
+      />
+
+      <AppointmentDetailsModal
+        appointment={selectedAppointment}
+        isOpen={isDetailsModalOpen}
+        onClose={() => {
+          setIsDetailsModalOpen(false);
+          setSelectedAppointment(null);
+        }}
       />
     </div>
   );

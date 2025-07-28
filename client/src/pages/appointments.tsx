@@ -100,7 +100,7 @@ export default function Appointments() {
   const getAppointmentColor = (type: string) => {
     switch (type) {
       case "meeting":
-        return "bg-primary bg-opacity-10 text-primary";
+        return "bg-teal-100 text-teal-700 border-teal-200";
       case "consultation":
         return "bg-blue-100 text-blue-600";
       case "demo":
